@@ -22,7 +22,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
     
     -  Psychrometric Analysis: this creates psychrometric charts for the plotting of hourlyclimate data {and of transformed data to mimic evaporative cooling}.
     
-    -  Wind rose: this plots a user-controllable wind rose, with theta segments of azimuthal sectors falsecoloured either according to the hours that the wind approaches that direction and in the indicated (theta) speed, or at the indicated (theta) temperature. For further advice on the interpretation of charts from the PyClim Web App please refer to:http://www.ibpsa.org/proceedings/BSO2020/BSOV2020_Robinson.pdf.
+    -  Wind rose: this plots a user-controllable wind rose, with theta segments of azimuthal sectors falsecoloured either according to the hours that the wind approaches that direction and in the indicated (theta) speed, or at the indicated (theta) temperature. For further advice on the interpretation of charts from the PyClim Web App please refer to: http://www.ibpsa.org/proceedings/BSO2020/BSOV2020_Robinson.pdf.
     """
     )
 
