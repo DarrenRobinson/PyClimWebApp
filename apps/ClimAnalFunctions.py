@@ -285,7 +285,8 @@ def igbeta(jday, cai, igh, idh, solalt, tilt, isotropic, DiffuseOnly, groundref)
         if idh>0:
             idbeta=idh_perez(jday, cai, solalt, idh, ibn, tilt)
     if DiffuseOnly==True:
-        igbeta=idbeta
+        iground=igh*groundref*(1-math.cos(tilt))/2
+        igbeta=idbeta+iground
     else:
         iground=igh*groundref*(1-math.cos(tilt))/2
         ibbeta=ibn*cai
