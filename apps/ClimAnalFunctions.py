@@ -25,8 +25,8 @@ pi = 3.141592654
 # lat = 53.7
 # longitude = -1
 # timezone = 0
-timeshift = -0.5 #for the hour-centred time convention
-groundref = 0.2
+# timeshift = -0.5 #for the hour-centred time convention
+# groundref = 0.2
 
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX########
 # FUNCTIONS TO CALCULATE THE PSYCHROMETRIC PROPERTIES OF HUMID AIR
@@ -273,7 +273,7 @@ def daylength(dec, lat):
 
 
 #this function calculates incident irradiance, for either an isotropic or an anisotropic sky
-def igbeta(jday, cai, igh, idh, solalt, tilt, isotropic, DiffuseOnly):
+def igbeta(jday, cai, igh, idh, solalt, tilt, isotropic, DiffuseOnly, groundref):
     if solalt>0:
         ibn=(igh-idh)/math.sin(solalt)
     else:

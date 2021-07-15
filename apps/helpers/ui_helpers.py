@@ -12,9 +12,6 @@ import re
 from urllib.request import Request, urlopen
 import geocoder
 
-# import matplotlib.pyplot as plt
-
-
 class ui_helpers():  
     def __init__(self):
         self.feats = ['psychros', 'windrose']

@@ -24,7 +24,7 @@ from apps.ClimAnalFunctions import *
 #FACTOR FOR CUTS THROUGH PATCHES FROM A PROGRESSIVELY TILTED PLANE. 
 ##########################################################################################
 
-def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timeshift = timeshift, groundref = groundref):
+def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
     
     st.write("# "+title)
 
@@ -59,7 +59,10 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
     #This is to access the headers from the epw file
     lat = lat * pi / 180
     groundref = st.sidebar.number_input("groundref", 0.0, 1.0, 0.2, 0.5)
-    timeshift = st.sidebar.slider("Timeshift", -0.5, 0.5, timeshift, 0.5, help="This is to handle timing conventions relating to climate data collection")
+    timeshift = st.sidebar.slider("Timeshift", -0.5, 0.5, -0.5, 0.5, help="This is to handle timing conventions relating to climate data collection")
+
+
+
 
     #this popuates global and diffuse lists with the corresponding solar data
     for i in range (3,len(file_list)):
@@ -81,7 +84,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
                         solalt_list.append(solar_altitude(i,j+timediff_list[i-1],lat, dec_list[i-1]))
                         solaz_list.append(solar_azimuth(i,j+timediff_list[i-1],lat,solalt_list[cumhour-1], dec_list[i-1]))
                     cai_list.append(cai(wallaz*pi/180,tilt*pi/180,solalt_list[cumhour-1],solaz_list[cumhour-1]))
-                    igbeta_list.append(igbeta(i, cai_list[cumhour-1],global_list[cumhour-1],diffuse_list[cumhour-1],solalt_list[cumhour-1],tilt*pi/180, isotropic, DiffuseOnly))
+                    igbeta_list.append(igbeta(i, cai_list[cumhour-1],global_list[cumhour-1],diffuse_list[cumhour-1],solalt_list[cumhour-1],tilt*pi/180, isotropic, DiffuseOnly, groundref))
                     globalirradbeta = globalirradbeta + igbeta_list[cumhour-1]    
             
             annualirrad_list.append(globalirradbeta)
