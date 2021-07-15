@@ -18,7 +18,7 @@ import numpy as np
 
 from apps.ClimAnalFunctions import * 
 
-def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timeshift = timeshift):
+def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timeshift=timeshift):
 
     st.write("# "+title)
 

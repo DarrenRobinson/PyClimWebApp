@@ -24,7 +24,7 @@ from apps.ClimAnalFunctions import *
 #FACTOR FOR CUTS THROUGH PATCHES FROM A PROGRESSIVELY TILTED PLANE. 
 ##########################################################################################
 
-def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, groundref = groundref):
+def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timeshift=timeshift, groundref=groundref):
     
     st.write("# "+title)
 
@@ -59,7 +59,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, ground
     #This is to access the headers from the epw file
     lat = lat * pi / 180
     groundref = st.sidebar.number_input("groundref", 0.0, 1.0, groundref, 0.5)
-    timeshift = st.sidebar.slider("Timeshift", -0.5, 0.5, -0.5, 0.5, help="This is to handle timing conventions relating to climate data collection")
+    timeshift = st.sidebar.slider("Timeshift", -0.5, 0.5, timeshift, 0.5, help="This is to handle timing conventions relating to climate data collection")
 
 
 
