@@ -229,6 +229,10 @@ class ui_helpers():
         # Connect to EnergyPlus
         response = urlopen('https://github.com/NREL/EnergyPlus/raw/develop/weather/master.geojson')
         data = json.loads(response.read().decode('utf8'))
+        return data
+
+    def get_db_df(self):
+        data = self.get_db()
         df = []
         for location in data['features']:
             url_str = []
@@ -242,11 +246,12 @@ class ui_helpers():
                     url_str += urls
             url_str += location['geometry']['coordinates']        
             df.append(url_str)
-        df = pd.DataFrame(df)
 
-        # Get current location and sort epw files by distance from it
-        geo = geocoder.ip('me')
-        latlng = geo.latlng
+        df = pd.DataFrame(df)
+        
+        latlng = [0] * 2
+        latlng[0] = st.session_state.user_lat if 'user_lat' in st.session_state else 53.4
+        latlng[1] = st.session_state.user_lng if 'user_lng' in st.session_state else -1.5
 
         R = 6373.0
 
@@ -269,8 +274,12 @@ class ui_helpers():
         distance = R * temp_df['c'] 
 
         df[len(df.columns)] = distance
-        df = df.sort_values(len(df.columns)-1)
+        df = df.sort_values(len(df.columns)-1) 
+        return df
 
+    @st.cache
+    def get_advanced_search_dropdowns(self):
+        df = self.get_db_df()
         # Generate dropdowns for filter by epw file categories
         regions = df[4].unique() 
         regions_dropdown = [{
@@ -295,7 +304,12 @@ class ui_helpers():
                 states_dropdown_individual_country = df[df[5] == countries_dropdown_individual_region[j]][6].dropna().unique().tolist()
                 states_dropdown_individual_country = list(filter(None, states_dropdown_individual_country))
                 states_dropdown[countries_dropdown_individual_region[j]] = ['All in '+countries_dropdown_individual_region[j]] + states_dropdown_individual_country
-        
+
+        return regions_dropdown, countries_dropdown, states_dropdown
+
+    def get_weather_data_dropdown(self):
+        df = self.get_db_df()
+
         weather_data_dropdown = []
         weather_data_dropdown_titles = pd.DataFrame(df[7].apply(lambda x: re.split('_|\.', str(x))).tolist())
         weather_data_dropdown_titles = weather_data_dropdown_titles.apply(lambda x: x.str.cat(sep=' '), axis=1)
@@ -309,18 +323,22 @@ class ui_helpers():
                 "file_name": df.iloc[i,8],
                 "file_url": df.iloc[i,9]
             })
-        
-        return regions_dropdown, countries_dropdown, states_dropdown, weather_data_dropdown
-        
+                
+        return weather_data_dropdown
+ 
+    
     def advanced_search(self):
-        regions_dropdown, countries_dropdown, states_dropdown, weather_data_dropdown = self.get_db()
+        regions_dropdown, countries_dropdown, states_dropdown = self.get_advanced_search_dropdowns()
+        weather_data_dropdown = self.get_weather_data_dropdown()
         expander = st.sidebar.beta_expander(label='Advanced Search')
         with expander:
+            st.write("Filter List by Region:")
             region = st.selectbox(
                 "Region", 
                 regions_dropdown,
                 format_func=lambda x: x['title']
             )
+
             epw_col1, epw_col2 = st.beta_columns(2)
 
             if region['title'] == 'All':
@@ -339,6 +357,10 @@ class ui_helpers():
                         states_dropdown_options = states_dropdown[country] 
 
             state = epw_col2.selectbox("State", states_dropdown_options)
+            
+            st.write("Sort List by Distance from Site:")
+            st.number_input("Latitude", -90.0, 90.0, 53.4, 0.1, key='user_lat')
+            st.number_input("Longitude", -180.0, 180.0, -1.5, 0.1, key='user_lng')
 
         weather_data_dropdown_options = weather_data_dropdown
         if (region['pf'] != 'all'):
@@ -354,11 +376,11 @@ class ui_helpers():
                 weather_data_dropdown_options = [ d for d in weather_data_dropdown if d['region'] in region['pf']]
 
         file_name = st.sidebar.selectbox(
-            'Select Weather Data (Keyword Search Enabled)', 
+            'Weather Data List (Keyword Search Enabled)', 
             weather_data_dropdown_options,
             format_func=lambda x: x['title'],
             # index = weather_data_dropdown_default_index,
             help="A list of available weather data files sorted by the distance from your current location."
         )      
-        
+
         return file_name
