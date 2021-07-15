@@ -25,8 +25,8 @@ pi = 3.141592654
 # lat = 53.7
 # longitude = -1
 # timezone = 0
-# timeshift = -0.5 #for the hour-centred time convention
-# groundref = 0.2
+timeshift = -0.5 #for the hour-centred time convention
+groundref = 0.2
 
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX########
 # FUNCTIONS TO CALCULATE THE PSYCHROMETRIC PROPERTIES OF HUMID AIR

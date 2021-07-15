@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 
 from apps.ClimAnalFunctions import * 
 
-def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
+def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timeshift = timeshift):
 
     st.write("# "+title)
     # ui_helper = ui_helpers()
