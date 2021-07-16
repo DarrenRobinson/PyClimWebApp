@@ -23,10 +23,10 @@ class ui_helpers():
         self.time_var = {'start_month': 1, 'start_day': 1, 'end_month': 12, 'end_day': 31, 'start_hour': 1, 'end_hour': 24}
 
     def _check_day(self, session_key, days):
-        
         if session_key in st.session_state:
             if st.session_state[ session_key ] > (len(days)): 
                 st.session_state[ session_key ] = 1
+        st.write("here")
         st.write(st.session_state)
 
     def epw_file_time_filter(self, feature):
