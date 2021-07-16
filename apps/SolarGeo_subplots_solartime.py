@@ -16,17 +16,17 @@
 
 
 #imports the basic libraries
+from datetime import time
 import streamlit as st
 import math
 import matplotlib.pyplot as plt
 
 from apps.ClimAnalFunctions import * 
 
-def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
+def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timeshift=timeshift):
 
     st.write("# "+title)
     # ui_helper = ui_helpers()
-
     lat = st.sidebar.number_input('Latitude', -90.0, 90.0, lat, help="Whilst these charts can be informed by climate data (global coordinates), they can also be generated independently here manually")
     lat = lat * pi / 180
     DayChoice = st.sidebar.slider('Julian Day Number', 1, 365, 172)
