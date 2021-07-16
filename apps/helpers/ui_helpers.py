@@ -1,7 +1,8 @@
+import streamlit as st
 import math
+# from numpy.lib.function_base import corrcoef
 # import tempfile
 import pandas as pd
-import streamlit as st
 import operator
 # import io
 # from PIL import Image
@@ -10,12 +11,23 @@ import base64
 import json
 import re
 from urllib.request import Request, urlopen
+# from streamlit_folium import folium_static
+# import folium
+# from branca.element import Figure
+import pydeck as pdk
+import pandas as pd
 
 class ui_helpers():  
     def __init__(self):
         self.feats = ['psychros', 'windrose']
         self.time_var = {'start_month': 1, 'start_day': 1, 'end_month': 12, 'end_day': 31, 'start_hour': 1, 'end_hour': 24}
-        
+
+    def _check_day(self, session_key, days):
+        st.write(st.session_state)
+        if session_key in st.session_state:
+            if st.session_state[ session_key ] > (len(days)): 
+                st.session_state[ session_key ] = 1
+
     def epw_file_time_filter(self, feature):
         for feat in self.feats:
             if feat == feature:
@@ -57,16 +69,19 @@ class ui_helpers():
 
         start_days = days[start_month_index]
         end_days = days[end_month_index]
-
+        # st.write(st.session_state)
         start_day_index = st.session_state[ session_keys['start_day'] ]-1 if session_keys['start_day'] in st.session_state else 0
         if session_keys['start_day'] in st.session_state:
             if st.session_state[ session_keys['start_day'] ] > (len(start_days)): 
+                # st.session_state[ session_keys['start_day'] ] = 1
                 start_day_index = 0
 
         end_day_index = st.session_state[ session_keys['end_day'] ]-1 if session_keys['end_day'] in st.session_state else end_days.index(max(end_days))
         if session_keys['end_day'] in st.session_state:
             if st.session_state[ session_keys['end_day'] ] > (len(end_days)): 
+                # st.session_state[ session_keys['end_day'] ] = 1
                 end_day_index = 0
+        # st.write(st.session_state)
         
         start_hour_index = st.session_state[ session_keys['start_hour'] ]-1 if session_keys['start_hour'] in st.session_state else 0
         end_hour_index = st.session_state[ session_keys['end_hour'] ]-1 if session_keys['end_hour'] in st.session_state else 23
@@ -79,7 +94,8 @@ class ui_helpers():
             format_func=lambda months: months['title'], 
             key=session_keys['start_month'], 
             index = start_month_index, 
-            help="This filter controls the range of data points that are plotted"
+            help="This filter controls the range of data points that are plotted",
+            on_change=self._check_day(session_keys['start_day'], start_days)
         )
 
         col2.selectbox(
@@ -88,7 +104,8 @@ class ui_helpers():
             format_func=lambda months: months['title'], 
             key=session_keys['end_month'], 
             index = end_month_index, 
-            help="This filter controls the range of data points that are plotted"
+            help="This filter controls the range of data points that are plotted",
+            on_change=self._check_day(session_keys['end_day'], end_days)
         )
 
         col1.selectbox(
@@ -383,3 +400,39 @@ class ui_helpers():
         )      
 
         return file_name
+    
+    def map_viewer(self):
+        data = self._get_db()
+        coordinates = []
+        for location in data['features']:
+            # for file_type in ['epw']:
+            #     match = re.search(r'href=[\'"]?([^\'" >]+)', location['properties'][file_type])
+            #     if match:
+            #         url = match.group(1)
+            #         urls = []
+            #         urls.append(url)
+            #         url_str = url.split('/')
+            #         url_str += urls
+            # url_str += location['geometry']['coordinates']        
+            coordinates.append(location['geometry']['coordinates'])   
+        df = pd.DataFrame(coordinates)
+        df = df.rename(columns={0: 'Longitude', 1: 'Latitude'})
+        df = df[:11]
+        layer = pdk.Layer(
+            "ScatterplotLayer",
+            df,
+            pickable=True,
+            opacity=0.8,
+            filled=True,
+            radius_scale=2,
+            radius_min_pixels=10,
+            radius_max_pixels=5,
+            line_width_min_pixels=0.01,
+            get_position='[Longitude, Latitude]',
+            get_fill_color=[255, 0, 0],
+            get_line_color=[0, 0, 0],
+        )
+        view_state = pdk.ViewState(latitude=df['Latitude'].iloc[0], longitude=df['Longitude'].iloc[0], zoom=1, min_zoom= 1, max_zoom=30, height=100)
+        r = pdk.Deck(layers=[layer], map_style='mapbox://styles/mapbox/streets-v11', initial_view_state=view_state, tooltip={"html": "<b>Longitude: </b> {Longitude} <br /> " "<b>Latitude: </b>{Latitude} <br /> "})
+                            
+        st.sidebar.pydeck_chart(r)

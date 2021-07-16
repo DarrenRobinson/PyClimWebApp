@@ -7,8 +7,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
 
     st.write("# "+title)
 
-    st.write(
-    """
+    st.write("""
     The PyClim Web App (built using Streamlit) is an interface to PyClim: a suite of graphical analysis modules (based around Python’s matplotlib library) for the analysis of hourly weather data. This is intended as a resources for architectural / engineering / technology students and practitioners, to help develop early-stage bioclimatic design concepts.
 
     There are two stages to the use of the PyClim Web App. First, a weather file needs to be selected. The is done by navigating down the hierarchy in the Advanced Search option from Region (continents) through country to state (where applicable) and then selecting the weather file from the list of those available. Alternatively, you can directly perform a keyword search for the weather data file.
@@ -26,5 +25,16 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
     -  Psychrometric Analysis: this creates psychrometric charts for the plotting of hourlyclimate data {and of transformed data to mimic evaporative cooling}.
     
     -  Wind rose: this plots a user-controllable wind rose, with theta segments of azimuthal sectors falsecoloured either according to the hours that the wind approaches that direction and in the indicated (theta) speed, or at the indicated (theta) temperature. For further advice on the interpretation of charts from the PyClim Web App please refer to: http://www.ibpsa.org/proceedings/BSO2020/BSOV2020_Robinson.pdf.
-    """
-    )
+    """)
+
+    st.header("The Team:")
+    
+    st.write("""
+    PyClim and this PyClim Web App interface to it were developed at and are maintained by the University of Sheffield, UK.
+
+    The original PyClim backend was developed in Python by Prof. Darren Robinson.
+
+    The Web App front end was developed using Streamlit by Alvin Mok through an internship funded by the University of Sheffield, under the supervision of Reena Sayani and Darren Robinson.
+
+    We are grateful to students of the Sheffield MSc in Sustainable Architecture Studies (Anupama Rao and Elizaveta Arestova) for their constructive feedback on earlier prototypes of this App.
+    """)
