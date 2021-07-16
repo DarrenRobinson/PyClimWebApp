@@ -40,5 +40,9 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
     We are grateful to students of the Sheffield MSc in Sustainable Architecture Studies (Anupama Rao and Elizaveta Arestova) for their constructive feedback on earlier prototypes of this App.
 
 
+
+    FEEDBACK:
+    
+    If you encounter any bugs with this App, please send a description by e-mail to Darren Robinson: d.robinson1@sheffield.ac.uk  
     """
     )
