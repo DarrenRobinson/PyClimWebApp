@@ -17,12 +17,12 @@ class MultiApp:
     def run(self):
         st.sidebar.write('# PyClim')
 
-        ui_helper = ui_helpers()     
+        ui_helper = ui_helpers()
         file_name = ui_helper.advanced_search() 
         
         epw_helper = epw() 
         epw_file_df, epw_file_headers = epw_helper.get_epw_f(file_name['file_url'])
-
+        # ui_helper.map_viewer()
         lat, longitude, timezone = float(epw_file_headers['LOCATION'][5]), float(epw_file_headers['LOCATION'][6]), float(epw_file_headers['LOCATION'][7])
         st.sidebar.markdown("Latitude: "+str(lat)+" Longitude: "+str(longitude)+"<br>Time Zone: "+str(timezone), unsafe_allow_html=True)
 
