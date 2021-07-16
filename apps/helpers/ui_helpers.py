@@ -21,26 +21,40 @@ class ui_helpers():
     def __init__(self):
         self.feats = ['psychros', 'windrose']
         self.time_var = {'start_month': 1, 'start_day': 1, 'end_month': 12, 'end_day': 31, 'start_hour': 1, 'end_hour': 24}
+        self._days_in_a_month()
+        self.session_keys = {}
 
-    def _check_day(self, session_key, days):
-        if session_key in st.session_state:
-            if st.session_state[ session_key ] > (len(days)): 
-                st.session_state[ session_key ] = 1
-        st.write("here")
-        st.write(st.session_state)
-
-    def epw_file_time_filter(self, feature):
+    def session_keys_init(self, feature):
         for feat in self.feats:
             if feat == feature:
-                session_keys = {
+                self.session_keys = {
                     "start_month": feat+"_start_month",
                     "end_month": feat+"_end_month",
                     "start_day": feat+"_start_day",
                     "end_day": feat+"_end_day",
                     "start_hour": feat+"_start_hour",
                     "end_hour": feat+"_end_hour"
-                }    
+                } 
 
+    def _days_in_a_month(self):
+        self.days = [0] * 12
+        for i in range(1,13):
+            if i in [1, 3, 5, 7, 8, 11, 12]:
+                self.days[i-1] = list(range(1,32))
+            elif i == 2:
+                self.days[i-1] = list(range(1,29))
+            else:
+                self.days[i-1] = list(range(1,31))
+        
+    def _check_day(self):
+
+        # if session_key in st.session_state:
+        #     if st.session_state[ session_key ] > (len(self.days)): 
+        st.session_state[ self.session_key ] = 1
+        # st.write("here")
+        # st.write(st.session_state)
+
+    def epw_file_time_filter(self):
         months = [
             {"title": "January", "value": 1}, 
             {"title": "February", "value": 2}, 
@@ -56,36 +70,36 @@ class ui_helpers():
             {"title": "December", "value": 12}
         ]
 
-        days = [0] * 12
-        for i in range(1,13):
-            if i in [1, 3, 5, 7, 8, 11, 12]:
-                days[i-1] = list(range(1,32))
-            elif i == 2:
-                days[i-1] = list(range(1,29))
-            else:
-                days[i-1] = list(range(1,31))  
+        # days = [0] * 12
+        # for i in range(1,13):
+        #     if i in [1, 3, 5, 7, 8, 11, 12]:
+        #         days[i-1] = list(range(1,32))
+        #     elif i == 2:
+        #         days[i-1] = list(range(1,29))
+        #     else:
+        #         days[i-1] = list(range(1,31))
         
-        start_month_index = st.session_state[ session_keys['start_month'] ]['value']-1 if session_keys['start_month'] in st.session_state else 0
-        end_month_index = st.session_state[ session_keys['end_month'] ]['value']-1 if session_keys['end_month'] in st.session_state else 11
+        start_month_index = st.session_state[ self.session_keys['start_month'] ]['value']-1 if self.session_keys['start_month'] in st.session_state else 0
+        end_month_index = st.session_state[ self.session_keys['end_month'] ]['value']-1 if self.session_keys['end_month'] in st.session_state else 11
 
-        start_days = days[start_month_index]
-        end_days = days[end_month_index]
+        start_days = self.days[start_month_index]
+        end_days = self.days[end_month_index]
         # st.write(st.session_state)
-        start_day_index = st.session_state[ session_keys['start_day'] ]-1 if session_keys['start_day'] in st.session_state else 0
-        if session_keys['start_day'] in st.session_state:
-            if st.session_state[ session_keys['start_day'] ] > (len(start_days)): 
-                # st.session_state[ session_keys['start_day'] ] = 1
+        start_day_index = st.session_state[ self.session_keys['start_day'] ]-1 if self.session_keys['start_day'] in st.session_state else 0
+        if self.session_keys['start_day'] in st.session_state:
+            if st.session_state[ self.session_keys['start_day'] ] > (len(start_days)): 
+                # st.session_state[ self.session_keys['start_day'] ] = 1
                 start_day_index = 0
 
-        end_day_index = st.session_state[ session_keys['end_day'] ]-1 if session_keys['end_day'] in st.session_state else end_days.index(max(end_days))
-        if session_keys['end_day'] in st.session_state:
-            if st.session_state[ session_keys['end_day'] ] > (len(end_days)): 
-                # st.session_state[ session_keys['end_day'] ] = 1
+        end_day_index = st.session_state[ self.session_keys['end_day'] ]-1 if self.session_keys['end_day'] in st.session_state else end_days.index(max(end_days))
+        if self.session_keys['end_day'] in st.session_state:
+            if st.session_state[ self.session_keys['end_day'] ] > (len(end_days)): 
+                # st.session_state[ self.session_keys['end_day'] ] = 1
                 end_day_index = 0
         # st.write(st.session_state)
         
-        start_hour_index = st.session_state[ session_keys['start_hour'] ]-1 if session_keys['start_hour'] in st.session_state else 0
-        end_hour_index = st.session_state[ session_keys['end_hour'] ]-1 if session_keys['end_hour'] in st.session_state else 23
+        start_hour_index = st.session_state[ self.session_keys['start_hour'] ]-1 if self.session_keys['start_hour'] in st.session_state else 0
+        end_hour_index = st.session_state[ self.session_keys['end_hour'] ]-1 if self.session_keys['end_hour'] in st.session_state else 23
 
         col1, col2 = st.sidebar.beta_columns(2)
 
@@ -93,26 +107,26 @@ class ui_helpers():
             "Start Month", 
             months, 
             format_func=lambda months: months['title'], 
-            key=session_keys['start_month'], 
+            key=self.session_keys['start_month'], 
             index = start_month_index, 
             help="This filter controls the range of data points that are plotted",
-            on_change=self._check_day(session_keys['start_day'], start_days)
+            on_change=self._check_day
         )
 
         col2.selectbox(
             "End Month", 
             months, 
             format_func=lambda months: months['title'], 
-            key=session_keys['end_month'], 
+            key=self.session_keys['end_month'], 
             index = end_month_index, 
             help="This filter controls the range of data points that are plotted",
-            on_change=self._check_day(session_keys['end_day'], end_days)
+            on_change=self._check_day
         )
 
         col1.selectbox(
             "Start Day", 
             start_days, 
-            key=session_keys['start_day'], 
+            key=self.session_keys['start_day'], 
             index = start_day_index,
             help="This filter controls the range of data points that are plotted"
         )
@@ -120,7 +134,7 @@ class ui_helpers():
         col1.selectbox(
             "End Day", 
             end_days, 
-            key=session_keys['end_day'], 
+            key=self.session_keys['end_day'], 
             index = end_day_index, 
             help="This filter controls the range of data points that are plotted"
         )
@@ -128,7 +142,7 @@ class ui_helpers():
         col1.selectbox(
             "Start Hour", 
             list(range(1,25)), 
-            key=session_keys['start_hour'], 
+            key=self.session_keys['start_hour'], 
             index = start_hour_index, 
             help="This filter controls the range of data points that are plotted"
         )
@@ -136,7 +150,7 @@ class ui_helpers():
         col2.selectbox(
             "End Hour",
             list(range(1,25)), 
-            key=session_keys['end_hour'], 
+            key=self.session_keys['end_hour'], 
             index = end_hour_index, 
             help="This filter controls the range of data points that are plotted"
         )    
