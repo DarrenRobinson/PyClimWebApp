@@ -49,14 +49,15 @@ class ui_helpers():
     def _check_start_day(self):
         if self.session_keys['start_day'] in st.session_state:
             if self.session_keys['start_month'] in st.session_state:
-                if st.session_state[ self.session_keys['start_day'] ] > (len(self.days[ self.session_keys['start_month']['value']-1 ])): 
+                st.write
+                if st.session_state[ self.session_keys['start_day'] ] > (len(self.days[ st.session_state[ self.session_keys['start_month'] ]['value']-1 ])): 
                     st.session_state[ self.session_keys['start_day'] ] = 1
         # st.write("here")
         # st.write(st.session_state)
     def _check_end_day(self):
         if self.session_keys['end_day'] in st.session_state:
             if self.session_keys['end_month'] in st.session_state:
-                if st.session_state[ self.session_keys['end_day'] ] > (len(self.days[ self.session_keys['end_month']['value']-1 ])): 
+                if st.session_state[ self.session_keys['end_day'] ] > (len(self.days[ st.session_state[ self.session_keys['end_month'] ]['value']-1 ])): 
                     st.session_state[ self.session_keys['end_day'] ] = 1
         # st.write("here")
         # st.write(st.session_state)
