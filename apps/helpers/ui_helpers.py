@@ -46,11 +46,17 @@ class ui_helpers():
             else:
                 self.days[i-1] = list(range(1,31))
         
-    def _check_day(self):
+    def _check_start_day(self):
 
         # if session_key in st.session_state:
         #     if st.session_state[ session_key ] > (len(self.days)): 
-        st.session_state[ self.session_key ] = 1
+        st.session_state[ self.session_keys['start_day'] ] = 1
+        # st.write("here")
+        # st.write(st.session_state)
+    def _check_end_day(self):
+        # if session_key in st.session_state:
+        #     if st.session_state[ session_key ] > (len(self.days)): 
+        st.session_state[ self.session_keys['end_day'] ] = 1
         # st.write("here")
         # st.write(st.session_state)
 
@@ -110,7 +116,7 @@ class ui_helpers():
             key=self.session_keys['start_month'], 
             index = start_month_index, 
             help="This filter controls the range of data points that are plotted",
-            on_change=self._check_day
+            on_change=self._check_start_day
         )
 
         col2.selectbox(
@@ -120,7 +126,7 @@ class ui_helpers():
             key=self.session_keys['end_month'], 
             index = end_month_index, 
             help="This filter controls the range of data points that are plotted",
-            on_change=self._check_day
+            on_change=self._check_end_day
         )
 
         col1.selectbox(
