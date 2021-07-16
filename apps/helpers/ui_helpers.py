@@ -1,16 +1,15 @@
 import math
-import tempfile
+# import tempfile
 import pandas as pd
 import streamlit as st
 import operator
-import io
-from PIL import Image
+# import io
+# from PIL import Image
 from io import BytesIO
 import base64
 import json
 import re
 from urllib.request import Request, urlopen
-import geocoder
 
 class ui_helpers():  
     def __init__(self):
@@ -225,14 +224,14 @@ class ui_helpers():
         return hrefs
 
     @st.cache
-    def get_db(self):
+    def _get_db(self):
         # Connect to EnergyPlus
         response = urlopen('https://github.com/NREL/EnergyPlus/raw/develop/weather/master.geojson')
         data = json.loads(response.read().decode('utf8'))
         return data
 
-    def get_db_df(self):
-        data = self.get_db()
+    def _get_db_df(self):
+        data = self._get_db()
         df = []
         for location in data['features']:
             url_str = []
@@ -279,7 +278,7 @@ class ui_helpers():
 
     @st.cache
     def get_advanced_search_dropdowns(self):
-        df = self.get_db_df()
+        df = self._get_db_df()
         # Generate dropdowns for filter by epw file categories
         regions = df[4].unique() 
         regions_dropdown = [{
@@ -308,7 +307,7 @@ class ui_helpers():
         return regions_dropdown, countries_dropdown, states_dropdown
 
     def get_weather_data_dropdown(self):
-        df = self.get_db_df()
+        df = self._get_db_df()
 
         weather_data_dropdown = []
         weather_data_dropdown_titles = pd.DataFrame(df[7].apply(lambda x: re.split('_|\.', str(x))).tolist())
