@@ -46,21 +46,28 @@ class ui_helpers():
             else:
                 self.days[i-1] = list(range(1,31))
         
-    def _check_start_day(self):
-        if self.session_keys['start_day'] in st.session_state:
-            if self.session_keys['start_month'] in st.session_state:
+    def _check_day(self, param):
+        if self.session_keys[param+'_day'] in st.session_state:
+            if self.session_keys[param+'_month'] in st.session_state:
                 st.write
-                if st.session_state[ self.session_keys['start_day'] ] > (len(self.days[ st.session_state[ self.session_keys['start_month'] ]['value']-1 ])): 
-                    st.session_state[ self.session_keys['start_day'] ] = 1
-        # st.write("here")
-        # st.write(st.session_state)
+                if st.session_state[ self.session_keys[param+'_day'] ] > (len(self.days[ st.session_state[ self.session_keys[param+'_month'] ]['value']-1 ])): 
+                    st.session_state[ self.session_keys[param+'_day'] ] = 1        
+
+    def _check_start_day(self):
+        self._check_day('start')
+        # if self.session_keys['start_day'] in st.session_state:
+        #     if self.session_keys['start_month'] in st.session_state:
+        #         st.write
+        #         if st.session_state[ self.session_keys['start_day'] ] > (len(self.days[ st.session_state[ self.session_keys['start_month'] ]['value']-1 ])): 
+        #             st.session_state[ self.session_keys['start_day'] ] = 1
+
     def _check_end_day(self):
-        if self.session_keys['end_day'] in st.session_state:
-            if self.session_keys['end_month'] in st.session_state:
-                if st.session_state[ self.session_keys['end_day'] ] > (len(self.days[ st.session_state[ self.session_keys['end_month'] ]['value']-1 ])): 
-                    st.session_state[ self.session_keys['end_day'] ] = 1
-        # st.write("here")
-        # st.write(st.session_state)
+        self._check_day('end')
+        # if self.session_keys['end_day'] in st.session_state:
+        #     if self.session_keys['end_month'] in st.session_state:
+        #         if st.session_state[ self.session_keys['end_day'] ] > (len(self.days[ st.session_state[ self.session_keys['end_month'] ]['value']-1 ])): 
+        #             st.session_state[ self.session_keys['end_day'] ] = 1
+
 
     def epw_file_time_filter(self):
         months = [
@@ -77,15 +84,6 @@ class ui_helpers():
             {"title": "November", "value": 11}, 
             {"title": "December", "value": 12}
         ]
-
-        # days = [0] * 12
-        # for i in range(1,13):
-        #     if i in [1, 3, 5, 7, 8, 11, 12]:
-        #         days[i-1] = list(range(1,32))
-        #     elif i == 2:
-        #         days[i-1] = list(range(1,29))
-        #     else:
-        #         days[i-1] = list(range(1,31))
         
         start_month_index = st.session_state[ self.session_keys['start_month'] ]['value']-1 if self.session_keys['start_month'] in st.session_state else 0
         end_month_index = st.session_state[ self.session_keys['end_month'] ]['value']-1 if self.session_keys['end_month'] in st.session_state else 11

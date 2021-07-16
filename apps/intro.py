@@ -25,16 +25,17 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
     -  Psychrometric Analysis: this creates psychrometric charts for the plotting of hourlyclimate data {and of transformed data to mimic evaporative cooling}.
     
     -  Wind rose: this plots a user-controllable wind rose, with theta segments of azimuthal sectors falsecoloured either according to the hours that the wind approaches that direction and in the indicated (theta) speed, or at the indicated (theta) temperature. For further advice on the interpretation of charts from the PyClim Web App please refer to: http://www.ibpsa.org/proceedings/BSO2020/BSOV2020_Robinson.pdf.
-    """)
-
-    st.header("The Team:")
     
-    st.write("""
+
+    THE TEAM:
+    
     PyClim and this PyClim Web App interface to it were developed at and are maintained by the University of Sheffield, UK.
-
+    
     The original PyClim backend was developed in Python by Prof. Darren Robinson.
-
+    
     The Web App front end was developed using Streamlit by Alvin Mok through an internship funded by the University of Sheffield, under the supervision of Reena Sayani and Darren Robinson.
-
+    
     We are grateful to students of the Sheffield MSc in Sustainable Architecture Studies (Anupama Rao and Elizaveta Arestova) for their constructive feedback on earlier prototypes of this App.
+    
+    
     """)
