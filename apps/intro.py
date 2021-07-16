@@ -10,7 +10,9 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
     st.write("""
     The PyClim Web App (built using Streamlit) is an interface to PyClim: a suite of graphical analysis modules (based around Python’s matplotlib library) for the analysis of hourly weather data. This is intended as a resources for architectural / engineering / technology students and practitioners, to help develop early-stage bioclimatic design concepts.
 
-    There are two stages to the use of the PyClim Web App. First, a weather file needs to be selected. The is done by navigating down the hierarchy in the Advanced Search option from Region (continents) through country to state (where applicable) and then selecting the weather file from the list of those available. Alternatively, you can also search by ranking weather files based on their Euclidean distance (distance, as the crow flies) from the coordinates of your target site location (just enter the latitude and longitude), or you can directly perform a keyword search for the weather data file or city.
+    There are two stages to the use of the PyClim Web App. 
+    
+    First, a weather file needs to be selected. The is done by navigating down the hierarchy in the Advanced Search option from Region (continents) through country to state (where applicable) and then selecting the weather file from the list of those available. Alternatively, you can also search by ranking weather files based on their Euclidean distance (distance, as the crow flies) from the coordinates of your target site location (just enter the latitude and longitude), or you can directly perform a keyword search for the weather data file or city.
 
     The second stage is to analyse the selected data using the dropdown list of Features:
 
