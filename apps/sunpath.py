@@ -22,7 +22,7 @@ from apps.ClimAnalFunctions import *
 def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
 
     st.write("# "+title)
-
+    
     lat = st.sidebar.number_input('Latitude', -90.0, 90.0, lat)
     lat = lat * pi / 180    
     AzimuthIncrement = st.sidebar.slider('Azimuth Increment', 1, 45, 10)

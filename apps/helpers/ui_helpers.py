@@ -24,7 +24,7 @@ class ui_helpers():
         self._days_in_a_month()
         self.session_keys = {}
 
-    def session_keys_init(self, feature):
+    def _session_keys_init(self, feature):
         for feat in self.feats:
             if feat == feature:
                 self.session_keys = {
@@ -46,30 +46,22 @@ class ui_helpers():
             else:
                 self.days[i-1] = list(range(1,31))
         
-    def _check_day(self, param):
-        if self.session_keys[param+'_day'] in st.session_state:
-            if self.session_keys[param+'_month'] in st.session_state:
+    def _check_day(self, start_or_end):
+        if self.session_keys[start_or_end+'_day'] in st.session_state:
+            if self.session_keys[start_or_end+'_month'] in st.session_state:
                 st.write
-                if st.session_state[ self.session_keys[param+'_day'] ] > (len(self.days[ st.session_state[ self.session_keys[param+'_month'] ]['value']-1 ])): 
-                    st.session_state[ self.session_keys[param+'_day'] ] = 1        
+                if st.session_state[ self.session_keys[start_or_end+'_day'] ] > (len(self.days[ st.session_state[ self.session_keys[start_or_end+'_month'] ]['value']-1 ])): 
+                    st.session_state[ self.session_keys[start_or_end+'_day'] ] = 1        
 
     def _check_start_day(self):
         self._check_day('start')
-        # if self.session_keys['start_day'] in st.session_state:
-        #     if self.session_keys['start_month'] in st.session_state:
-        #         st.write
-        #         if st.session_state[ self.session_keys['start_day'] ] > (len(self.days[ st.session_state[ self.session_keys['start_month'] ]['value']-1 ])): 
-        #             st.session_state[ self.session_keys['start_day'] ] = 1
 
     def _check_end_day(self):
         self._check_day('end')
-        # if self.session_keys['end_day'] in st.session_state:
-        #     if self.session_keys['end_month'] in st.session_state:
-        #         if st.session_state[ self.session_keys['end_day'] ] > (len(self.days[ st.session_state[ self.session_keys['end_month'] ]['value']-1 ])): 
-        #             st.session_state[ self.session_keys['end_day'] ] = 1
 
 
-    def epw_file_time_filter(self):
+    def epw_file_time_filter(self, feature):
+        self._session_keys_init(feature)
         months = [
             {"title": "January", "value": 1}, 
             {"title": "February", "value": 2}, 
@@ -90,19 +82,16 @@ class ui_helpers():
 
         start_days = self.days[start_month_index]
         end_days = self.days[end_month_index]
-        # st.write(st.session_state)
+
         start_day_index = st.session_state[ self.session_keys['start_day'] ]-1 if self.session_keys['start_day'] in st.session_state else 0
-        if self.session_keys['start_day'] in st.session_state:
-            if st.session_state[ self.session_keys['start_day'] ] > (len(start_days)): 
-                # st.session_state[ self.session_keys['start_day'] ] = 1
-                start_day_index = 0
+        # if self.session_keys['start_day'] in st.session_state:
+        #     if st.session_state[ self.session_keys['start_day'] ] > (len(start_days)): 
+        #         start_day_index = 0
 
         end_day_index = st.session_state[ self.session_keys['end_day'] ]-1 if self.session_keys['end_day'] in st.session_state else end_days.index(max(end_days))
-        if self.session_keys['end_day'] in st.session_state:
-            if st.session_state[ self.session_keys['end_day'] ] > (len(end_days)): 
-                # st.session_state[ self.session_keys['end_day'] ] = 1
-                end_day_index = 0
-        # st.write(st.session_state)
+        # if self.session_keys['end_day'] in st.session_state:
+        #     if st.session_state[ self.session_keys['end_day'] ] > (len(end_days)): 
+        #         end_day_index = 0
         
         start_hour_index = st.session_state[ self.session_keys['start_hour'] ]-1 if self.session_keys['start_hour'] in st.session_state else 0
         end_hour_index = st.session_state[ self.session_keys['end_hour'] ]-1 if self.session_keys['end_hour'] in st.session_state else 23
@@ -267,6 +256,7 @@ class ui_helpers():
         response = urlopen('https://github.com/NREL/EnergyPlus/raw/develop/weather/master.geojson')
         data = json.loads(response.read().decode('utf8'))
         return data
+
 
     def _get_db_df(self):
         data = self._get_db()

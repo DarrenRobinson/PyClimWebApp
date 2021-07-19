@@ -13,22 +13,6 @@ class epw():
     def _read(self,fp):
         self.headers=self._read_headers(fp)
         self.dataframe=self._read_data(fp)
-
-    def get_epw_f(self, url):
-        name = url[url.rfind('/') + 1:]
-        response = Request(url, headers={'User-Agent' : "Magic Browser"}) 
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            with open(tmpdirname + name, 'wb') as f:
-                f.write(urlopen(response).read())
-                self._read(tmpdirname+name)
-                f.close()
-        return self.dataframe, self.headers
-
-    def get_file_list(self, epw_file_df, epw_file_header):
-        file_list = []
-        file_list.extend([[epw_file_header['LOCATION'][0], ' -', epw_file_header['LOCATION'][2], epw_file_header['LOCATION'][5], epw_file_header['LOCATION'][6], epw_file_header['LOCATION'][7]], ['month', 'day', 'hour', 'Dry Bulb Temp', 'Rel Humidity', 'Global Horiz Rad', 'Diffuse Rad', 'Wind Speed', 'Wind Direction', ''], [' ', ' ', ' ', 'degrees C', 'percent', '(Wh/sq.m)', '(Wh/sq.m)', 'ms', 'degrees', '']])
-        file_list.extend(epw_file_df[['Month', 'Day', 'Hour', 'Dry Bulb Temperature', 'Relative Humidity', 'Global Horizontal Radiation', 'Diffuse Horizontal Radiation', 'Wind Speed', 'Wind Direction']].values.tolist())
-        return file_list
         
     def _read_headers(self,fp):
         d={}
@@ -93,7 +77,23 @@ class epw():
                 if row[0].isdigit():
                     break
         return i 
-        
+    
+    def read_epw_f(self, url):
+        name = url[url.rfind('/') + 1:]
+        response = Request(url, headers={'User-Agent' : "Magic Browser"}) 
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            with open(tmpdirname + name, 'wb') as f:
+                f.write(urlopen(response).read())
+                self._read(tmpdirname+name)
+                f.close()
+        return self.dataframe, self.headers
+
+    def epw_to_file_list(self, epw_file_df, epw_file_header):
+        file_list = []
+        file_list.extend([[epw_file_header['LOCATION'][0], ' -', epw_file_header['LOCATION'][2], epw_file_header['LOCATION'][5], epw_file_header['LOCATION'][6], epw_file_header['LOCATION'][7]], ['month', 'day', 'hour', 'Dry Bulb Temp', 'Rel Humidity', 'Global Horiz Rad', 'Diffuse Rad', 'Wind Speed', 'Wind Direction', ''], [' ', ' ', ' ', 'degrees C', 'percent', '(Wh/sq.m)', '(Wh/sq.m)', 'ms', 'degrees', '']])
+        file_list.extend(epw_file_df[['Month', 'Day', 'Hour', 'Dry Bulb Temperature', 'Relative Humidity', 'Global Horizontal Radiation', 'Diffuse Horizontal Radiation', 'Wind Speed', 'Wind Direction']].values.tolist())
+        return file_list
+    
     def write(self,fp):
         with open(fp, 'w', newline='') as csvfile:
             csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)

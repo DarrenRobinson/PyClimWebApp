@@ -28,8 +28,8 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, daynum
     st.write("# "+title)
 
     # Time filter
-    ui_helper.session_keys_init('psychros')
-    ui_helper.epw_file_time_filter()
+    # ui_helper.session_keys_init('psychros')
+    ui_helper.epw_file_time_filter('psychros')
 
     # colour = st.sidebar.color_picker('Colour of Data Points when Filter is Applied', value='#0C791A', help="By default when applying filters, all data should be plotted in the same colour")
     colour = '#0C791A'
