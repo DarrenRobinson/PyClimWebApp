@@ -31,7 +31,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
     This linked video tutorial demonstrates the use of the App: navigating the analysis features, interpreting the charts and selecting weather data files:-
     https://digitalmedia.sheffield.ac.uk/media/PyClim-WebApp-Tutorial1/1_z98gtuf8 
     
-    The second linked video demonstrates some of PyClim's more advanced features of the App for manipulating the charts:-
+    The second linked video demonstrates some of the more advanced features of the App for manipulating the charts:-
     https://digitalmedia.sheffield.ac.uk/media/PyClim-WebApp-Tutorial2/1_2ffevizg 
     
     For further advice on the interpretation of charts from the PyClim Web App please refer to: http://www.ibpsa.org/proceedings/BSO2020/BSOV2020_Robinson.pdf.
