@@ -322,7 +322,7 @@ class ui_helpers():
             if st.session_state.filter_option == self.sort_list:
                 df = self._sort_list_by_distance(df)
             elif st.session_state.filter_option == self.filter_list:
-                df = df.sort_values(5)
+                df = df.sort_values([5, 6])
                 st.dataframe(df)
         else:
             df = self._sort_list_by_distance(df)
