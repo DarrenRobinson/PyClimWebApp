@@ -29,8 +29,8 @@ class ui_helpers():
         self.time_var = {'start_month': 1, 'start_day': 1, 'end_month': 12, 'end_day': 31, 'start_hour': 1, 'end_hour': 24}
         self._days_in_a_month()
         self.session_keys = {}
-        self.sort_list = 'Sort List by Distance from Site'
-        self.filter_list = 'Filter List by Region'
+        self.sort_list = 'Search by distance from target site'
+        self.filter_list = 'Search hierarchically by region'
 
     def _session_keys_init(self, feature):
         for feat in self.feats:
@@ -323,6 +323,7 @@ class ui_helpers():
                 df = self._sort_list_by_distance(df)
             elif st.session_state.filter_option == self.filter_list:
                 df = df.sort_values(5)
+                st.dataframe(df)
         else:
             df = self._sort_list_by_distance(df)
         return df
@@ -406,7 +407,7 @@ class ui_helpers():
         weather_data_dropdown_options = weather_data_dropdown
 
 
-        expander = st.sidebar.beta_expander(label='Advanced Search')
+        expander = st.sidebar.beta_expander(label='Weather Data Search')
         with expander:
             st.radio("", [self.sort_list, self.filter_list], key='filter_option', on_change=self._filter_settings_reset)
 
