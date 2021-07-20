@@ -102,7 +102,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
         #NB: The jet cmap gives very good discrimination:
         cp = ax.pcolormesh(azimuth_list, zenith_list, value_list, cmap='jet') #'plasma', 'magma', 'jet' and 'viridis' are good cmaps
         
-        ax.set_title('Annual Wind Rose: with wind speed in radial sectors')
+        ax.set_title('Annual Wind Rose: with wind speed in radial sectors \n')
         ax.set_theta_zero_location("N")
         ax.set_theta_direction(-1)
         ax.set_ylim([int(np.percentile(winspeed_list,lower_percentile_limit)), int(np.percentile(winspeed_list,upper_percentile_limit))])
@@ -113,7 +113,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
     else:
         cp = ax.pcolormesh(azimuth_list, tempzen_list, tempval_list, cmap='jet')
         
-        ax.set_title('Annual Wind Rose: with temperature in radial sectors, in multiples of {0:1.1f}' .format(TempInterval))
+        ax.set_title('Annual Wind Rose: with temperature in radial sectors, in multiples of {0:1.1f} \n' .format(TempInterval))
         ax.set_theta_zero_location("N")
         ax.set_theta_direction(-1)
         ax.set_ylim([int(np.percentile(temp_list,lower_percentile_limit)), int(np.percentile(temp_list,upper_percentile_limit))])
