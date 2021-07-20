@@ -324,6 +324,7 @@ class ui_helpers():
                 df = self._sort_list_by_distance(df)
             elif st.session_state.filter_option == self.filter_list:
                 df = df.sort_values(8)
+                st.dataframe(df)
         else:
             df = self._sort_list_by_distance(df)
         return df
@@ -405,7 +406,7 @@ class ui_helpers():
 
     def advanced_search(self):
         regions_dropdown, countries_dropdown, states_dropdown, weather_data_dropdown = self._get_advanced_search_dropdowns()
-        st.write(countries_dropdown)
+        
         # weather_data_dropdown = self._get_weather_data_dropdown()
         weather_data_dropdown_options = weather_data_dropdown
 
