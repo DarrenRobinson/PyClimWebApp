@@ -413,13 +413,13 @@ class ui_helpers():
 
             
 
-
+        st.write(len(weather_data_dropdown_options))
         file_name = st.sidebar.selectbox(
             'Weather Data List (Keyword Search Enabled)', 
             weather_data_dropdown_options,
             format_func=lambda x: x['title'],
             # index = weather_data_dropdown_default_index,
-            help="A list of available weather data files sorted by the distance from your current location."
+            help="A list of available weather data files"
         )      
 
         return file_name
