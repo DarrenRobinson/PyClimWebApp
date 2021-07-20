@@ -12,6 +12,7 @@
 
 #imports the basic libraries
 import streamlit as st
+import math
 import matplotlib.pyplot as plt
 import numpy as np
 

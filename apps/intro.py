@@ -1,6 +1,3 @@
-import numpy as np
-from numpy.core.numeric import True_
-import pandas as pd
 import streamlit as st
 
 def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):

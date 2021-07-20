@@ -7,6 +7,7 @@
 
 #THIS MODULE SIMPLY CREATES A POLAR WIND ROSE PLOT.
 import streamlit as st
+import math
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -17,7 +18,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
     
     # Time filter helper
     # ui_helper.session_keys_init('windrose')
-    ui_helper.epw_file_time_filter('windrose')
+    ui_helper.time_filter('windrose')
     
     #in the future: provide the option to plot using the Beaufort scale
 

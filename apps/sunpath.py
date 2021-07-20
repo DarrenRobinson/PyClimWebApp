@@ -9,13 +9,10 @@
 #specification of solar or clock time. It can also create shading protractors.
 
 #imports the basic libraries
-import base64
-from io import BytesIO
 import streamlit as st
 import math
 import matplotlib.pyplot as plt
 import numpy as np
-import tempfile
 
 from apps.ClimAnalFunctions import * 
 
