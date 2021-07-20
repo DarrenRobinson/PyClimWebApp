@@ -1,3 +1,8 @@
+# general naming convention:
+# func(): methods to be called by user
+# _func(): assisting methods called by system
+
+
 import streamlit as st
 import math
 # from numpy.lib.function_base import corrcoef
@@ -183,12 +188,12 @@ class ui_helpers():
 
 
 
-    def _epw_file_time_filter_pipeline(self, epw_file_dataframe, op_cond, limits):
+    def _time_filter_pipeline(self, epw_file_dataframe, op_cond, limits):
         filter_operator = operator.__and__ if op_cond else operator.__or__
         epw_file_dataframe = epw_file_dataframe.loc[filter_operator(limits[0], limits[1])]
         return epw_file_dataframe
 
-    def epw_file_time_filter_conditions(self, epw_file_dataframe, file_title):
+    def time_filter_conditions(self, epw_file_dataframe, file_title):
         time_var = self.time_var.copy()
         for feat in self.feats:
             if feat == file_title:
@@ -211,7 +216,7 @@ class ui_helpers():
             (epw_file_dataframe['Month'] == time_var['end_month']) & (epw_file_dataframe['Day'] <= time_var['end_day']))
             )
         )
-        epw_file_dataframe = self._epw_file_time_filter_pipeline(epw_file_dataframe, conditions, limits)
+        epw_file_dataframe = self._time_filter_pipeline(epw_file_dataframe, conditions, limits)
         
         # filter by hour
         conditions = (time_var['end_hour'] >= time_var['start_hour'])
@@ -219,7 +224,7 @@ class ui_helpers():
             (epw_file_dataframe['Hour'] >= time_var['start_hour']),
             (epw_file_dataframe['Hour'] <= time_var['end_hour'])       
         )
-        epw_file_dataframe = self._epw_file_time_filter_pipeline(epw_file_dataframe, conditions, limits)
+        epw_file_dataframe = self._time_filter_pipeline(epw_file_dataframe, conditions, limits)
 
         return epw_file_dataframe
 
@@ -316,18 +321,16 @@ class ui_helpers():
         if 'filter_option' in st.session_state:
             if st.session_state.filter_option == self.sort_list:
                 df = self._sort_list_by_distance(df)
+            elif st.session_state.filter_option == self.filter_list:
+                df = df.sort_values(5)
         else:
             df = self._sort_list_by_distance(df)
-
         return df
 
 
 
 
 
-
-
-    @st.cache
     def _get_advanced_search_dropdowns(self):
         df = self._get_db_df()
         # Generate dropdowns for filter by epw file categories
@@ -355,11 +358,6 @@ class ui_helpers():
                 states_dropdown_individual_country = list(filter(None, states_dropdown_individual_country))
                 states_dropdown[countries_dropdown_individual_region[j]] = ['All in '+countries_dropdown_individual_region[j]] + states_dropdown_individual_country
 
-        return regions_dropdown, countries_dropdown, states_dropdown
-
-    def _get_weather_data_dropdown(self):
-        df = self._get_db_df()
-
         weather_data_dropdown = []
         weather_data_dropdown_titles = pd.DataFrame(df[7].apply(lambda x: re.split('_|\.', str(x))).tolist())
         weather_data_dropdown_titles = weather_data_dropdown_titles.apply(lambda x: x.str.cat(sep=' '), axis=1)
@@ -374,7 +372,7 @@ class ui_helpers():
                 "file_url": df.iloc[i,9]
             })
                 
-        return weather_data_dropdown
+        return regions_dropdown, countries_dropdown, states_dropdown, weather_data_dropdown
    
     def _filter_settings_reset(self):
         if 'filter_option' in st.session_state:
@@ -402,8 +400,9 @@ class ui_helpers():
         return False
 
     def advanced_search(self):
-        regions_dropdown, countries_dropdown, states_dropdown = self._get_advanced_search_dropdowns()
-        weather_data_dropdown = self._get_weather_data_dropdown()
+        regions_dropdown, countries_dropdown, states_dropdown, weather_data_dropdown = self._get_advanced_search_dropdowns()
+        
+        # weather_data_dropdown = self._get_weather_data_dropdown()
         weather_data_dropdown_options = weather_data_dropdown
 
 
