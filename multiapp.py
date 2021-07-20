@@ -1,3 +1,9 @@
+'''
+This class is the backbone of the web-app. 
+It is called and run (instantiated) in app.py.
+
+'''
+
 import streamlit as st
 from apps.ClimAnalFunctions import *
 from apps.helpers.ui_helpers import ui_helpers
