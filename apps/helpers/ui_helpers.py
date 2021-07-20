@@ -23,7 +23,7 @@ class ui_helpers():
         self.time_var = {'start_month': 1, 'start_day': 1, 'end_month': 12, 'end_day': 31, 'start_hour': 1, 'end_hour': 24}
         self._days_in_a_month()
         self.session_keys = {}
-        self.filter_options = ['Filter List by Region', 'Sort List by Distance from Site']
+        self.filter_options = ['Sort List by Distance from Site', 'Filter List by Region']
 
 
     def _session_keys_init(self, feature):
@@ -279,7 +279,7 @@ class ui_helpers():
         df = pd.DataFrame(df)
         
         if 'filter_option' in st.session_state:
-            if st.session_state.filter_option == self.filter_options[1]:
+            if st.session_state.filter_option == self.filter_options[0]:
                 latlng = [0] * 2
                 latlng[0] = st.session_state.user_lat if 'user_lat' in st.session_state else 53.4
                 latlng[1] = st.session_state.user_lng if 'user_lng' in st.session_state else -1.5
@@ -357,63 +357,72 @@ class ui_helpers():
             })
                 
         return weather_data_dropdown
- 
+   
+    def _filter_option(self):
+        return
+
+
     
     def advanced_search(self):
         regions_dropdown, countries_dropdown, states_dropdown = self.get_advanced_search_dropdowns()
         weather_data_dropdown = self.get_weather_data_dropdown()
         weather_data_dropdown_options = weather_data_dropdown
+
         expander = st.sidebar.beta_expander(label='Advanced Search')
         with expander:
-            filter_option = st.radio("", self.filter_options, key='filter_option')
-            if filter_option == self.filter_options[0]:
-                st.write("Filter List by Region:")
-                region = st.selectbox(
-                    "Region", 
-                    regions_dropdown,
-                    format_func=lambda x: x['title']
-                )
+            st.radio("", self.filter_options, key='filter_option', on_change=self._filter_option)
 
-                epw_col1, epw_col2 = st.beta_columns(2)
+            if 'filter_option' in st.session_state:
 
-                if region['title'] == 'All':
-                    countries_dropdown_options = []
-                    # countries_dropdown_options = countries_dropdown["All"]
-                else:
-                    countries_dropdown_options = countries_dropdown[region['pf']]
+                if st.session_state.filter_option == self.filter_options[0]:
+                    st.write("Sort List by Distance from Site:")
 
-                country = epw_col1.selectbox("Country", countries_dropdown_options)
-                
-                # if 'All in ' in country:
-                states_dropdown_options = []
-                if country is not None:
-                    if 'All in ' not in country:
-                        if len(states_dropdown[country]) > 1:
-                            states_dropdown_options = states_dropdown[country] 
+                    st.number_input("Latitude", -90.0, 90.0, 53.4, 0.1, key='user_lat')
+                    st.number_input("Longitude", -180.0, 180.0, -1.5, 0.1, key='user_lng')
 
-                state = epw_col2.selectbox("State", states_dropdown_options)
+                if st.session_state.filter_option == self.filter_options[1]:
+                    st.write("Filter List by Region:")
+                    st.selectbox(
+                        "Region", 
+                        regions_dropdown,
+                        format_func=lambda x: x['title'], 
+                        key='region'
+                    )
+                    
+                    epw_col1, epw_col2 = st.beta_columns(2)
 
-
-                if (region['pf'] != 'all'):
-                    if ('All in ' not in country):
-                        if state is not None:
-                            if ('All in ' not in state):
-                                weather_data_dropdown_options = [ d for d in weather_data_dropdown if ((d['state'] in state) & (d['state'] != ''))]
-                            else:
-                                weather_data_dropdown_options = [ d for d in weather_data_dropdown if d['country'] in country]
+                    if 'region' in st.session_state:
+                        if st.session_state.region['title'] == 'All':
+                            countries_dropdown_options = []
+                            # countries_dropdown_options = countries_dropdown["All"]
                         else:
-                            weather_data_dropdown_options = [ d for d in weather_data_dropdown if d['country'] in country]
-                    else:
-                        weather_data_dropdown_options = [ d for d in weather_data_dropdown if d['region'] in region['pf']]   
+                            countries_dropdown_options = countries_dropdown[st.session_state.region['pf']]
 
-            if filter_option == self.filter_options[1]:
-                st.write("Sort List by Distance from Site:")
-                st.number_input("Latitude", -90.0, 90.0, 53.4, 0.1, key='user_lat')
-                st.number_input("Longitude", -180.0, 180.0, -1.5, 0.1, key='user_lng')
+                    country = epw_col1.selectbox("Country", countries_dropdown_options)
+                    
+                    # if 'All in ' in country:
+                    states_dropdown_options = []
+                    if country is not None:
+                        if 'All in ' not in country:
+                            if len(states_dropdown[country]) > 1:
+                                states_dropdown_options = states_dropdown[country] 
 
-            
+                    state = epw_col2.selectbox("State", states_dropdown_options)
 
-        st.write(len(weather_data_dropdown_options))
+                    if 'region' in st.session_state:
+                        if (st.session_state.region['pf'] != 'all'):
+                            if ('All in ' not in country):
+                                if state is not None:
+                                    if ('All in ' not in state):
+                                        weather_data_dropdown_options = [ d for d in weather_data_dropdown if ((d['state'] in state) & (d['state'] != ''))]
+                                    else:
+                                        weather_data_dropdown_options = [ d for d in weather_data_dropdown if d['country'] in country]
+                                else:
+                                    weather_data_dropdown_options = [ d for d in weather_data_dropdown if d['country'] in country]
+                            else:
+                                weather_data_dropdown_options = [ d for d in weather_data_dropdown if d['region'] in st.session_state.region['pf']]   
+
+        # st.write(len(weather_data_dropdown_options))
         file_name = st.sidebar.selectbox(
             'Weather Data List (Keyword Search Enabled)', 
             weather_data_dropdown_options,
