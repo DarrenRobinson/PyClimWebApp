@@ -23,6 +23,8 @@ class ui_helpers():
         self.time_var = {'start_month': 1, 'start_day': 1, 'end_month': 12, 'end_day': 31, 'start_hour': 1, 'end_hour': 24}
         self._days_in_a_month()
         self.session_keys = {}
+        self.filter_options = ['Filter List by Region', 'Sort List by Distance from Site']
+
 
     def _session_keys_init(self, feature):
         for feat in self.feats:
@@ -276,32 +278,35 @@ class ui_helpers():
 
         df = pd.DataFrame(df)
         
-        latlng = [0] * 2
-        latlng[0] = st.session_state.user_lat if 'user_lat' in st.session_state else 53.4
-        latlng[1] = st.session_state.user_lng if 'user_lng' in st.session_state else -1.5
+        if 'filter_option' in st.session_state:
+            if st.session_state.filter_option == self.filter_options[1]:
+                latlng = [0] * 2
+                latlng[0] = st.session_state.user_lat if 'user_lat' in st.session_state else 53.4
+                latlng[1] = st.session_state.user_lng if 'user_lng' in st.session_state else -1.5
 
-        R = 6373.0
+                R = 6373.0
 
-        lat1 = math.radians(latlng[0])
-        lon1 = math.radians(latlng[1])
+                lat1 = math.radians(latlng[0])
+                lon1 = math.radians(latlng[1])
 
-        lat2 = df[11].astype(float).apply(math.radians)
-        lon2 = df[10].astype(float).apply(math.radians)
+                lat2 = df[11].astype(float).apply(math.radians)
+                lon2 = df[10].astype(float).apply(math.radians)
 
-        dlat = lat2 - lat1
-        dlon = lon2 - lon1
+                dlat = lat2 - lat1
+                dlon = lon2 - lon1
 
-        a = ((dlat/2).apply(math.sin)**2) + math.cos(lat1) * (lat2.apply(math.cos)) * (dlon/2).apply(math.sin)**2
+                a = ((dlat/2).apply(math.sin)**2) + math.cos(lat1) * (lat2.apply(math.cos)) * (dlon/2).apply(math.sin)**2
 
-        temp_df = pd.DataFrame()
-        temp_df['a_sq'] = a.apply(math.sqrt)
-        temp_df['one_minus_a_sq'] = (1-a).apply(math.sqrt)
-        temp_df['c'] = 2 * temp_df.apply(lambda x: math.atan2(x['a_sq'], x['one_minus_a_sq']), axis=1)
+                temp_df = pd.DataFrame()
+                temp_df['a_sq'] = a.apply(math.sqrt)
+                temp_df['one_minus_a_sq'] = (1-a).apply(math.sqrt)
+                temp_df['c'] = 2 * temp_df.apply(lambda x: math.atan2(x['a_sq'], x['one_minus_a_sq']), axis=1)
 
-        distance = R * temp_df['c'] 
+                distance = R * temp_df['c'] 
 
-        df[len(df.columns)] = distance
-        df = df.sort_values(len(df.columns)-1) 
+                df[len(df.columns)] = distance
+                df = df.sort_values(len(df.columns)-1) 
+
         return df
 
     @st.cache
@@ -360,9 +365,8 @@ class ui_helpers():
         weather_data_dropdown_options = weather_data_dropdown
         expander = st.sidebar.beta_expander(label='Advanced Search')
         with expander:
-            filter_options = ['Filter List by Region', 'Sort List by Distance from Site']
-            filter_option = st.radio("", filter_options)
-            if filter_option == filter_options[0]:
+            filter_option = st.radio("", self.filter_options, key='filter_option')
+            if filter_option == self.filter_options[0]:
                 st.write("Filter List by Region:")
                 region = st.selectbox(
                     "Region", 
@@ -402,7 +406,7 @@ class ui_helpers():
                     else:
                         weather_data_dropdown_options = [ d for d in weather_data_dropdown if d['region'] in region['pf']]   
 
-            if filter_option == filter_options[1]:
+            if filter_option == self.filter_options[1]:
                 st.write("Sort List by Distance from Site:")
                 st.number_input("Latitude", -90.0, 90.0, 53.4, 0.1, key='user_lat')
                 st.number_input("Longitude", -180.0, 180.0, -1.5, 0.1, key='user_lng')
