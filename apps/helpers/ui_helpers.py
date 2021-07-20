@@ -275,7 +275,6 @@ class ui_helpers():
         return data
 
     def _sort_list_by_distance(self, df):
-        st.write("here")
         latlng = [0] * 2
         latlng[0] = st.session_state.user_lat if 'user_lat' in st.session_state else 53.4
         latlng[1] = st.session_state.user_lng if 'user_lng' in st.session_state else -1.5
@@ -332,9 +331,6 @@ class ui_helpers():
 
 
 
-
-
-    # @st.cache
     def _get_advanced_search_dropdowns(self):
         df = self._get_db_df()
         # Generate dropdowns for filter by epw file categories
