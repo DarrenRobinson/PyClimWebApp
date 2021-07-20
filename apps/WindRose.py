@@ -109,7 +109,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
         
         if invert_radialaxis==True:
             ax.set_ylim(plt.ylim()[::-1])
-        fig.colorbar(cp, label = 'Annual hours: wind approaching from ith direction at jth speed')
+        fig.colorbar(cp, label = 'Annual hours: wind approaching from \n ith direction at jth speed')
     else:
         cp = ax.pcolormesh(azimuth_list, tempzen_list, tempval_list, cmap='jet')
         
@@ -121,7 +121,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
         if invert_radialaxis==True:
             ax.set_ylim(plt.ylim()[::-1])
     #    ax.set_yticklabels([])
-        fig.colorbar(cp, label = 'Annual hours: wind approaching from ith direction at jth temperature')
+        fig.colorbar(cp, label = 'Annual hours: wind approaching from \n ith direction at jth temperature')
 
     plt.tight_layout()
     # plt.show()
