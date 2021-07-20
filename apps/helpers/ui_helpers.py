@@ -322,8 +322,11 @@ class ui_helpers():
         if 'filter_option' in st.session_state:
             if st.session_state.filter_option == self.sort_list:
                 df = self._sort_list_by_distance(df)
+            # elif st.session_state.filter_option == self.filter_list:
+            #     df = df.sort_values()
         else:
             df = self._sort_list_by_distance(df)
+            st.dataframe(df)
 
         return df
 
