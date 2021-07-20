@@ -359,7 +359,7 @@ class ui_helpers():
         weather_data_dropdown = self.get_weather_data_dropdown()
         expander = st.sidebar.beta_expander(label='Advanced Search')
         with expander:
-            filter_option = st.radio("Filter Option", ("By Region", "By Distance"))
+            filter_option = st.radio("Filter Option", ("By Region!", "By Distance!"))
             if filter_option == 'By Region':
                 st.write("Filter List by Region:")
                 region = st.selectbox(
