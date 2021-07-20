@@ -362,11 +362,6 @@ class ui_helpers():
                 states_dropdown_individual_country = list(filter(None, states_dropdown_individual_country))
                 states_dropdown[countries_dropdown_individual_region[j]] = ['All in '+countries_dropdown_individual_region[j]] + states_dropdown_individual_country
 
-        return regions_dropdown, countries_dropdown, states_dropdown
-
-    def _get_weather_data_dropdown(self):
-        df = self._get_db_df()
-
         weather_data_dropdown = []
         weather_data_dropdown_titles = pd.DataFrame(df[7].apply(lambda x: re.split('_|\.', str(x))).tolist())
         weather_data_dropdown_titles = weather_data_dropdown_titles.apply(lambda x: x.str.cat(sep=' '), axis=1)
@@ -381,7 +376,7 @@ class ui_helpers():
                 "file_url": df.iloc[i,9]
             })
                 
-        return weather_data_dropdown
+        return regions_dropdown, countries_dropdown, states_dropdown, weather_data_dropdown
    
     def _filter_settings_reset(self):
         if 'filter_option' in st.session_state:
@@ -409,8 +404,8 @@ class ui_helpers():
         return False
 
     def advanced_search(self):
-        regions_dropdown, countries_dropdown, states_dropdown = self._get_advanced_search_dropdowns()
-        weather_data_dropdown = self._get_weather_data_dropdown()
+        regions_dropdown, countries_dropdown, states_dropdown, weather_data_dropdown = self._get_advanced_search_dropdowns()
+        # weather_data_dropdown = self._get_weather_data_dropdown()
         weather_data_dropdown_options = weather_data_dropdown
 
 
