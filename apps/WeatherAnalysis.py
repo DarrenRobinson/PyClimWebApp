@@ -284,7 +284,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
     axes[1,0].violinplot(diurnal_data_to_plot)
     axes[1,0].set_title('Diurnal Temperature Violin Plot')
     axes[1,0].set_xlabel('Time, months')
-    axes[0,0].set_ylabel('Temperature, ' + '$^o$C')
+    axes[1,0].set_ylabel('Temperature, ' + '$^o$C')
 
     winspeed_data_to_plot = [winspeed_matrix[0], winspeed_matrix[1], winspeed_matrix[2], winspeed_matrix[3], winspeed_matrix[4], winspeed_matrix[5], winspeed_matrix[6], winspeed_matrix[7], winspeed_matrix[8], winspeed_matrix[9], winspeed_matrix[10], winspeed_matrix[11]]
     axes[1,1].violinplot(winspeed_data_to_plot)
