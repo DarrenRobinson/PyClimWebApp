@@ -163,7 +163,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, daynum
 
     plt.axvline(x=60, color='lightgrey')
     #plt.axis('off')
-    fig_title = 'Hourly climate data plotted on a psychrometric chart'
+    fig_title = 'Hourly climate data plotted on a psychrometric chart (raw weather data, not transformed)'
     plt.title(fig_title, loc='center')    
     plt.legend(loc = 'upper left', frameon=False)
 
@@ -250,7 +250,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, daynum
         
         plt.axvline(x=60, color='lightgrey')
         #plt.axis('off')
-        fig_title = 'Hourly climate data plotted on a psychrometric chart'
+        fig_title = 'Hourly climate data plotted on a psychrometric chart (data transformed to emulate direct evaporative cooling)'
         plt.title(fig_title, loc='center')
         
         # plt.show()
