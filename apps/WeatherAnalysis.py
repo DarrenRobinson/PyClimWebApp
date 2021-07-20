@@ -172,7 +172,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
         plt.plot(tground_matrix[month-1], depth_list, lw=2, c=Colour_list[11-(month-1)])
     fig_title = "Ground temperature profile"
     plt.title(fig_title)
-    plt.xlabel('temperature, oC')
+    plt.xlabel('temperature, ' + '$^o$C')
     plt.ylabel('depth below surface, m')
 
     plt.ylim(0,20)
@@ -201,7 +201,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
 
     fig_title = "temperature frequency histogram"
     ax.set_title(fig_title)
-    ax.set_xlabel('temperature bins, oC')
+    ax.set_xlabel('temperature bins,' + '$^o$C')
     ax.set_ylabel('counts [grey]')
     ax2.set_ylabel('cumulative counts [red / blue]')
 
@@ -272,7 +272,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
     axes[0,0].violinplot(temp_data_to_plot)
     axes[0,0].set_title('Temperature Violin Plot')
     axes[0,0].set_xlabel('Time, months')
-    axes[0,0].set_ylabel('Temperature, oC')
+    axes[0,0].set_ylabel('Temperature, ' + '$^o$C')
 
     rh_data_to_plot = [rh_matrix[0], rh_matrix[1], rh_matrix[2], rh_matrix[3], rh_matrix[4], rh_matrix[5], rh_matrix[6], rh_matrix[7], rh_matrix[8], rh_matrix[9], rh_matrix[10], rh_matrix[11]]
     axes[0,1].violinplot(rh_data_to_plot)
@@ -284,7 +284,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
     axes[1,0].violinplot(diurnal_data_to_plot)
     axes[1,0].set_title('Diurnal Temperature Violin Plot')
     axes[1,0].set_xlabel('Time, months')
-    axes[1,0].set_ylabel('Diurnal temperature, oC')
+    axes[0,0].set_ylabel('Temperature, ' + '$^o$C')
 
     winspeed_data_to_plot = [winspeed_matrix[0], winspeed_matrix[1], winspeed_matrix[2], winspeed_matrix[3], winspeed_matrix[4], winspeed_matrix[5], winspeed_matrix[6], winspeed_matrix[7], winspeed_matrix[8], winspeed_matrix[9], winspeed_matrix[10], winspeed_matrix[11]]
     axes[1,1].violinplot(winspeed_data_to_plot)
