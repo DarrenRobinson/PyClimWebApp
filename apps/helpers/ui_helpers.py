@@ -333,7 +333,7 @@ class ui_helpers():
 
 
 
-    @st.cache
+    # @st.cache
     def _get_advanced_search_dropdowns(self):
         df = self._get_db_df()
         # Generate dropdowns for filter by epw file categories
