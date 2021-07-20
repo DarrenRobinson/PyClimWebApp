@@ -20,7 +20,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from apps.ClimAnalFunctions import * 
-from settings import *
 
 def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, daynum_list, hour_range, filter_applied):
     st.write("# "+title)
@@ -29,7 +28,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, daynum
     # ui_helper.session_keys_init('psychros')
     ui_helper.time_filter('psychros')
 
-    # colour = st.sidebar.color_picker(color_picker_label, value='#0C791A', help=color_picker_help_text)
+    # colour = st.sidebar.color_picker(color_picker_label, value='#0C791A', help="By default when applying filters, all data should be plotted in the same colour")
     colour = '#0C791A'
 
     # file_list = []
@@ -37,8 +36,8 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, daynum
     rh_list = []
     g_list = []
 
-    PlotMonthly = st.sidebar.checkbox(PlotMonthly_label, value=True, help=PlotMonthly_label_help_text)
-    PlotEvapCool = st.sidebar.checkbox(PlotEvapCool_label, value=True, help=PlotEvapCool_help_text)
+    PlotMonthly = st.sidebar.checkbox("Plot Monthly", value=True, help="If FALSE then there is no distinction between data points for different months")
+    PlotEvapCool = st.sidebar.checkbox("PlotEvapCool", value=True, help="Efficiency of the evaporative cooling process")
     
     min_temp = min(np.array(file_list[3:])[:,3])
     # max_temp = max(np.array(file_list[3:])[:,3])

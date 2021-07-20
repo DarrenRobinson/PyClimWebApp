@@ -17,7 +17,6 @@ from urllib.request import Request, urlopen
 import pydeck as pdk
 import pandas as pd
 
-from settings import *
 
 class ui_helpers():  
     def __init__(self):
@@ -25,8 +24,8 @@ class ui_helpers():
         self.time_var = {'start_month': 1, 'start_day': 1, 'end_month': 12, 'end_day': 31, 'start_hour': 1, 'end_hour': 24}
         self._days_in_a_month()
         self.session_keys = {}
-        self.sort_list = sort_list
-        self.filter_list = filter_list
+        self.sort_list = 'Sort List by Distance from Site'
+        self.filter_list = 'Filter List by Region'
 
     def _session_keys_init(self, feature):
         for feat in self.feats:
