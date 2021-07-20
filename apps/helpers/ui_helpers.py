@@ -17,14 +17,17 @@ from urllib.request import Request, urlopen
 import pydeck as pdk
 import pandas as pd
 
+
 class ui_helpers():  
     def __init__(self):
         self.feats = ['psychros', 'windrose']
         self.time_var = {'start_month': 1, 'start_day': 1, 'end_month': 12, 'end_day': 31, 'start_hour': 1, 'end_hour': 24}
         self._days_in_a_month()
         self.session_keys = {}
+        self.sort_list = 'Sort List by Distance from Site'
+        self.filter_list = 'Filter List by Region'
 
-    def session_keys_init(self, feature):
+    def _session_keys_init(self, feature):
         for feat in self.feats:
             if feat == feature:
                 self.session_keys = {
@@ -46,30 +49,21 @@ class ui_helpers():
             else:
                 self.days[i-1] = list(range(1,31))
         
-    def _check_day(self, param):
-        if self.session_keys[param+'_day'] in st.session_state:
-            if self.session_keys[param+'_month'] in st.session_state:
+    def _check_day(self, start_or_end):
+        if self.session_keys[start_or_end+'_day'] in st.session_state:
+            if self.session_keys[start_or_end+'_month'] in st.session_state:
                 st.write
-                if st.session_state[ self.session_keys[param+'_day'] ] > (len(self.days[ st.session_state[ self.session_keys[param+'_month'] ]['value']-1 ])): 
-                    st.session_state[ self.session_keys[param+'_day'] ] = 1        
+                if st.session_state[ self.session_keys[start_or_end+'_day'] ] > (len(self.days[ st.session_state[ self.session_keys[start_or_end+'_month'] ]['value']-1 ])): 
+                    st.session_state[ self.session_keys[start_or_end+'_day'] ] = 1        
 
     def _check_start_day(self):
         self._check_day('start')
-        # if self.session_keys['start_day'] in st.session_state:
-        #     if self.session_keys['start_month'] in st.session_state:
-        #         st.write
-        #         if st.session_state[ self.session_keys['start_day'] ] > (len(self.days[ st.session_state[ self.session_keys['start_month'] ]['value']-1 ])): 
-        #             st.session_state[ self.session_keys['start_day'] ] = 1
 
     def _check_end_day(self):
         self._check_day('end')
-        # if self.session_keys['end_day'] in st.session_state:
-        #     if self.session_keys['end_month'] in st.session_state:
-        #         if st.session_state[ self.session_keys['end_day'] ] > (len(self.days[ st.session_state[ self.session_keys['end_month'] ]['value']-1 ])): 
-        #             st.session_state[ self.session_keys['end_day'] ] = 1
 
-
-    def epw_file_time_filter(self):
+    def time_filter(self, feature):
+        self._session_keys_init(feature)
         months = [
             {"title": "January", "value": 1}, 
             {"title": "February", "value": 2}, 
@@ -90,19 +84,9 @@ class ui_helpers():
 
         start_days = self.days[start_month_index]
         end_days = self.days[end_month_index]
-        # st.write(st.session_state)
-        start_day_index = st.session_state[ self.session_keys['start_day'] ]-1 if self.session_keys['start_day'] in st.session_state else 0
-        if self.session_keys['start_day'] in st.session_state:
-            if st.session_state[ self.session_keys['start_day'] ] > (len(start_days)): 
-                # st.session_state[ self.session_keys['start_day'] ] = 1
-                start_day_index = 0
 
+        start_day_index = st.session_state[ self.session_keys['start_day'] ]-1 if self.session_keys['start_day'] in st.session_state else 0
         end_day_index = st.session_state[ self.session_keys['end_day'] ]-1 if self.session_keys['end_day'] in st.session_state else end_days.index(max(end_days))
-        if self.session_keys['end_day'] in st.session_state:
-            if st.session_state[ self.session_keys['end_day'] ] > (len(end_days)): 
-                # st.session_state[ self.session_keys['end_day'] ] = 1
-                end_day_index = 0
-        # st.write(st.session_state)
         
         start_hour_index = st.session_state[ self.session_keys['start_hour'] ]-1 if self.session_keys['start_hour'] in st.session_state else 0
         end_hour_index = st.session_state[ self.session_keys['end_hour'] ]-1 if self.session_keys['end_hour'] in st.session_state else 23
@@ -195,6 +179,10 @@ class ui_helpers():
                 months[-1]['title']
             )
 
+
+
+
+
     def _epw_file_time_filter_pipeline(self, epw_file_dataframe, op_cond, limits):
         filter_operator = operator.__and__ if op_cond else operator.__or__
         epw_file_dataframe = epw_file_dataframe.loc[filter_operator(limits[0], limits[1])]
@@ -235,6 +223,10 @@ class ui_helpers():
 
         return epw_file_dataframe
 
+
+
+
+
     def is_filter_applied(self, feat):
         for var in self.time_var.keys():
             if feat+"_"+var in st.session_state:
@@ -244,6 +236,10 @@ class ui_helpers():
                 elif st.session_state[feat+"_"+var] != self.time_var[var]:
                     return True
         return False
+
+
+
+
 
     def _save_plt_fig(self, fig, filename, format):
         tmpfile = BytesIO()
@@ -261,6 +257,11 @@ class ui_helpers():
         hrefs = '<center>Download figures '+links_str+'</center><br>'
         return hrefs
 
+
+
+
+
+
     @st.cache
     def _get_db(self):
         # Connect to EnergyPlus
@@ -268,24 +269,7 @@ class ui_helpers():
         data = json.loads(response.read().decode('utf8'))
         return data
 
-    def _get_db_df(self):
-        data = self._get_db()
-        df = []
-        for location in data['features']:
-            url_str = []
-            for file_type in ['epw']:
-                match = re.search(r'href=[\'"]?([^\'" >]+)', location['properties'][file_type])
-                if match:
-                    url = match.group(1)
-                    urls = []
-                    urls.append(url)
-                    url_str = url.split('/')
-                    url_str += urls
-            url_str += location['geometry']['coordinates']        
-            df.append(url_str)
-
-        df = pd.DataFrame(df)
-        
+    def _sort_list_by_distance(self, df):
         latlng = [0] * 2
         latlng[0] = st.session_state.user_lat if 'user_lat' in st.session_state else 53.4
         latlng[1] = st.session_state.user_lng if 'user_lng' in st.session_state else -1.5
@@ -312,10 +296,39 @@ class ui_helpers():
 
         df[len(df.columns)] = distance
         df = df.sort_values(len(df.columns)-1) 
+
         return df
 
+    def _get_db_df(self):
+        data = self._get_db()
+        df = []
+        for location in data['features']:
+            match = re.search(r'href=[\'"]?([^\'" >]+)', location['properties']['epw'])
+            if match:
+                url = match.group(1)
+                url_str = url.split('/')
+                url_str += [url]
+            url_str += location['geometry']['coordinates']        
+            df.append(url_str)
+
+        df = pd.DataFrame(df)
+
+        if 'filter_option' in st.session_state:
+            if st.session_state.filter_option == self.sort_list:
+                df = self._sort_list_by_distance(df)
+        else:
+            df = self._sort_list_by_distance(df)
+
+        return df
+
+
+
+
+
+
+
     @st.cache
-    def get_advanced_search_dropdowns(self):
+    def _get_advanced_search_dropdowns(self):
         df = self._get_db_df()
         # Generate dropdowns for filter by epw file categories
         regions = df[4].unique() 
@@ -344,7 +357,7 @@ class ui_helpers():
 
         return regions_dropdown, countries_dropdown, states_dropdown
 
-    def get_weather_data_dropdown(self):
+    def _get_weather_data_dropdown(self):
         df = self._get_db_df()
 
         weather_data_dropdown = []
@@ -362,66 +375,96 @@ class ui_helpers():
             })
                 
         return weather_data_dropdown
- 
-    
+   
+    def _filter_settings_reset(self):
+        if 'filter_option' in st.session_state:
+            if st.session_state.filter_option != self.sort_list:
+                if 'user_lat' in st.session_state:
+                    st.session_state.user_lat = 53.40
+                if 'user_lng' in st.session_state:
+                    st.session_state.user_lng = -1.5
+            if st.session_state.filter_option != self.filter_list:
+                if 'region' in st.session_state:
+                    st.session_state.region = {
+                        "title": "All",
+                        "pf": "all"
+                    }
+            
+    def _check_if_a_valid_option_is_selected(self, var_to_check, str_to_check):
+        if var_to_check in st.session_state:
+            if st.session_state[var_to_check] is not None:
+                if var_to_check == 'region':
+                    if str_to_check not in st.session_state[var_to_check]['pf']:
+                        return True        
+                else:
+                    if str_to_check not in st.session_state[var_to_check]:
+                        return True
+        return False
+
     def advanced_search(self):
-        regions_dropdown, countries_dropdown, states_dropdown = self.get_advanced_search_dropdowns()
-        weather_data_dropdown = self.get_weather_data_dropdown()
+        regions_dropdown, countries_dropdown, states_dropdown = self._get_advanced_search_dropdowns()
+        weather_data_dropdown = self._get_weather_data_dropdown()
+        weather_data_dropdown_options = weather_data_dropdown
+
+
         expander = st.sidebar.beta_expander(label='Advanced Search')
         with expander:
-            st.write("Filter List by Region:")
-            region = st.selectbox(
-                "Region", 
-                regions_dropdown,
-                format_func=lambda x: x['title']
-            )
+            st.radio("", [self.sort_list, self.filter_list], key='filter_option', on_change=self._filter_settings_reset)
 
-            epw_col1, epw_col2 = st.beta_columns(2)
+            if 'filter_option' in st.session_state:
+                if st.session_state.filter_option == self.sort_list:
+                    st.write(self.sort_list+':')
 
-            if region['title'] == 'All':
-                countries_dropdown_options = []
-                # countries_dropdown_options = countries_dropdown["All"]
-            else:
-                countries_dropdown_options = countries_dropdown[region['pf']]
+                    st.number_input("Latitude", -90.0, 90.0, 53.4, 0.1, key='user_lat')
+                    st.number_input("Longitude", -180.0, 180.0, -1.5, 0.1, key='user_lng')
+                    
+                if st.session_state.filter_option == self.filter_list:
+                    st.write(self.filter_list+':')
 
-            country = epw_col1.selectbox("Country", countries_dropdown_options)
-            
-            # if 'All in ' in country:
-            states_dropdown_options = []
-            if country is not None:
-                if 'All in ' not in country:
-                    if len(states_dropdown[country]) > 1:
-                        states_dropdown_options = states_dropdown[country] 
+                    st.selectbox(
+                        "Region", 
+                        regions_dropdown,
+                        format_func=lambda x: x['title'], 
+                        key='region'
+                    )
+                    epw_col1, epw_col2 = st.beta_columns(2)
 
-            state = epw_col2.selectbox("State", states_dropdown_options)
-            
-            st.write("Sort List by Distance from Site:")
-            st.number_input("Latitude", -90.0, 90.0, 53.4, 0.1, key='user_lat')
-            st.number_input("Longitude", -180.0, 180.0, -1.5, 0.1, key='user_lng')
+                    if 'region' in st.session_state:
+                        if st.session_state.region['title'] == 'All':
+                            countries_dropdown_options = []
+                        else:
+                            countries_dropdown_options = countries_dropdown[st.session_state.region['pf']]
 
-        weather_data_dropdown_options = weather_data_dropdown
-        if (region['pf'] != 'all'):
-            if ('All in ' not in country):
-                if state is not None:
-                    if ('All in ' not in state):
-                        weather_data_dropdown_options = [ d for d in weather_data_dropdown if ((d['state'] in state) & (d['state'] != ''))]
-                    else:
-                        weather_data_dropdown_options = [ d for d in weather_data_dropdown if d['country'] in country]
-                else:
-                    weather_data_dropdown_options = [ d for d in weather_data_dropdown if d['country'] in country]
-            else:
-                weather_data_dropdown_options = [ d for d in weather_data_dropdown if d['region'] in region['pf']]
+                    epw_col1.selectbox("Country", countries_dropdown_options, key='country')
+                    
+                    states_dropdown_options = []
+                    if self._check_if_a_valid_option_is_selected('country', 'All in'):
+                        if len(states_dropdown[st.session_state.country]) > 1:
+                            states_dropdown_options = states_dropdown[st.session_state.country] 
+
+                    epw_col2.selectbox("State", states_dropdown_options, key='state')
+
+                    if self._check_if_a_valid_option_is_selected('region', 'all'):
+                        if self._check_if_a_valid_option_is_selected('country', 'All in'):
+                            if self._check_if_a_valid_option_is_selected('state', 'All in'):
+                                weather_data_dropdown_options = [ d for d in weather_data_dropdown if ((d['state'] in st.session_state.state) & (d['state'] != ''))]
+                            else:
+                                weather_data_dropdown_options = [ d for d in weather_data_dropdown if d['country'] in st.session_state.country]
+                        else:
+                            weather_data_dropdown_options = [ d for d in weather_data_dropdown if d['region'] in st.session_state.region['pf']]   
 
         file_name = st.sidebar.selectbox(
             'Weather Data List (Keyword Search Enabled)', 
             weather_data_dropdown_options,
             format_func=lambda x: x['title'],
-            # index = weather_data_dropdown_default_index,
-            help="A list of available weather data files sorted by the distance from your current location."
+            help="A list of available weather data files"
         )      
 
         return file_name
     
+
+
+
     def map_viewer(self):
         data = self._get_db()
         coordinates = []

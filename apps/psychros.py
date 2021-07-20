@@ -15,12 +15,9 @@
 
 #imports the basic libraries
 import streamlit as st
-# from apps.helpers.ui_helpers import ui_helpers
-
 import math
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 
 from apps.ClimAnalFunctions import * 
 
@@ -28,10 +25,10 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, daynum
     st.write("# "+title)
 
     # Time filter
-    ui_helper.session_keys_init('psychros')
-    ui_helper.epw_file_time_filter()
+    # ui_helper.session_keys_init('psychros')
+    ui_helper.time_filter('psychros')
 
-    # colour = st.sidebar.color_picker('Colour of Data Points when Filter is Applied', value='#0C791A', help="By default when applying filters, all data should be plotted in the same colour")
+    # colour = st.sidebar.color_picker(color_picker_label, value='#0C791A', help="By default when applying filters, all data should be plotted in the same colour")
     colour = '#0C791A'
 
     # file_list = []

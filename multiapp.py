@@ -1,3 +1,9 @@
+'''
+This class is the backbone of the web-app. 
+It is called and run (instantiated) in app.py.
+
+'''
+
 import streamlit as st
 from apps.ClimAnalFunctions import *
 from apps.helpers.ui_helpers import ui_helpers
@@ -21,7 +27,7 @@ class MultiApp:
         file_name = ui_helper.advanced_search() 
         
         epw_helper = epw() 
-        epw_file_df, epw_file_headers = epw_helper.get_epw_f(file_name['file_url'])
+        epw_file_df, epw_file_headers = epw_helper.read_epw_f(file_name['file_url'])
         # ui_helper.map_viewer()
         lat, longitude, timezone = float(epw_file_headers['LOCATION'][5]), float(epw_file_headers['LOCATION'][6]), float(epw_file_headers['LOCATION'][7])
         st.sidebar.markdown("Latitude: "+str(lat)+" Longitude: "+str(longitude)+"<br>Time Zone: "+str(timezone), unsafe_allow_html=True)
@@ -33,7 +39,7 @@ class MultiApp:
         )
 
         epw_file_df = ui_helper.epw_file_time_filter_conditions(epw_file_df, app['file_title'])
-        file_list = epw_helper.get_file_list(epw_file_df, epw_file_headers)
+        file_list = epw_helper.epw_to_file_list(epw_file_df, epw_file_headers)
         
         st.sidebar.write("---")
 
