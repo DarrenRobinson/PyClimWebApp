@@ -405,6 +405,7 @@ class ui_helpers():
 
     def advanced_search(self):
         regions_dropdown, countries_dropdown, states_dropdown, weather_data_dropdown = self._get_advanced_search_dropdowns()
+        st.write(countries_dropdown)
         # weather_data_dropdown = self._get_weather_data_dropdown()
         weather_data_dropdown_options = weather_data_dropdown
 
