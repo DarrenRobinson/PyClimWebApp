@@ -359,35 +359,37 @@ class ui_helpers():
         weather_data_dropdown = self.get_weather_data_dropdown()
         expander = st.sidebar.beta_expander(label='Advanced Search')
         with expander:
-            st.write("Filter List by Region:")
-            region = st.selectbox(
-                "Region", 
-                regions_dropdown,
-                format_func=lambda x: x['title']
-            )
+            filter_option = st.radio("Filter Option", ("By Region", "By Distance"))
+            if filter_option == 'By Region':
+                st.write("Filter List by Region:")
+                region = st.selectbox(
+                    "Region", 
+                    regions_dropdown,
+                    format_func=lambda x: x['title']
+                )
 
-            epw_col1, epw_col2 = st.beta_columns(2)
+                epw_col1, epw_col2 = st.beta_columns(2)
 
-            if region['title'] == 'All':
-                countries_dropdown_options = []
-                # countries_dropdown_options = countries_dropdown["All"]
-            else:
-                countries_dropdown_options = countries_dropdown[region['pf']]
+                if region['title'] == 'All':
+                    countries_dropdown_options = []
+                    # countries_dropdown_options = countries_dropdown["All"]
+                else:
+                    countries_dropdown_options = countries_dropdown[region['pf']]
 
-            country = epw_col1.selectbox("Country", countries_dropdown_options)
-            
-            # if 'All in ' in country:
-            states_dropdown_options = []
-            if country is not None:
-                if 'All in ' not in country:
-                    if len(states_dropdown[country]) > 1:
-                        states_dropdown_options = states_dropdown[country] 
+                country = epw_col1.selectbox("Country", countries_dropdown_options)
+                
+                # if 'All in ' in country:
+                states_dropdown_options = []
+                if country is not None:
+                    if 'All in ' not in country:
+                        if len(states_dropdown[country]) > 1:
+                            states_dropdown_options = states_dropdown[country] 
 
-            state = epw_col2.selectbox("State", states_dropdown_options)
-            
-            st.write("Sort List by Distance from Site:")
-            st.number_input("Latitude", -90.0, 90.0, 53.4, 0.1, key='user_lat')
-            st.number_input("Longitude", -180.0, 180.0, -1.5, 0.1, key='user_lng')
+                state = epw_col2.selectbox("State", states_dropdown_options)
+            if filter_option == 'By Distance':
+                st.write("Sort List by Distance from Site:")
+                st.number_input("Latitude", -90.0, 90.0, 53.4, 0.1, key='user_lat')
+                st.number_input("Longitude", -180.0, 180.0, -1.5, 0.1, key='user_lng')
 
         weather_data_dropdown_options = weather_data_dropdown
         if (region['pf'] != 'all'):

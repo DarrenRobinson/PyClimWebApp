@@ -18,8 +18,6 @@ class MultiApp:
         st.sidebar.write('# PyClim')
 
         ui_helper = ui_helpers()
-        filter_option = st.sidebar.radio("Filter Option", ("By Region", "By Distance"))
-
         file_name = ui_helper.advanced_search() 
         
         epw_helper = epw() 
