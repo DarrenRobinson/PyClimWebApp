@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
+# General naming convention:
+# func(): methods to be called by user
+# _func(): assisting methods called by system
 
 import tempfile
 from urllib.request import Request, urlopen
 import pandas as pd
 import csv
 
-class epw():  
+class epw_helpers():  
     def __init__(self):
         self.headers={}
         self.dataframe=pd.DataFrame()   
@@ -78,26 +81,26 @@ class epw():
                     break
         return i 
     
+
+    # This method is called in loading sequence 2, app.run(), app.py, to read the selected weather data file from EnergyPlus
     def read_epw_f(self, url):
-        name = url[url.rfind('/') + 1:]
-        response = Request(url, headers={'User-Agent' : "Magic Browser"}) 
-        with tempfile.TemporaryDirectory() as tmpdirname:
+        name = url[url.rfind('/') + 1:]                                         # Extract filename out of url
+        response = Request(url, headers={'User-Agent' : "Magic Browser"})     
+        with tempfile.TemporaryDirectory() as tmpdirname:                       # temp folder for storing the file during extraction
             with open(tmpdirname + name, 'wb') as f:
                 f.write(urlopen(response).read())
-                self._read(tmpdirname+name)
+                self._read(tmpdirname+name)                                     # read file
                 f.close()
         return self.dataframe, self.headers
 
+    # This method is called in loading sequence 4, app.run(), app.py, to convert the weather data file dataframe to list
     def epw_to_file_list(self, epw_file_df, epw_file_header):
         file_list = []
+
+        # Add the first 3 rows of headings (optional(?) implemented to bridge the workflow of backend script)
         file_list.extend([[epw_file_header['LOCATION'][0], ' -', epw_file_header['LOCATION'][2], epw_file_header['LOCATION'][5], epw_file_header['LOCATION'][6], epw_file_header['LOCATION'][7]], ['month', 'day', 'hour', 'Dry Bulb Temp', 'Rel Humidity', 'Global Horiz Rad', 'Diffuse Rad', 'Wind Speed', 'Wind Direction', ''], [' ', ' ', ' ', 'degrees C', 'percent', '(Wh/sq.m)', '(Wh/sq.m)', 'ms', 'degrees', '']])
+        
+        # This is where the unwanted columns in the dataframe gets filtered out. 
         file_list.extend(epw_file_df[['Month', 'Day', 'Hour', 'Dry Bulb Temperature', 'Relative Humidity', 'Global Horizontal Radiation', 'Diffuse Horizontal Radiation', 'Wind Speed', 'Wind Direction']].values.tolist())
+        
         return file_list
-    
-    def write(self,fp):
-        with open(fp, 'w', newline='') as csvfile:
-            csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-            for k,v in self.headers.items():
-                csvwriter.writerow([k]+v)
-            for row in self.dataframe.itertuples(index= False):
-                csvwriter.writerow(i for i in row)

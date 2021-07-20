@@ -1,3 +1,8 @@
+# general naming convention:
+# func(): methods to be called by user
+# _func(): assisting methods called by system
+
+
 import streamlit as st
 import math
 # from numpy.lib.function_base import corrcoef
@@ -183,12 +188,12 @@ class ui_helpers():
 
 
 
-    def _epw_file_time_filter_pipeline(self, epw_file_dataframe, op_cond, limits):
+    def _time_filter_pipeline(self, epw_file_dataframe, op_cond, limits):
         filter_operator = operator.__and__ if op_cond else operator.__or__
         epw_file_dataframe = epw_file_dataframe.loc[filter_operator(limits[0], limits[1])]
         return epw_file_dataframe
 
-    def epw_file_time_filter_conditions(self, epw_file_dataframe, file_title):
+    def time_filter_conditions(self, epw_file_dataframe, file_title):
         time_var = self.time_var.copy()
         for feat in self.feats:
             if feat == file_title:
@@ -211,7 +216,7 @@ class ui_helpers():
             (epw_file_dataframe['Month'] == time_var['end_month']) & (epw_file_dataframe['Day'] <= time_var['end_day']))
             )
         )
-        epw_file_dataframe = self._epw_file_time_filter_pipeline(epw_file_dataframe, conditions, limits)
+        epw_file_dataframe = self._time_filter_pipeline(epw_file_dataframe, conditions, limits)
         
         # filter by hour
         conditions = (time_var['end_hour'] >= time_var['start_hour'])
@@ -219,7 +224,7 @@ class ui_helpers():
             (epw_file_dataframe['Hour'] >= time_var['start_hour']),
             (epw_file_dataframe['Hour'] <= time_var['end_hour'])       
         )
-        epw_file_dataframe = self._epw_file_time_filter_pipeline(epw_file_dataframe, conditions, limits)
+        epw_file_dataframe = self._time_filter_pipeline(epw_file_dataframe, conditions, limits)
 
         return epw_file_dataframe
 
@@ -270,6 +275,7 @@ class ui_helpers():
         return data
 
     def _sort_list_by_distance(self, df):
+        st.write("here")
         latlng = [0] * 2
         latlng[0] = st.session_state.user_lat if 'user_lat' in st.session_state else 53.4
         latlng[1] = st.session_state.user_lng if 'user_lng' in st.session_state else -1.5
