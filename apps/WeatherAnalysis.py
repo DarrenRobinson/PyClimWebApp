@@ -18,7 +18,7 @@ import numpy as np
 
 from apps.ClimAnalFunctions import * 
 
-def app(app, epw, ui_helper, timeshift=timeshift):
+def app(app, epw, ui, timeshift=timeshift):
 
     st.write("# "+app['title'])
 
@@ -183,7 +183,7 @@ def app(app, epw, ui_helper, timeshift=timeshift):
     plt.legend(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
     # plt.show()
     st.pyplot(fig)
-    st.write(ui_helper.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
     tground_matrix.clear()
 
@@ -208,7 +208,7 @@ def app(app, epw, ui_helper, timeshift=timeshift):
 
     # plt.show()
     st.pyplot(fig)
-    st.write(ui_helper.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
     temp_list.clear()
 
@@ -230,7 +230,7 @@ def app(app, epw, ui_helper, timeshift=timeshift):
 
     # plt.show()
     st.pyplot(fig)
-    st.write(ui_helper.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
     winspeed_list.clear()
 
@@ -246,7 +246,7 @@ def app(app, epw, ui_helper, timeshift=timeshift):
 
     # plt.show()
     st.pyplot(fig)
-    st.write(ui_helper.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
 
     #plots a degree-day histograms
@@ -263,7 +263,7 @@ def app(app, epw, ui_helper, timeshift=timeshift):
     plt.legend((y1[0],y2[0]), ('Heating', 'Cooling'), loc='best')
     # plt.show()
     st.pyplot(fig)
-    st.write(ui_helper.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
 
     #this plots violin plots:
@@ -297,7 +297,7 @@ def app(app, epw, ui_helper, timeshift=timeshift):
     # plt.show()
     st.pyplot(fig)
     fig_title = 'Violin Plots'
-    st.write(ui_helper.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
     temp_matrix.clear()
     winspeed_matrix.clear()
@@ -326,7 +326,7 @@ def app(app, epw, ui_helper, timeshift=timeshift):
     plt.plot(day_list, SStime_list,c='red')    
     # plt.show()
     st.pyplot(fig)
-    st.write(ui_helper.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
     
     global_list.clear()
 
@@ -354,6 +354,6 @@ def app(app, epw, ui_helper, timeshift=timeshift):
     plt.plot(day_list, SStime_list,c='red')    
     # plt.show()
     st.pyplot(fig)
-    st.write(ui_helper.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
     illuminance_list.clear()

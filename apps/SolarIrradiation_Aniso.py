@@ -25,7 +25,7 @@ from apps.ClimAnalFunctions import *
 #FACTOR FOR CUTS THROUGH PATCHES FROM A PROGRESSIVELY TILTED PLANE. 
 ##########################################################################################
 
-def app(app, epw, ui_helper, timeshift=timeshift, groundref=groundref):
+def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
     
     st.write("# "+app['title'])
 
@@ -112,7 +112,7 @@ def app(app, epw, ui_helper, timeshift=timeshift, groundref=groundref):
         ax.set_ylabel('Collector tilt, deg')
         # plt.show()
         st.pyplot(fig)
-        st.write(ui_helper.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+        st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
     else:
         #This creates a 2D irradiation surface plot
@@ -131,4 +131,4 @@ def app(app, epw, ui_helper, timeshift=timeshift, groundref=groundref):
         ax.set_ylabel('Collector tilt, deg')
         # plt.show()
         st.pyplot(fig)
-        st.write(ui_helper.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+        st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)

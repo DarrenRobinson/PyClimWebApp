@@ -16,7 +16,7 @@ import numpy as np
 
 from apps.ClimAnalFunctions import * 
 
-def app(app, epw, ui_helper):
+def app(app, epw, ui):
 
     st.write("# "+app['title'])
 
@@ -174,6 +174,6 @@ def app(app, epw, ui_helper):
     plt.tight_layout()
     # plt.show()
     st.pyplot(fig)
-    st.write(ui_helper.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
 

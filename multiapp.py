@@ -4,11 +4,9 @@ It is called and run (instantiated) in app.py.
 '''
 
 import streamlit as st
-from apps.ClimAnalFunctions import *
 from apps.helpers.helper import Helper
 from apps.helpers.ui_helper import UIHelper
 from apps.helpers.epw_helper import EPWHelper
-import os
 
 class MultiApp:
     def __init__(self):
@@ -49,7 +47,7 @@ class MultiApp:
             format_func=lambda app: app['title']
         )
 
-        self.epw.time_filter_conditions(app['file_title'])   # Filter dataset for selected feature if applicable
+        self.epw.epw_filter(app['file_title'])   # Filter dataset for selected feature if applicable
         self.epw.epw_to_file_list()                          # Convert the epw dataframe to list format with first two rows as header info
         
         st.sidebar.write("---")

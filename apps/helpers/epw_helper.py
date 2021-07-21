@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-# General naming convention:
-# func(): methods to be called by user
-# _func(): assisting methods called by system
-
-
 import streamlit as st
 import tempfile
 from urllib.request import Request, urlopen
@@ -12,7 +6,10 @@ import csv
 import operator
 from apps.helpers.helper import Helper
 
-
+# -*- coding: utf-8 -*-
+# General naming convention:
+# func(): methods to be called by user
+# _func(): assisting methods called by system
 class EPWHelper(Helper):  
     def __init__(self):
         Helper.__init__(self)
@@ -119,7 +116,7 @@ class EPWHelper(Helper):
 
 
     # This method filters the data
-    def _time_filter_pipeline(self, op_cond, range):
+    def _epw_filter_pipeline(self, op_cond, range):
         #
         # Operator AND is used (op_cond = True) if in dropdowns start month is before end month e.g. start: Feb, end: Nov
         # e.g. May is valid out because it is after Feb **AND** before Nov
@@ -134,7 +131,7 @@ class EPWHelper(Helper):
 
 
     # This method passes the required parameters (direction and range) to _time_filter_pipeline
-    def time_filter_conditions(self, file_title):
+    def epw_filter(self, file_title):
         # Read the corresponding filter parameters from st.session_state according to feature (file_title)
         time_var = self.time_var.copy()
         for feature in self.features:
@@ -158,7 +155,7 @@ class EPWHelper(Helper):
             (self.dataframe['Month'] == time_var['end_month']) & (self.dataframe['Day'] <= time_var['end_day']))
             )
         )
-        self.dataframe = self._time_filter_pipeline(direction, range)
+        self.dataframe = self._epw_filter_pipeline(direction, range)
         
         # filter by hour
         direction = (time_var['end_hour'] >= time_var['start_hour'])
@@ -166,6 +163,6 @@ class EPWHelper(Helper):
             (self.dataframe['Hour'] >= time_var['start_hour']),
             (self.dataframe['Hour'] <= time_var['end_hour'])       
         )
-        self.dataframe = self._time_filter_pipeline(direction, range)
+        self.dataframe = self._epw_filter_pipeline(direction, range)
 
         return self.dataframe

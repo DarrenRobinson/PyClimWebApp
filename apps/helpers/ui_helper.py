@@ -1,29 +1,18 @@
-# general naming convention:
-# func(): methods to be called by user
-# _func(): assisting methods called by system
-
-
 import streamlit as st
 import math
-# from numpy.lib.function_base import corrcoef
-# import tempfile
 import pandas as pd
-import operator
-# import io
-# from PIL import Image
 from io import BytesIO
 import base64
 import json
 import re
 from urllib.request import Request, urlopen
-# from streamlit_folium import folium_static
-# import folium
-# from branca.element import Figure
 import pydeck as pdk
 import pandas as pd
 from apps.helpers.helper import Helper
 
-
+# General naming convention:
+# func(): methods to be called by user
+# _func(): assisting methods called by system
 class UIHelper(Helper):  
     def __init__(self):
         Helper.__init__(self)
@@ -45,7 +34,6 @@ class UIHelper(Helper):
     # )
     # are used for displaying the time filter panel in psychros and WindRose
     #
-
 
     # This method generates a set of feature-specific names e.g. psychros_start_month, windrose_start_month
     # so that the time filter stores these parameters separately for each feature in st.session_state.
@@ -211,17 +199,9 @@ class UIHelper(Helper):
                 months[-1]['title']
             )
 
-    #
-    # The following methods
-    # (
-    # _time_filter_pipeline, 
-    # time_filter_conditions, 
-    # is_filter_applied
-    # )
-    # are used for filtering the data as per user input
-    #
 
 
+    # This method helps with display decisions. It checks if any time filter parameters i.e. month, day & hour are different from default.
     def is_filter_applied(self, feat):
         for var in self.time_var.keys():
             if feat+"_"+var in st.session_state:

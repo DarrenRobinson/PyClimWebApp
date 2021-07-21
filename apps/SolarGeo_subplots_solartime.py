@@ -23,11 +23,9 @@ import numpy as np
 
 from apps.ClimAnalFunctions import * 
 
-def app(app, epw, ui_helper, timeshift=timeshift):
-
+def app(app, epw, ui, timeshift=timeshift):
     st.write("# "+app['title'])
 
-    # ui_helper = ui_helpers()
     lat = st.sidebar.number_input('Latitude', -90.0, 90.0, epw.lat, help="Whilst these charts can be informed by climate data (global coordinates), they can also be generated independently here manually")
     lat = lat * pi / 180
     DayChoice = st.sidebar.slider('Julian Day Number', 1, 365, 172)
@@ -149,5 +147,5 @@ def app(app, epw, ui_helper, timeshift=timeshift):
     # plt.show()
     st.pyplot(fig)
     fig_title = 'Solar Geometry Subplots'
-    st.write(ui_helper.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
     
