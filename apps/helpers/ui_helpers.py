@@ -29,9 +29,25 @@ class ui_helpers():
         self.time_var = {'start_month': 1, 'start_day': 1, 'end_month': 12, 'end_day': 31, 'start_hour': 1, 'end_hour': 24}
         self._days_in_a_month()
         self.session_keys = {}
-        self.sort_list = 'Search by distance from target site'
-        self.filter_list = 'Search hierarchically by region'
+        self.sort_list = 'by distance from target site:'
+        self.filter_list = 'hierarchically by region:'
 
+    #
+    # The following methods
+    # (
+    # _session_keys_init, 
+    # _days_in_a_month, 
+    # _check_day, 
+    # _check_start_day, 
+    # _check_end_day,
+    # time_filter
+    # )
+    # are used for displaying the time filter panel in psychros and WindRose
+    #
+
+
+    # This method generates a set of feature-specific names e.g. psychros_start_month, windrose_start_month
+    # so that the time filter stores these parameters separately for each feature in st.session_state.
     def _session_keys_init(self, feature):
         for feat in self.feats:
             if feat == feature:
@@ -44,6 +60,7 @@ class ui_helpers():
                     "end_hour": feat+"_end_hour"
                 } 
 
+    # This method generates a set of number arrays for days in different months (e.g. for start and end day dropdowns)
     def _days_in_a_month(self):
         self.days = [0] * 12
         for i in range(1,13):
@@ -53,11 +70,12 @@ class ui_helpers():
                 self.days[i-1] = list(range(1,29))
             else:
                 self.days[i-1] = list(range(1,31))
-        
+
+    # _check_day, _check_start_day, _check_end_day are callbacks from start_month and end_month dropdowns.
     def _check_day(self, start_or_end):
         if self.session_keys[start_or_end+'_day'] in st.session_state:
             if self.session_keys[start_or_end+'_month'] in st.session_state:
-                st.write
+                # If the stored day exceeds the range of days in the new selected month, it will be reset to 1.
                 if st.session_state[ self.session_keys[start_or_end+'_day'] ] > (len(self.days[ st.session_state[ self.session_keys[start_or_end+'_month'] ]['value']-1 ])): 
                     st.session_state[ self.session_keys[start_or_end+'_day'] ] = 1        
 
@@ -67,6 +85,7 @@ class ui_helpers():
     def _check_end_day(self):
         self._check_day('end')
 
+    # This is the main method to display the time filter dropdowns.
     def time_filter(self, feature):
         self._session_keys_init(feature)
         months = [
@@ -84,18 +103,23 @@ class ui_helpers():
             {"title": "December", "value": 12}
         ]
         
+        # Set the dropdowns to display the previously selected month if applicable
         start_month_index = st.session_state[ self.session_keys['start_month'] ]['value']-1 if self.session_keys['start_month'] in st.session_state else 0
         end_month_index = st.session_state[ self.session_keys['end_month'] ]['value']-1 if self.session_keys['end_month'] in st.session_state else 11
 
+        # Set the day range according to the month selected 
         start_days = self.days[start_month_index]
         end_days = self.days[end_month_index]
 
+        # Set the dropdowns to display the previously selected day if applicable
         start_day_index = st.session_state[ self.session_keys['start_day'] ]-1 if self.session_keys['start_day'] in st.session_state else 0
         end_day_index = st.session_state[ self.session_keys['end_day'] ]-1 if self.session_keys['end_day'] in st.session_state else end_days.index(max(end_days))
         
+        # Set the dropdowns to display the previously selected hour if applicable
         start_hour_index = st.session_state[ self.session_keys['start_hour'] ]-1 if self.session_keys['start_hour'] in st.session_state else 0
         end_hour_index = st.session_state[ self.session_keys['end_hour'] ]-1 if self.session_keys['end_hour'] in st.session_state else 23
 
+        # Dropdowns
         col1, col2 = st.sidebar.beta_columns(2)
 
         col2.selectbox(
@@ -150,6 +174,7 @@ class ui_helpers():
             help="This filter controls the range of data points that are plotted"
         )    
         
+        # Display text underneath title to indicate the range of filtered data currently showing
         if (end_hour_index >= start_hour_index):
             show_hour = str(start_hour_index+1)+":00 to "+str(end_hour_index+1)+":00,"
         else:
@@ -184,16 +209,34 @@ class ui_helpers():
                 months[-1]['title']
             )
 
+    #
+    # The following methods
+    # (
+    # _time_filter_pipeline, 
+    # time_filter_conditions, 
+    # is_filter_applied
+    # )
+    # are used for filtering the data as per user input
+    #
 
 
-
-
-    def _time_filter_pipeline(self, epw_file_dataframe, op_cond, limits):
+    # This method filters the data
+    def _time_filter_pipeline(self, epw_file_dataframe, op_cond, range):
+        #
+        # Operator AND is used (op_cond = True) if in dropdowns start month is before end month e.g. start: Feb, end: Nov
+        # e.g. May is valid out because it is after Feb **AND** before Nov
+        # 
+        # Operator OR is used (op_cond = False) if start month is after end month e.g. start: Nov, end: Feb, as it
+        # indicates the desired range is Jan to Feb and Nov to Dec
+        # e.g. Jan is valid because it is after Nov **OR** before Feb
+        #
         filter_operator = operator.__and__ if op_cond else operator.__or__
-        epw_file_dataframe = epw_file_dataframe.loc[filter_operator(limits[0], limits[1])]
+        epw_file_dataframe = epw_file_dataframe.loc[filter_operator(range[0], range[1])]
         return epw_file_dataframe
 
+    # This method passes the required parameters (direction and range) to _time_filter_pipeline
     def time_filter_conditions(self, epw_file_dataframe, file_title):
+        # Read the corresponding filter parameters from st.session_state according to feature (file_title)
         time_var = self.time_var.copy()
         for feat in self.feats:
             if feat == file_title:
@@ -205,8 +248,8 @@ class ui_helpers():
                             time_var[var] = st.session_state[feat+"_"+var]
         
         # filter by day and month
-        conditions = (time_var['end_month'] > time_var['start_month']) | ((time_var['end_month'] == time_var['start_month']) & (time_var['end_day'] >= time_var['start_day']))
-        limits = (
+        direction = (time_var['end_month'] > time_var['start_month']) | ((time_var['end_month'] == time_var['start_month']) & (time_var['end_day'] >= time_var['start_day']))
+        range = (
             (
             (epw_file_dataframe['Month'] > time_var['start_month']) | 
             ((epw_file_dataframe['Month'] == time_var['start_month']) & (epw_file_dataframe['Day'] >= time_var['start_day']))
@@ -216,21 +259,17 @@ class ui_helpers():
             (epw_file_dataframe['Month'] == time_var['end_month']) & (epw_file_dataframe['Day'] <= time_var['end_day']))
             )
         )
-        epw_file_dataframe = self._time_filter_pipeline(epw_file_dataframe, conditions, limits)
+        epw_file_dataframe = self._time_filter_pipeline(epw_file_dataframe, direction, range)
         
         # filter by hour
-        conditions = (time_var['end_hour'] >= time_var['start_hour'])
-        limits = (
+        direction = (time_var['end_hour'] >= time_var['start_hour'])
+        range = (
             (epw_file_dataframe['Hour'] >= time_var['start_hour']),
             (epw_file_dataframe['Hour'] <= time_var['end_hour'])       
         )
-        epw_file_dataframe = self._time_filter_pipeline(epw_file_dataframe, conditions, limits)
+        epw_file_dataframe = self._time_filter_pipeline(epw_file_dataframe, direction, range)
 
         return epw_file_dataframe
-
-
-
-
 
     def is_filter_applied(self, feat):
         for var in self.time_var.keys():
@@ -243,9 +282,16 @@ class ui_helpers():
         return False
 
 
+    #
+    # The following methods
+    # (
+    # _save_plt_fig, 
+    # generate_fig_dl_link
+    # )
+    # are used for filtering the data as per user input
+    #
 
-
-
+    # This method 
     def _save_plt_fig(self, fig, filename, format):
         tmpfile = BytesIO()
         fig.savefig(tmpfile, format=format, dpi=300)
@@ -306,6 +352,7 @@ class ui_helpers():
 
     def _get_db_df(self):
         data = self._get_db()
+        st.dataframe(data)
         df = []
         for location in data['features']:
             match = re.search(r'href=[\'"]?([^\'" >]+)', location['properties']['epw'])
@@ -318,12 +365,12 @@ class ui_helpers():
 
         df = pd.DataFrame(df)
 
+        
         if 'filter_option' in st.session_state:
             if st.session_state.filter_option == self.sort_list:
                 df = self._sort_list_by_distance(df)
             elif st.session_state.filter_option == self.filter_list:
                 df = df.sort_values([5, 6])
-                st.dataframe(df)
         else:
             df = self._sort_list_by_distance(df)
         return df
@@ -409,17 +456,18 @@ class ui_helpers():
 
         expander = st.sidebar.beta_expander(label='Weather Data Search')
         with expander:
+            st.write("Search")
             st.radio("", [self.sort_list, self.filter_list], key='filter_option', on_change=self._filter_settings_reset)
 
             if 'filter_option' in st.session_state:
                 if st.session_state.filter_option == self.sort_list:
-                    st.write(self.sort_list+':')
+                    # st.write(self.sort_list+':')
 
                     st.number_input("Latitude", -90.0, 90.0, 53.4, 0.1, key='user_lat')
                     st.number_input("Longitude", -180.0, 180.0, -1.5, 0.1, key='user_lng')
                     
                 if st.session_state.filter_option == self.filter_list:
-                    st.write(self.filter_list+':')
+                    # st.write(self.filter_list+':')
 
                     st.selectbox(
                         "Region", 
