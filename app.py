@@ -19,3 +19,4 @@ app.add_app("Psychrometric Analysis", "psychros", psychros.app)
 app.add_app("Wind Rose", "windrose", WindRose.app)
 
 app.run()
+

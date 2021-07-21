@@ -288,10 +288,9 @@ class ui_helpers():
     # _save_plt_fig, 
     # generate_fig_dl_link
     # )
-    # are used for filtering the data as per user input
+    # are used for generating figure download links
     #
 
-    # This method 
     def _save_plt_fig(self, fig, filename, format):
         tmpfile = BytesIO()
         fig.savefig(tmpfile, format=format, dpi=300)
@@ -308,18 +307,25 @@ class ui_helpers():
         hrefs = '<center>Download figures '+links_str+'</center><br>'
         return hrefs
 
+    #
+    # The following methods
+    # (
+    # _get_db, 
+    # _sort_list_by_distance,
+    # _get_db_df, 
+    # 
+    # )
+    # are used for connecting to EnergyPlus
+    #
 
-
-
-
-
-    @st.cache
+    # @st.cache
     def _get_db(self):
         # Connect to EnergyPlus
         response = urlopen('https://github.com/NREL/EnergyPlus/raw/develop/weather/master.geojson')
         data = json.loads(response.read().decode('utf8'))
         return data
 
+    # This method sort locations by euclidean distance
     def _sort_list_by_distance(self, df):
         latlng = [0] * 2
         latlng[0] = st.session_state.user_lat if 'user_lat' in st.session_state else 53.4
@@ -344,7 +350,7 @@ class ui_helpers():
         temp_df['c'] = 2 * temp_df.apply(lambda x: math.atan2(x['a_sq'], x['one_minus_a_sq']), axis=1)
 
         distance = R * temp_df['c'] 
-
+        
         df[len(df.columns)] = distance
         df = df.sort_values(len(df.columns)-1) 
 
@@ -352,7 +358,6 @@ class ui_helpers():
 
     def _get_db_df(self):
         data = self._get_db()
-        st.dataframe(data)
         df = []
         for location in data['features']:
             match = re.search(r'href=[\'"]?([^\'" >]+)', location['properties']['epw'])

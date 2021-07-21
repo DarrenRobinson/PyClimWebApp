@@ -7,6 +7,8 @@ import streamlit as st
 from apps.ClimAnalFunctions import *
 from apps.helpers.ui_helpers import ui_helpers
 from apps.helpers.epw_helpers import epw_helpers
+import os, psutil
+
 
 class MultiApp:
     def __init__(self):
@@ -53,6 +55,9 @@ class MultiApp:
             self.apps,
             format_func=lambda app: app['title']
         )
+
+        process = psutil.Process(os.getpid())
+        st.write(process.memory_info().rss)
 
         #
         # Loading sequence 4: prepare dataset for selected feature 
