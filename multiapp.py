@@ -8,6 +8,7 @@ from apps.ClimAnalFunctions import *
 from apps.helpers.ui_helpers import ui_helpers
 from apps.helpers.epw_helpers import epw_helpers
 
+
 class MultiApp:
     def __init__(self):
         self.apps = []
@@ -24,12 +25,16 @@ class MultiApp:
     def run(self):
         st.sidebar.write('# PyClim')
 
+
+
         #
         # Loading sequence 1: advanced search functionalities
         #
         ui_helper = ui_helpers()                                                        # Instantiate the UI helpers
         file_name = ui_helper.advanced_search()                                         # Display sorting/filtering functionalities
 
+
+        
         #
         # Loading sequence 2: display selected weather file info: latitude, longitude, timezone
         #
@@ -38,10 +43,9 @@ class MultiApp:
         lat, longitude, timezone = float(epw_file_headers['LOCATION'][5]), float(epw_file_headers['LOCATION'][6]), float(epw_file_headers['LOCATION'][7])
         st.sidebar.markdown("Latitude: "+str(lat)+" Longitude: "+str(longitude)+"<br>Time Zone: "+str(timezone), unsafe_allow_html=True)
         
-        
-        st.sidebar.write("---")
 
-        
+
+
         #
         # Loading sequence 3: display feature selection dropdown
         #
@@ -70,6 +74,8 @@ class MultiApp:
         file_list = epw_helper.epw_to_file_list(epw_file_df, epw_file_headers)
         
         st.sidebar.write("---")
+
+
 
         #
         # Loading sequence 5: run the selected feature script
