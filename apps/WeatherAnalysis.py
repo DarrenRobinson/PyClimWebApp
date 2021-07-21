@@ -104,7 +104,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
             day_list.append(cumday)
             dec_list.append(declin_angle(cumday))
             SStime, SRtime = sunrise_time(dec_list[cumday-1],lat,cumday)
-            dT = time_diff(cumday,False,longitude,timezone,0)
+            dT = time_diff(cumday,True,longitude,timezone,timeshift)
             SStime_list.append(min(24,SStime+dT))
             SRtime_list.append(max(1,SRtime+dT))
             for k in range(1,25):
