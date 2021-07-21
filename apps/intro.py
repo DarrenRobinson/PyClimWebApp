@@ -42,7 +42,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
 
     The Web App front end was developed using Streamlit by Alvin Mok through an internship funded by the University of Sheffield, under the supervision of Reena Sayani and Darren Robinson.
 
-    We are grateful to students of the Sheffield MSc in Sustainable Architecture Studies (Anupama Rao and Elizaveta Arestova) for their constructive feedback on earlier prototypes of this App.
+    We are grateful to the following staff and students of the Sheffield School of Architecture for their constructive feedback on earlier prototypes of this App: Elizaveta Arestova, Anupama Rao, Jonathan Sykes, Parag Wate.
 
 
 
