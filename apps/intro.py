@@ -11,7 +11,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
     
     First, a weather file needs to be selected. The is done either by directly entering a filename or by performing a keyword search in the Weather Data List box, or by performing a Weather data search. This latter has two options: 1) search by distance - this ranks weather files based on their Euclidean distance (distance, as the crow flies) from the coordinates of your target site location (just enter the latitude and longitude), or 2) search hierarchically by region - this allows you to navigate down a geographical hierarchy from Region (the scale of continents) through country to state (where applicable) and then to select the weather file from the list of those available.
 
-    The second stage is to analyse the selected data using the dropdown list of Features:
+    The second stage is to analyse the selected data using the dropdown list of Analysis Tools:
 
     -  Sunpath and Shading: this creates sunpath diagrams in stereographic projection, plotting time lines either according to solar or clock time; this latter representing the Analemma, calculated using the equation of time. You can also project shading protractors onto the diagram for a wall of specified azimuth.
 
