@@ -13,7 +13,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
 
     The second stage is to analyse the selected data using the dropdown list of Features:
 
-    -  Sunpath and Shading: this creates sunpath diagrams in stereographic projection, plotting time lines either according to solar or clock time; this latter representing the Analemma, calculated using the equation of time (EqT). You can also project shading protractors onto the diagram for a wall of specified azimuth.
+    -  Sunpath and Shading: this creates sunpath diagrams in stereographic projection, plotting time lines either according to solar or clock time; this latter representing the Analemma, calculated using the equation of time. You can also project shading protractors onto the diagram for a wall of specified azimuth.
 
     -  Solar Geometry Subplots: this is more of a pedagogical resource, to help develop students’ understanding of how solar geometry and sun position influences the cosine of the angle of incidence (CAI) on a receiving surface (e.g. a wall or a solar collector). A 3x2 grid of subplots is created: the first three plotting daily variations in declination, Equation of time and solar daylength; the latter three plotting hourly solar altitude, azimuth and cosine of the angle of incidence on the receiving surface.
 
