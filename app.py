@@ -1,3 +1,4 @@
+
 import streamlit as st
 from multiapp import MultiApp
 # 1. Import your features here using file names
@@ -10,6 +11,7 @@ app = MultiApp()
 # file_title and func are system settings and should always be name in such way
 # e.g. intro.py = "intro"     for file_title
 #                 "intro.app" for func
+
 app.add_app("About", "intro", intro.app)
 app.add_app("Sun Path and Shading Analysis", "sunpath", sunpath.app)
 app.add_app("Solar Geometry Subplots", "SolarGeo_subplots_solartime", SolarGeo_subplots_solartime.app)
