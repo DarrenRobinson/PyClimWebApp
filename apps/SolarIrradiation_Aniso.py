@@ -26,7 +26,6 @@ from apps.ClimAnalFunctions import *
 ##########################################################################################
 
 def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
-    
     st.write("# "+app['title'])
 
     DiffuseOnly = st.sidebar.checkbox("DiffuseOnly", value=False, help="If TRUE then only diffuse irradiation is calculated; otherwise direct is also included")

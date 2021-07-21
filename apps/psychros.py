@@ -23,7 +23,6 @@ from apps.ClimAnalFunctions import *
 
 def app(app, epw, ui):
     st.write("# "+app['title'])
-
        
     filter_applied = ui.is_filter_applied(app['file_title'])
     daynum_list = [31,28,31,30,31,30,31,31,30,31,30,31]     # Default values if dataset is not filtered

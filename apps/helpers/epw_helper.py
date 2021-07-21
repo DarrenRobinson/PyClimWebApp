@@ -107,10 +107,19 @@ class EPWHelper(Helper):
     # This method is called in loading sequence 4, app.run(), app.py, to convert the weather data file dataframe to list
     def epw_to_file_list(self):
         # Add the first 3 rows of headings (optional(?) implemented to bridge the workflow of backend script)
-        self.file_list.extend([[self.headers['LOCATION'][0], ' -', self.headers['LOCATION'][2], self.headers['LOCATION'][5], self.headers['LOCATION'][6], self.headers['LOCATION'][7]], ['month', 'day', 'hour', 'Dry Bulb Temp', 'Rel Humidity', 'Global Horiz Rad', 'Diffuse Rad', 'Wind Speed', 'Wind Direction', ''], [' ', ' ', ' ', 'degrees C', 'percent', '(Wh/sq.m)', '(Wh/sq.m)', 'ms', 'degrees', '']])
-        
+        self.file_list.extend(
+            [
+                [self.headers['LOCATION'][0], ' -', self.headers['LOCATION'][2], self.headers['LOCATION'][5], self.headers['LOCATION'][6], self.headers['LOCATION'][7]], 
+                ['month', 'day', 'hour', 'Dry Bulb Temp', 'Rel Humidity', 'Global Horiz Rad', 'Diffuse Rad', 'Wind Speed', 'Wind Direction', ''], 
+                [' ', ' ', ' ', 'degrees C', 'percent', '(Wh/sq.m)', '(Wh/sq.m)', 'ms', 'degrees', '']
+            ]
+        )
         # This is where the unwanted columns in the dataframe gets filtered out. 
-        self.file_list.extend(self.dataframe[['Month', 'Day', 'Hour', 'Dry Bulb Temperature', 'Relative Humidity', 'Global Horizontal Radiation', 'Diffuse Horizontal Radiation', 'Wind Speed', 'Wind Direction']].values.tolist())
+        self.file_list.extend(
+            self.dataframe[
+                ['Month', 'Day', 'Hour', 'Dry Bulb Temperature', 'Relative Humidity', 'Global Horizontal Radiation', 'Diffuse Horizontal Radiation', 'Wind Speed', 'Wind Direction']
+            ].values.tolist()
+        )
         
         return self.file_list
 

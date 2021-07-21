@@ -19,9 +19,7 @@ import numpy as np
 from apps.ClimAnalFunctions import * 
 
 def app(app, epw, ui, timeshift=timeshift):
-
     st.write("# "+app['title'])
-
 
     globaleff = False
     daynum_list = []
