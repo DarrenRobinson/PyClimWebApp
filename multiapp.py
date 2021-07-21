@@ -29,53 +29,29 @@ class MultiApp:
     def run(self):
         st.sidebar.write('# PyClim')
 
-        #
-        # Loading sequence 1: advanced search functionalities
-        #
-
-        self.helper.features = self.apps  
-        self.ui.advanced_search()  # Display sorting/filtering functionalities
-
-        #
-        # Loading sequence 2: display selected weather file info: latitude, longitude, timezone
-        #
-
-        self.epw.read_epw_f(self.ui.file_name['file_url']) # Fetch the epw dataframe and header info 
-        st.sidebar.markdown("Latitude: "+str(self.epw.lat)+" Longitude: "+str(self.epw.longitude)+"<br>Time Zone: "+str(self.epw.timezone), unsafe_allow_html=True)
-        
+        self.helper.features = self.apps                    # Inform helper of available features
+        self.ui.advanced_search()                           # Display sorting/filtering functionalities
+        self.epw.read_epw_f(self.ui.file_name['file_url'])  # Fetch the epw dataframe and header info 
+       
+        st.sidebar.markdown(
+            "Latitude: "+str(self.epw.lat)+
+            " Longitude: "+str(self.epw.longitude)+
+            "<br>Time Zone: "+str(self.epw.timezone), 
+            unsafe_allow_html=True
+        )
 
         st.sidebar.write("---")
 
-
-
-        #
-        # Loading sequence 3: display feature selection dropdown
-        #
-        #
-        # Format of variable "app":
-        # {
-        #   "title": "About"                    # app['title']
-        #   "file_title": "intro"               # app['file_title']
-        #   "function": "<class 'function'>"    # app['function']
-        #}
+        # Display feature selection dropdown
         app = st.sidebar.selectbox(
             'Analysis Tools:',
             self.apps,
             format_func=lambda app: app['title']
         )
 
-        #
-        # Loading sequence 4: prepare dataset for selected feature 
-        #
-
-        self.epw.time_filter_conditions(app['file_title'])  # The parameter, app['file_title'], is the name of the selected feature which informs the method for which feature it is filtering
-        self.epw.epw_to_file_list() # Convert the epw dataframe to list format with first two rows as header info
+        self.epw.time_filter_conditions(app['file_title'])   # Filter dataset for selected feature if applicable
+        self.epw.epw_to_file_list()                          # Convert the epw dataframe to list format with first two rows as header info
         
         st.sidebar.write("---")
 
-        #
-        # Loading sequence 5: run the selected feature script
-        #
-
-
-        app['function'](app, self.epw, self.ui)
+        app['function'](app, self.epw, self.ui)              # Run the selected feature script

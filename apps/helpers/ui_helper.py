@@ -50,7 +50,6 @@ class UIHelper(Helper):
     # This method generates a set of feature-specific names e.g. psychros_start_month, windrose_start_month
     # so that the time filter stores these parameters separately for each feature in st.session_state.
     def _session_keys_init(self, selected_feature):
-        st.write(self.features)
         for feature in self.features:
             if feature['file_title'] == selected_feature:
                 self.session_keys = {
