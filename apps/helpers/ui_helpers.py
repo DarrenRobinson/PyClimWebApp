@@ -356,6 +356,8 @@ class ui_helpers():
 
         return df
 
+    # This method converts the data object to a dataframe with columns like coordinates and epw file names;
+    # it also sorts the dataframe according to the preferred order
     def _get_db_df(self):
         data = self._get_db()
         df = []
@@ -378,15 +380,24 @@ class ui_helpers():
                 df = df.sort_values([5, 6])
         else:
             df = self._sort_list_by_distance(df)
+
         return df
 
 
-
-
+    #
+    # The following methods
+    # (
+    # _get_advanced_search_dropdowns, 
+    # _filter_settings_reset,
+    # _check_if_a_valid_option_is_selected, 
+    # advanced_search
+    # )
+    # are used for displaying the weather data search
+    #
 
     def _get_advanced_search_dropdowns(self):
         df = self._get_db_df()
-        # Generate dropdowns for filter by epw file categories
+
         regions = df[4].unique() 
         regions_dropdown = [{
             "title": "All",
@@ -427,6 +438,8 @@ class ui_helpers():
                 
         return regions_dropdown, countries_dropdown, states_dropdown, weather_data_dropdown
    
+
+    # This method is callback. This method resets the settings when another radio option is selected.
     def _filter_settings_reset(self):
         if 'filter_option' in st.session_state:
             if st.session_state.filter_option != self.sort_list:
@@ -440,7 +453,7 @@ class ui_helpers():
                         "title": "All",
                         "pf": "all"
                     }
-            
+    
     def _check_if_a_valid_option_is_selected(self, var_to_check, str_to_check):
         if var_to_check in st.session_state:
             if st.session_state[var_to_check] is not None:
@@ -452,6 +465,7 @@ class ui_helpers():
                         return True
         return False
 
+    # This method populates the advanced search panel and weather data file list
     def advanced_search(self):
         regions_dropdown, countries_dropdown, states_dropdown, weather_data_dropdown = self._get_advanced_search_dropdowns()
         
@@ -516,7 +530,7 @@ class ui_helpers():
         return file_name
     
 
-
+    
 
     def map_viewer(self):
         data = self._get_db()
