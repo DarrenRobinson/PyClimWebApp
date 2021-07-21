@@ -528,10 +528,10 @@ class ui_helpers():
         )      
 
         return file_name
-    
 
-    
 
+
+    # This method is under construction. Currently when it's called, it outputs a map pinpointing selections in weather data file list
     def map_viewer(self):
         data = self._get_db()
         coordinates = []
