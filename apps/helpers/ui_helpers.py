@@ -29,8 +29,8 @@ class ui_helpers():
         self.time_var = {'start_month': 1, 'start_day': 1, 'end_month': 12, 'end_day': 31, 'start_hour': 1, 'end_hour': 24}
         self._days_in_a_month()
         self.session_keys = {}
-        self.sort_list = 'Search by distance from target site'
-        self.filter_list = 'Search hierarchically by region'
+        self.sort_list = 'by distance from target site'
+        self.filter_list = 'hierarchically by region'
 
     def _session_keys_init(self, feature):
         for feat in self.feats:
