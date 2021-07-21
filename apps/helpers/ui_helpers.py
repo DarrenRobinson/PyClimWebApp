@@ -29,8 +29,8 @@ class ui_helpers():
         self.time_var = {'start_month': 1, 'start_day': 1, 'end_month': 12, 'end_day': 31, 'start_hour': 1, 'end_hour': 24}
         self._days_in_a_month()
         self.session_keys = {}
-        self.sort_list = 'Sort List by Distance from Site'
-        self.filter_list = 'Filter List by Region'
+        self.sort_list = 'Search by distance from target site'
+        self.filter_list = 'Search hierarchically by region'
 
     def _session_keys_init(self, feature):
         for feat in self.feats:
@@ -406,7 +406,7 @@ class ui_helpers():
         weather_data_dropdown_options = weather_data_dropdown
 
 
-        expander = st.sidebar.beta_expander(label='Advanced Search')
+        expander = st.sidebar.beta_expander(label='Weather data search')
         with expander:
             st.radio("", [self.sort_list, self.filter_list], key='filter_option', on_change=self._filter_settings_reset)
 
@@ -453,7 +453,7 @@ class ui_helpers():
                             weather_data_dropdown_options = [ d for d in weather_data_dropdown if d['region'] in st.session_state.region['pf']]   
 
         file_name = st.sidebar.selectbox(
-            'Weather Data List (Keyword Search Enabled)', 
+            'Weather Data File List (Keyword Search Enabled)', 
             weather_data_dropdown_options,
             format_func=lambda x: x['title'],
             help="A list of available weather data files"
