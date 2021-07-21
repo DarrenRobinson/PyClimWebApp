@@ -38,6 +38,10 @@ class MultiApp:
         lat, longitude, timezone = float(epw_file_headers['LOCATION'][5]), float(epw_file_headers['LOCATION'][6]), float(epw_file_headers['LOCATION'][7])
         st.sidebar.markdown("Latitude: "+str(lat)+" Longitude: "+str(longitude)+"<br>Time Zone: "+str(timezone), unsafe_allow_html=True)
         
+        
+        st.sidebar.write("---")
+
+        
         #
         # Loading sequence 3: display feature selection dropdown
         #
@@ -49,7 +53,7 @@ class MultiApp:
         #   "function": "<class 'function'>"    # app['function']
         #}
         app = st.sidebar.selectbox(
-            'Select Feature',
+            'Analysis Tools:',
             self.apps,
             format_func=lambda app: app['title']
         )
