@@ -44,6 +44,7 @@ class MultiApp:
         st.sidebar.markdown("Latitude: "+str(lat)+" Longitude: "+str(longitude)+"<br>Time Zone: "+str(timezone), unsafe_allow_html=True)
         
 
+        st.sidebar.write("---")
 
 
         #
