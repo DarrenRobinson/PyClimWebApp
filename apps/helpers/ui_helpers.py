@@ -473,6 +473,7 @@ class ui_helpers():
         weather_data_dropdown_options = weather_data_dropdown
 
 
+
         expander = st.sidebar.beta_expander(label='Weather Data Search')
         with expander:
             st.write("Search")
@@ -521,7 +522,7 @@ class ui_helpers():
                             weather_data_dropdown_options = [ d for d in weather_data_dropdown if d['region'] in st.session_state.region['pf']]   
 
         file_name = st.sidebar.selectbox(
-            'Weather Data List (Keyword Search Enabled)', 
+            'Weather Data File List (Keyword Search Enabled)', 
             weather_data_dropdown_options,
             format_func=lambda x: x['title'],
             help="A list of available weather data files"

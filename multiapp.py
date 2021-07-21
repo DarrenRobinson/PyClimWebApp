@@ -45,6 +45,7 @@ class MultiApp:
         
 
 
+
         #
         # Loading sequence 3: display feature selection dropdown
         #
@@ -56,7 +57,7 @@ class MultiApp:
         #   "function": "<class 'function'>"    # app['function']
         #}
         app = st.sidebar.selectbox(
-            'Select Feature',
+            'Analysis Tools:',
             self.apps,
             format_func=lambda app: app['title']
         )

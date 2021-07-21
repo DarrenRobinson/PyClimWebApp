@@ -9,11 +9,11 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
 
     There are two stages to the use of the PyClim Web App. 
     
-    First, a weather file needs to be selected. The is done by navigating down the hierarchy in the Advanced Search option from Region (the scale of continents) through country to state (where applicable) and then selecting the weather file from the list of those available. Alternatively, you can also search by ranking weather files based on their Euclidean distance (distance, as the crow flies) from the coordinates of your target site location (just enter the latitude and longitude), or you can directly perform a keyword search for the weather data file or city.
+    First, a weather file needs to be selected. The is done either by directly entering a filename or by performing a keyword search in the Weather Data List box, or by performing a Weather data search. This latter has two options: 1) search by distance - this ranks weather files based on their Euclidean distance (distance, as the crow flies) from the coordinates of your target site location (just enter the latitude and longitude), or 2) search hierarchically by region - this allows you to navigate down a geographical hierarchy from Region (the scale of continents) through country to state (where applicable) and then to select the weather file from the list of those available.
 
-    The second stage is to analyse the selected data using the dropdown list of Features:
+    The second stage is to analyse the selected data using the dropdown list of Analysis Tools:
 
-    -  Sunpath and Shading: this creates sunpath diagrams in stereographic projection, plotting time lines either according to solar or clock time; this latter representing the Analemma, calculated using the equation of time (EqT). You can also project shading protractors onto the diagram for a wall of specified azimuth.
+    -  Sunpath and Shading: this creates sunpath diagrams in stereographic projection, plotting time lines either according to solar or clock time; this latter representing the Analemma, calculated using the equation of time. You can also project shading protractors onto the diagram for a wall of specified azimuth.
 
     -  Solar Geometry Subplots: this is more of a pedagogical resource, to help develop students’ understanding of how solar geometry and sun position influences the cosine of the angle of incidence (CAI) on a receiving surface (e.g. a wall or a solar collector). A 3x2 grid of subplots is created: the first three plotting daily variations in declination, Equation of time and solar daylength; the latter three plotting hourly solar altitude, azimuth and cosine of the angle of incidence on the receiving surface.
 
@@ -42,7 +42,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
 
     The Web App front end was developed using Streamlit by Alvin Mok through an internship funded by the University of Sheffield, under the supervision of Reena Sayani and Darren Robinson.
 
-    We are grateful to students of the Sheffield MSc in Sustainable Architecture Studies (Anupama Rao and Elizaveta Arestova) for their constructive feedback on earlier prototypes of this App.
+    We are grateful to the following staff and students of the Sheffield School of Architecture for their constructive feedback on earlier prototypes of this App: Elizaveta Arestova, Anupama Rao, Jonathan Sykes, Parag Wate.
 
 
 
