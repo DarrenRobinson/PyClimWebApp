@@ -13,12 +13,11 @@ import numpy as np
 
 from apps.ClimAnalFunctions import *  
 
-def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
-    st.write("# "+title)
+def app(app, epw, ui_helper):
+    st.write("# "+app['title'])
     
     # Time filter helper
-    # ui_helper.session_keys_init('windrose')
-    ui_helper.time_filter('windrose')
+    ui_helper.time_filter(app['file_title'])
     
     #in the future: provide the option to plot using the Beaufort scale
 
@@ -54,10 +53,10 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
     #     file.close()
 
     #this popuates lists with the corresponding data
-    for i in range (3, len(file_list)):
-        temp_list.append(float(file_list[i][3])/TempInterval)
-        winspeed_list.append(float(file_list[i][7]))
-        windir_list.append(float(file_list[i][8]))
+    for i in range (3, len(epw.file_list)):
+        temp_list.append(float(epw.file_list[i][3])/TempInterval)
+        winspeed_list.append(float(epw.file_list[i][7]))
+        windir_list.append(float(epw.file_list[i][8]))
     
     maxspeed = int(max(winspeed_list))
     maxtemp = int(max(temp_list))
@@ -71,7 +70,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
 
     adjustment = -mintemp if mintemp > 0 else max(mintemp, -mintemp) # 1) A var is created for adjustment: temp will always start from 0 as the index number for row in tempval_list
 
-    for j in range (0,len(file_list)-3):  
+    for j in range (0,len(epw.file_list)-3):  
         sectornum = int(windir_list[j]/(360/numsectors))
         speednum=int(winspeed_list[j])
         tempnum=int(temp_list[j])

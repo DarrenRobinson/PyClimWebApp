@@ -21,16 +21,17 @@ from urllib.request import Request, urlopen
 # from branca.element import Figure
 import pydeck as pdk
 import pandas as pd
+from apps.helpers.helper import Helper
 
 
-class ui_helpers():  
+class UIHelper(Helper):  
     def __init__(self):
-        self.feats = ['psychros', 'windrose']
-        self.time_var = {'start_month': 1, 'start_day': 1, 'end_month': 12, 'end_day': 31, 'start_hour': 1, 'end_hour': 24}
+        Helper.__init__(self)
         self._days_in_a_month()
         self.session_keys = {}
         self.sort_list = 'by distance from target site:'
         self.filter_list = 'hierarchically by region:'
+        self.file_name = {}
 
     #
     # The following methods
@@ -48,17 +49,19 @@ class ui_helpers():
 
     # This method generates a set of feature-specific names e.g. psychros_start_month, windrose_start_month
     # so that the time filter stores these parameters separately for each feature in st.session_state.
-    def _session_keys_init(self, feature):
-        for feat in self.feats:
-            if feat == feature:
+    def _session_keys_init(self, selected_feature):
+        st.write(self.features)
+        for feature in self.features:
+            if feature['file_title'] == selected_feature:
                 self.session_keys = {
-                    "start_month": feat+"_start_month",
-                    "end_month": feat+"_end_month",
-                    "start_day": feat+"_start_day",
-                    "end_day": feat+"_end_day",
-                    "start_hour": feat+"_start_hour",
-                    "end_hour": feat+"_end_hour"
+                    "start_month": feature['file_title']+"_start_month",
+                    "end_month": feature['file_title']+"_end_month",
+                    "start_day": feature['file_title']+"_start_day",
+                    "end_day": feature['file_title']+"_end_day",
+                    "start_hour": feature['file_title']+"_start_hour",
+                    "end_hour": feature['file_title']+"_end_hour"
                 } 
+                
 
     # This method generates a set of number arrays for days in different months (e.g. for start and end day dropdowns)
     def _days_in_a_month(self):
@@ -220,57 +223,6 @@ class ui_helpers():
     #
 
 
-    # This method filters the data
-    def _time_filter_pipeline(self, epw_file_dataframe, op_cond, range):
-        #
-        # Operator AND is used (op_cond = True) if in dropdowns start month is before end month e.g. start: Feb, end: Nov
-        # e.g. May is valid out because it is after Feb **AND** before Nov
-        # 
-        # Operator OR is used (op_cond = False) if start month is after end month e.g. start: Nov, end: Feb, as it
-        # indicates the desired range is Jan to Feb and Nov to Dec
-        # e.g. Jan is valid because it is after Nov **OR** before Feb
-        #
-        filter_operator = operator.__and__ if op_cond else operator.__or__
-        epw_file_dataframe = epw_file_dataframe.loc[filter_operator(range[0], range[1])]
-        return epw_file_dataframe
-
-    # This method passes the required parameters (direction and range) to _time_filter_pipeline
-    def time_filter_conditions(self, epw_file_dataframe, file_title):
-        # Read the corresponding filter parameters from st.session_state according to feature (file_title)
-        time_var = self.time_var.copy()
-        for feat in self.feats:
-            if feat == file_title:
-                for var in time_var.keys():
-                    if feat+"_"+var in st.session_state:
-                        if (var == 'start_month') | (var == 'end_month'):
-                            time_var[var] = st.session_state[feat+"_"+var]['value']
-                        else:
-                            time_var[var] = st.session_state[feat+"_"+var]
-        
-        # filter by day and month
-        direction = (time_var['end_month'] > time_var['start_month']) | ((time_var['end_month'] == time_var['start_month']) & (time_var['end_day'] >= time_var['start_day']))
-        range = (
-            (
-            (epw_file_dataframe['Month'] > time_var['start_month']) | 
-            ((epw_file_dataframe['Month'] == time_var['start_month']) & (epw_file_dataframe['Day'] >= time_var['start_day']))
-            ),
-            (
-            ((epw_file_dataframe['Month'] < time_var['end_month']) | 
-            (epw_file_dataframe['Month'] == time_var['end_month']) & (epw_file_dataframe['Day'] <= time_var['end_day']))
-            )
-        )
-        epw_file_dataframe = self._time_filter_pipeline(epw_file_dataframe, direction, range)
-        
-        # filter by hour
-        direction = (time_var['end_hour'] >= time_var['start_hour'])
-        range = (
-            (epw_file_dataframe['Hour'] >= time_var['start_hour']),
-            (epw_file_dataframe['Hour'] <= time_var['end_hour'])       
-        )
-        epw_file_dataframe = self._time_filter_pipeline(epw_file_dataframe, direction, range)
-
-        return epw_file_dataframe
-
     def is_filter_applied(self, feat):
         for var in self.time_var.keys():
             if feat+"_"+var in st.session_state:
@@ -377,10 +329,9 @@ class ui_helpers():
             if st.session_state.filter_option == self.sort_list:
                 df = self._sort_list_by_distance(df)
             elif st.session_state.filter_option == self.filter_list:
-                df = df.sort_values([5, 6])
+                df = df.sort_values([5, 6, 7])
         else:
             df = self._sort_list_by_distance(df)
-
         return df
 
 
@@ -521,14 +472,14 @@ class ui_helpers():
                         else:
                             weather_data_dropdown_options = [ d for d in weather_data_dropdown if d['region'] in st.session_state.region['pf']]   
 
-        file_name = st.sidebar.selectbox(
+        self.file_name = st.sidebar.selectbox(
             'Weather Data File List (Keyword Search Enabled)', 
             weather_data_dropdown_options,
             format_func=lambda x: x['title'],
             help="A list of available weather data files"
         )      
 
-        return file_name
+        return self.file_name
 
 
 

@@ -21,12 +21,25 @@ import numpy as np
 
 from apps.ClimAnalFunctions import * 
 
-def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, daynum_list, hour_range, filter_applied):
-    st.write("# "+title)
+def app(app, epw, ui):
+    st.write("# "+app['title'])
+
+       
+    filter_applied = ui.is_filter_applied(app['file_title'])
+    daynum_list = [31,28,31,30,31,30,31,31,30,31,30,31]     # Default values if dataset is not filtered
+    hour_range = 25                                         # Default values if dataset is not filtered
+    if filter_applied:
+        # Calculate number of days each month if dataset is filtered
+        for i in range (1,13):
+            daynum_list[i-1] = len(epw.dataframe[epw.dataframe['Month'] == i]['Day'].unique()) 
+        # Calculate number of hours daily if dataset is filtered
+        hour_range = (st.session_state.psychros_end_hour-st.session_state.psychros_start_hour+2) if (st.session_state.psychros_end_hour >= st.session_state.psychros_start_hour) else ((24-st.session_state.psychros_start_hour)+(st.session_state.psychros_end_hour-1)+2)
+
+
+
 
     # Time filter
-    # ui_helper.session_keys_init('psychros')
-    ui_helper.time_filter('psychros')
+    ui.time_filter(app['file_title'])
 
     # colour = st.sidebar.color_picker(color_picker_label, value='#0C791A', help="By default when applying filters, all data should be plotted in the same colour")
     colour = '#0C791A'
@@ -39,8 +52,8 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, daynum
     PlotMonthly = st.sidebar.checkbox("Plot Monthly", value=True, help="If FALSE then there is no distinction between data points for different months")
     PlotEvapCool = st.sidebar.checkbox("PlotEvapCool", value=True, help="Efficiency of the evaporative cooling process")
     
-    min_temp = min(np.array(file_list[3:])[:,3])
-    # max_temp = max(np.array(file_list[3:])[:,3])
+    min_temp = min(np.array(epw.file_list[3:])[:,3])
+    # max_temp = max(np.array(epw.file_list[3:])[:,3])
 
     LLdbt = st.sidebar.number_input("LLdbt", min_value=float(min_temp), value=25.0, step=0.5, help="Temperature above which data points are shifted to mimic evaporative cooling") #lower limit of temperature: above which data is shifted
     MartinezLimit = True
@@ -58,15 +71,15 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, daynum
     #     for line in file:
     #         line = line.rstrip('\n')
     #         line = line.split(',')
-    #         file_list.append(line)
+    #         epw.file_list.append(line)
     #         numhours=numhours+1
     #     file.close()
-    numhours = len(file_list)
+    numhours = len(epw.file_list)
 
     #this popuates lists with the corresponding data
-    for i in range (3, len(file_list)):
-        temp_list.append(float(file_list[i][3]))
-        rh_list.append(float(file_list[i][4]))
+    for i in range (3, len(epw.file_list)):
+        temp_list.append(float(epw.file_list[i][3]))
+        rh_list.append(float(epw.file_list[i][4]))
 
     #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
     #NOW: CREATE THE PSYCHROMETRIC CHART
@@ -169,7 +182,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, daynum
 
     # plt.show()
     st.pyplot(fig)
-    st.write(ui_helper.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
     if PlotEvapCool == True:
         
@@ -256,4 +269,4 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, daynum
         # plt.show()
         st.pyplot(fig)
 
-        st.write(ui_helper.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+        st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)

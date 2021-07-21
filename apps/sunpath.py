@@ -16,11 +16,12 @@ import numpy as np
 
 from apps.ClimAnalFunctions import * 
 
-def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
+def app(app, epw, ui_helper):
 
-    st.write("# "+title)
+    st.write("# "+app['title'])
+
     
-    lat = st.sidebar.number_input('Latitude', -90.0, 90.0, lat)
+    lat = st.sidebar.number_input('Latitude', -90.0, 90.0, epw.lat)
     lat = lat * pi / 180    
     AzimuthIncrement = st.sidebar.slider('Azimuth Increment', 1, 45, 10)
     HorizontalProtractor = st.sidebar.checkbox("Horizontal Protractor", value=False)

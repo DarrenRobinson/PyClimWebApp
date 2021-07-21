@@ -18,9 +18,10 @@ import numpy as np
 
 from apps.ClimAnalFunctions import * 
 
-def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timeshift=timeshift):
+def app(app, epw, ui_helper, timeshift=timeshift):
 
-    st.write("# "+title)
+    st.write("# "+app['title'])
+
 
     globaleff = False
     daynum_list = []
@@ -63,7 +64,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
     AnnualIgh=0
     DiffuseFraction=0
 
-    lat = lat * pi / 180
+    lat = epw.lat * pi / 180
 
     # numhours = len(file_list)
     # numhours=0
@@ -76,13 +77,13 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
     #     file.close()
 
     #this popuates lists with the corresponding data
-    for h in range (3, len(file_list)):
-        temp_list.append(float(file_list[h][3]))
-        rh_list.append(float(file_list[h][4]))
-        global_list.append(float(file_list[h][5]))
-        diffuse_list.append(float(file_list[h][6]))
-        winspeed_list.append(float(file_list[h][7]))
-        windir_list.append(float(file_list[h][8]))
+    for h in range (3, len(epw.file_list)):
+        temp_list.append(float(epw.file_list[h][3]))
+        rh_list.append(float(epw.file_list[h][4]))
+        global_list.append(float(epw.file_list[h][5]))
+        diffuse_list.append(float(epw.file_list[h][6]))
+        winspeed_list.append(float(epw.file_list[h][7]))
+        windir_list.append(float(epw.file_list[h][8]))
 
     daynum_list = [31,28,31,30,31,30,31,31,30,31,30,31] 
     AnnualIgh = sum(global_list)/1000
@@ -104,7 +105,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
             day_list.append(cumday)
             dec_list.append(declin_angle(cumday))
             SStime, SRtime = sunrise_time(dec_list[cumday-1],lat,cumday)
-            dT = time_diff(cumday,True,longitude,timezone,timeshift)
+            dT = time_diff(cumday,True,epw.longitude,epw.timezone,timeshift)
             SStime_list.append(min(24,SStime+dT))
             SRtime_list.append(max(1,SRtime+dT))
             for k in range(1,25):

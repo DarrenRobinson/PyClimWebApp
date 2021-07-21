@@ -23,11 +23,12 @@ import numpy as np
 
 from apps.ClimAnalFunctions import * 
 
-def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timeshift=timeshift):
+def app(app, epw, ui_helper, timeshift=timeshift):
 
-    st.write("# "+title)
+    st.write("# "+app['title'])
+
     # ui_helper = ui_helpers()
-    lat = st.sidebar.number_input('Latitude', -90.0, 90.0, lat, help="Whilst these charts can be informed by climate data (global coordinates), they can also be generated independently here manually")
+    lat = st.sidebar.number_input('Latitude', -90.0, 90.0, epw.lat, help="Whilst these charts can be informed by climate data (global coordinates), they can also be generated independently here manually")
     lat = lat * pi / 180
     DayChoice = st.sidebar.slider('Julian Day Number', 1, 365, 172)
     wallaz = st.sidebar.slider("WallAz", 0, 359, 180, help="This is the orientation of the wall: receiving surface")
@@ -45,7 +46,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
     solaz_list = []
     timediff_list = []
     cai_list = []
-    file_list = []
+    # file_list = []
     global_list = []
     diffuse_list = []
     day_global_list = []
@@ -82,7 +83,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
         day_list.append(i)
         dec_list.append(declin_angle(i))
         daylength_list.append(daylength(dec_list[i-1],lat))
-        timediff_list.append(time_diff(i, EqTonly, longitude, timezone, timeshift))
+        timediff_list.append(time_diff(i, EqTonly, epw.longitude, epw.timezone, timeshift))
 
         if i == DayChoice:
         #this loop populates lists for daynuber, solar altitude and solar azimuth for a user-defined day

@@ -25,9 +25,9 @@ from apps.ClimAnalFunctions import *
 #FACTOR FOR CUTS THROUGH PATCHES FROM A PROGRESSIVELY TILTED PLANE. 
 ##########################################################################################
 
-def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timeshift=timeshift, groundref=groundref):
+def app(app, epw, ui_helper, timeshift=timeshift, groundref=groundref):
     
-    st.write("# "+title)
+    st.write("# "+app['title'])
 
     DiffuseOnly = st.sidebar.checkbox("DiffuseOnly", value=False, help="If TRUE then only diffuse irradiation is calculated; otherwise direct is also included")
     isotropic = st.sidebar.checkbox("isotropic", value=False, help="If TRUE then simpler calculations are used for an isotropic sky")
@@ -58,7 +58,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
     #     file.close()
 
     #This is to access the headers from the epw file
-    lat = lat * pi / 180
+    lat = epw.lat * pi / 180
     groundref = st.sidebar.number_input("groundref", 0.0, 1.0, groundref, 0.5)
     timeshift = st.sidebar.slider("Timeshift", -0.5, 0.5, timeshift, 0.5, help="This is to handle timing conventions relating to climate data collection")
 
@@ -66,9 +66,9 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
 
 
     #this popuates global and diffuse lists with the corresponding solar data
-    for i in range (3,len(file_list)):
-        global_list.append(float(file_list[i][5]))
-        diffuse_list.append(float(file_list[i][6]))
+    for i in range (3,len(epw.file_list)):
+        global_list.append(float(epw.file_list[i][5]))
+        diffuse_list.append(float(epw.file_list[i][6]))
 
     #This is where the daily and hourly solar quantities are calculated
     for tilt in range(0,95,10):
@@ -77,7 +77,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
                 if FirstSweep == True: #no need to re-calculate sun-positions
                     day_list.append(i)
                     dec_list.append(declin_angle(i))
-                    timediff_list.append(time_diff(i,False,longitude,timezone,timeshift))
+                    timediff_list.append(time_diff(i,False,epw.longitude,epw.timezone,timeshift))
                     #This populates a list of daily SR, SS times, for the solar availability plots
                 for j in range(1,25):
                     cumhour=cumhour+1
