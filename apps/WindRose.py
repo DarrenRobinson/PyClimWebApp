@@ -7,18 +7,16 @@
 
 #THIS MODULE SIMPLY CREATES A POLAR WIND ROSE PLOT.
 import streamlit as st
-import math
 import matplotlib.pyplot as plt
 import numpy as np
 
 from apps.ClimAnalFunctions import *  
 
-def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
-    st.write("# "+title)
+def app(app, epw, ui):
+    st.write("# "+app['title'])
     
     # Time filter helper
-    # ui_helper.session_keys_init('windrose')
-    ui_helper.time_filter('windrose')
+    ui.time_filter(app['file_title'])
     
     #in the future: provide the option to plot using the Beaufort scale
 
@@ -54,11 +52,14 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
     #     file.close()
 
     #this popuates lists with the corresponding data
-    for i in range (3, len(file_list)):
-        temp_list.append(float(file_list[i][3])/TempInterval)
-        winspeed_list.append(float(file_list[i][7]))
-        windir_list.append(float(file_list[i][8]))
-    
+    # for i in range (3, len(epw.file_list)):
+    #     temp_list.append(float(epw.file_list[i][3])/TempInterval)
+    #     winspeed_list.append(float(epw.file_list[i][7]))
+    #     windir_list.append(float(epw.file_list[i][8]))
+    temp_list = epw.dataframe['Dry Bulb Temperature'].values.tolist()
+    winspeed_list = epw.dataframe['Wind Speed'].values.tolist()
+    windir_list = epw.dataframe['Wind Direction'].values.tolist()
+
     maxspeed = int(max(winspeed_list))
     maxtemp = int(max(temp_list))
     mintemp = int(min(temp_list))
@@ -71,7 +72,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
 
     adjustment = -mintemp if mintemp > 0 else max(mintemp, -mintemp) # 1) A var is created for adjustment: temp will always start from 0 as the index number for row in tempval_list
 
-    for j in range (0,len(file_list)-3):  
+    for j in range (0,len(epw.dataframe)):  
         sectornum = int(windir_list[j]/(360/numsectors))
         speednum=int(winspeed_list[j])
         tempnum=int(temp_list[j])
@@ -127,4 +128,4 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
     # plt.show()
     st.pyplot(fig)
     fig_title = 'Wind Rose'
-    st.write(ui_helper.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)

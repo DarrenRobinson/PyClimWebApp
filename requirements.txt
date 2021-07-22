@@ -1,5 +1,6 @@
 matplotlib==3.2.2
-pydeck==0.6.2
 pandas==1.0.5
-streamlit==0.84.1
+psutil==5.7.0
+pydeck==0.6.2
 numpy==1.18.5
+streamlit==0.84.1

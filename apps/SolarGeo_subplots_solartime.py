@@ -17,24 +17,21 @@
 
 #imports the basic libraries
 import streamlit as st
-import math
 import matplotlib.pyplot as plt
-import numpy as np
 
 from apps.ClimAnalFunctions import * 
 
-def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timeshift=timeshift):
+def app(app, epw, ui, timeshift=timeshift):
+    st.write("# "+app['title'])
 
-    st.write("# "+title)
-    # ui_helper = ui_helpers()
-    lat = st.sidebar.number_input('Latitude', -90.0, 90.0, lat, help="Whilst these charts can be informed by climate data (global coordinates), they can also be generated independently here manually")
+    lat = st.sidebar.number_input('Latitude', -90.0, 90.0, epw.lat, help="Whilst these charts can be informed by climate data (global coordinates), they can also be generated independently here manually")
     lat = lat * pi / 180
     DayChoice = st.sidebar.slider('Julian Day Number', 1, 365, 172)
     wallaz = st.sidebar.slider("WallAz", 0, 359, 180, help="This is the orientation of the wall: receiving surface")
     wallaz = wallaz * pi /180
     tilt = st.sidebar.slider("Tilt", 0, 179, 90, help="This is the tilt of the wall: receiving surface (0 is flat facing up, 179 is flat almost facing down)")
     tilt = tilt * pi / 180
-    isotropic = True
+    # isotropic = True
     EqTonly=False #this is a switch that corrects for longitude difference when finding the sun position
     #groundref=0.2
 
@@ -45,12 +42,12 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
     solaz_list = []
     timediff_list = []
     cai_list = []
-    file_list = []
-    global_list = []
-    diffuse_list = []
-    day_global_list = []
-    day_diffuse_list = []
-    igbeta_list = []
+    # file_list = []
+    # global_list = []
+    # diffuse_list = []
+    # day_global_list = []
+    # day_diffuse_list = []
+    # igbeta_list = []
     daylength_list = []
 
 
@@ -82,7 +79,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
         day_list.append(i)
         dec_list.append(declin_angle(i))
         daylength_list.append(daylength(dec_list[i-1],lat))
-        timediff_list.append(time_diff(i, EqTonly, longitude, timezone, timeshift))
+        timediff_list.append(time_diff(i, EqTonly, epw.longitude, epw.timezone, timeshift))
 
         if i == DayChoice:
         #this loop populates lists for daynuber, solar altitude and solar azimuth for a user-defined day
@@ -148,5 +145,5 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
     # plt.show()
     st.pyplot(fig)
     fig_title = 'Solar Geometry Subplots'
-    st.write(ui_helper.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
     

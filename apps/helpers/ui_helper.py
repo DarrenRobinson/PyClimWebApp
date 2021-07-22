@@ -1,36 +1,26 @@
-# general naming convention:
-# func(): methods to be called by user
-# _func(): assisting methods called by system
-
-
 import streamlit as st
 import math
-# from numpy.lib.function_base import corrcoef
-# import tempfile
 import pandas as pd
-import operator
-# import io
-# from PIL import Image
 from io import BytesIO
 import base64
 import json
 import re
 from urllib.request import Request, urlopen
-# from streamlit_folium import folium_static
-# import folium
-# from branca.element import Figure
 import pydeck as pdk
 import pandas as pd
+from apps.helpers.helper import Helper
 
-
-class ui_helpers():  
+# General naming convention:
+# func(): methods to be called by user
+# _func(): assisting methods called by system
+class UIHelper(Helper):  
     def __init__(self):
-        self.feats = ['psychros', 'windrose']
-        self.time_var = {'start_month': 1, 'start_day': 1, 'end_month': 12, 'end_day': 31, 'start_hour': 1, 'end_hour': 24}
+        Helper.__init__(self)
         self._days_in_a_month()
         self.session_keys = {}
         self.sort_list = 'by distance from target site:'
         self.filter_list = 'hierarchically by region:'
+        self.file_name = {}
 
     #
     # The following methods
@@ -45,20 +35,20 @@ class ui_helpers():
     # are used for displaying the time filter panel in psychros and WindRose
     #
 
-
     # This method generates a set of feature-specific names e.g. psychros_start_month, windrose_start_month
     # so that the time filter stores these parameters separately for each feature in st.session_state.
-    def _session_keys_init(self, feature):
-        for feat in self.feats:
-            if feat == feature:
+    def _session_keys_init(self, selected_feature):
+        for feature in self.features:
+            if feature['file_title'] == selected_feature:
                 self.session_keys = {
-                    "start_month": feat+"_start_month",
-                    "end_month": feat+"_end_month",
-                    "start_day": feat+"_start_day",
-                    "end_day": feat+"_end_day",
-                    "start_hour": feat+"_start_hour",
-                    "end_hour": feat+"_end_hour"
+                    "start_month": feature['file_title']+"_start_month",
+                    "end_month": feature['file_title']+"_end_month",
+                    "start_day": feature['file_title']+"_start_day",
+                    "end_day": feature['file_title']+"_end_day",
+                    "start_hour": feature['file_title']+"_start_hour",
+                    "end_hour": feature['file_title']+"_end_hour"
                 } 
+                
 
     # This method generates a set of number arrays for days in different months (e.g. for start and end day dropdowns)
     def _days_in_a_month(self):
@@ -209,68 +199,9 @@ class ui_helpers():
                 months[-1]['title']
             )
 
-    #
-    # The following methods
-    # (
-    # _time_filter_pipeline, 
-    # time_filter_conditions, 
-    # is_filter_applied
-    # )
-    # are used for filtering the data as per user input
-    #
 
 
-    # This method filters the data
-    def _time_filter_pipeline(self, epw_file_dataframe, op_cond, range):
-        #
-        # Operator AND is used (op_cond = True) if in dropdowns start month is before end month e.g. start: Feb, end: Nov
-        # e.g. May is valid out because it is after Feb **AND** before Nov
-        # 
-        # Operator OR is used (op_cond = False) if start month is after end month e.g. start: Nov, end: Feb, as it
-        # indicates the desired range is Jan to Feb and Nov to Dec
-        # e.g. Jan is valid because it is after Nov **OR** before Feb
-        #
-        filter_operator = operator.__and__ if op_cond else operator.__or__
-        epw_file_dataframe = epw_file_dataframe.loc[filter_operator(range[0], range[1])]
-        return epw_file_dataframe
-
-    # This method passes the required parameters (direction and range) to _time_filter_pipeline
-    def time_filter_conditions(self, epw_file_dataframe, file_title):
-        # Read the corresponding filter parameters from st.session_state according to feature (file_title)
-        time_var = self.time_var.copy()
-        for feat in self.feats:
-            if feat == file_title:
-                for var in time_var.keys():
-                    if feat+"_"+var in st.session_state:
-                        if (var == 'start_month') | (var == 'end_month'):
-                            time_var[var] = st.session_state[feat+"_"+var]['value']
-                        else:
-                            time_var[var] = st.session_state[feat+"_"+var]
-        
-        # filter by day and month
-        direction = (time_var['end_month'] > time_var['start_month']) | ((time_var['end_month'] == time_var['start_month']) & (time_var['end_day'] >= time_var['start_day']))
-        range = (
-            (
-            (epw_file_dataframe['Month'] > time_var['start_month']) | 
-            ((epw_file_dataframe['Month'] == time_var['start_month']) & (epw_file_dataframe['Day'] >= time_var['start_day']))
-            ),
-            (
-            ((epw_file_dataframe['Month'] < time_var['end_month']) | 
-            (epw_file_dataframe['Month'] == time_var['end_month']) & (epw_file_dataframe['Day'] <= time_var['end_day']))
-            )
-        )
-        epw_file_dataframe = self._time_filter_pipeline(epw_file_dataframe, direction, range)
-        
-        # filter by hour
-        direction = (time_var['end_hour'] >= time_var['start_hour'])
-        range = (
-            (epw_file_dataframe['Hour'] >= time_var['start_hour']),
-            (epw_file_dataframe['Hour'] <= time_var['end_hour'])       
-        )
-        epw_file_dataframe = self._time_filter_pipeline(epw_file_dataframe, direction, range)
-
-        return epw_file_dataframe
-
+    # This method helps with display decisions. It checks if any time filter parameters i.e. month, day & hour are different from default.
     def is_filter_applied(self, feat):
         for var in self.time_var.keys():
             if feat+"_"+var in st.session_state:
@@ -377,10 +308,9 @@ class ui_helpers():
             if st.session_state.filter_option == self.sort_list:
                 df = self._sort_list_by_distance(df)
             elif st.session_state.filter_option == self.filter_list:
-                df = df.sort_values([5, 6])
+                df = df.sort_values([5, 6, 7])
         else:
             df = self._sort_list_by_distance(df)
-
         return df
 
 
@@ -521,50 +451,51 @@ class ui_helpers():
                         else:
                             weather_data_dropdown_options = [ d for d in weather_data_dropdown if d['region'] in st.session_state.region['pf']]   
 
-        file_name = st.sidebar.selectbox(
+        self.file_name = st.sidebar.selectbox(
             'Weather Data File List (Keyword Search Enabled)', 
             weather_data_dropdown_options,
             format_func=lambda x: x['title'],
             help="A list of available weather data files"
         )      
 
-        return file_name
+        return self.file_name
 
 
 
     # This method is under construction. Currently when it's called, it outputs a map pinpointing selections in weather data file list
-    def map_viewer(self):
-        data = self._get_db()
-        coordinates = []
-        for location in data['features']:
-            # for file_type in ['epw']:
-            #     match = re.search(r'href=[\'"]?([^\'" >]+)', location['properties'][file_type])
-            #     if match:
-            #         url = match.group(1)
-            #         urls = []
-            #         urls.append(url)
-            #         url_str = url.split('/')
-            #         url_str += urls
-            # url_str += location['geometry']['coordinates']        
-            coordinates.append(location['geometry']['coordinates'])   
-        df = pd.DataFrame(coordinates)
-        df = df.rename(columns={0: 'Longitude', 1: 'Latitude'})
-        df = df[:11]
-        layer = pdk.Layer(
-            "ScatterplotLayer",
-            df,
-            pickable=True,
-            opacity=0.8,
-            filled=True,
-            radius_scale=2,
-            radius_min_pixels=10,
-            radius_max_pixels=5,
-            line_width_min_pixels=0.01,
-            get_position='[Longitude, Latitude]',
-            get_fill_color=[255, 0, 0],
-            get_line_color=[0, 0, 0],
-        )
-        view_state = pdk.ViewState(latitude=df['Latitude'].iloc[0], longitude=df['Longitude'].iloc[0], zoom=1, min_zoom= 1, max_zoom=30, height=100)
-        r = pdk.Deck(layers=[layer], map_style='mapbox://styles/mapbox/streets-v11', initial_view_state=view_state, tooltip={"html": "<b>Longitude: </b> {Longitude} <br /> " "<b>Latitude: </b>{Latitude} <br /> "})
+    # It is commented out as it's currently unused
+    # def map_viewer(self):
+    #     data = self._get_db()
+    #     coordinates = []
+    #     for location in data['features']:
+    #         # for file_type in ['epw']:
+    #         #     match = re.search(r'href=[\'"]?([^\'" >]+)', location['properties'][file_type])
+    #         #     if match:
+    #         #         url = match.group(1)
+    #         #         urls = []
+    #         #         urls.append(url)
+    #         #         url_str = url.split('/')
+    #         #         url_str += urls
+    #         # url_str += location['geometry']['coordinates']        
+    #         coordinates.append(location['geometry']['coordinates'])   
+    #     df = pd.DataFrame(coordinates)
+    #     df = df.rename(columns={0: 'Longitude', 1: 'Latitude'})
+    #     df = df[:11]
+    #     layer = pdk.Layer(
+    #         "ScatterplotLayer",
+    #         df,
+    #         pickable=True,
+    #         opacity=0.8,
+    #         filled=True,
+    #         radius_scale=2,
+    #         radius_min_pixels=10,
+    #         radius_max_pixels=5,
+    #         line_width_min_pixels=0.01,
+    #         get_position='[Longitude, Latitude]',
+    #         get_fill_color=[255, 0, 0],
+    #         get_line_color=[0, 0, 0],
+    #     )
+    #     view_state = pdk.ViewState(latitude=df['Latitude'].iloc[0], longitude=df['Longitude'].iloc[0], zoom=1, min_zoom= 1, max_zoom=30, height=100)
+    #     r = pdk.Deck(layers=[layer], map_style='mapbox://styles/mapbox/streets-v11', initial_view_state=view_state, tooltip={"html": "<b>Longitude: </b> {Longitude} <br /> " "<b>Latitude: </b>{Latitude} <br /> "})
                             
-        st.sidebar.pydeck_chart(r)
+    #     st.sidebar.pydeck_chart(r)

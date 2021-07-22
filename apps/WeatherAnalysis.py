@@ -18,26 +18,25 @@ import numpy as np
 
 from apps.ClimAnalFunctions import * 
 
-def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timeshift=timeshift):
-
-    st.write("# "+title)
+def app(app, epw, ui, timeshift=timeshift):
+    st.write("# "+app['title'])
 
     globaleff = False
     daynum_list = []
     # file_list = []
-    temp_list = []
+    # temp_list = []
     dailymeantemp_list = []
-    rh_list = []
-    global_list = []
-    diffuse_list = []
-    winspeed_list= []
-    windir_list = []
+    # rh_list = []
+    # global_list = []
+    # diffuse_list = []
+    # winspeed_list= []
+    # windir_list = []
     temp_matrix = []
     winspeed_matrix = []
     tground_matrix=[]
     depth_list = []
     Colour_list = []
-    Month_list=[]
+    # Month_list=[]
     daytempprofile = []
     Diurnal_matrix = []
     rh_matrix = []
@@ -63,7 +62,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
     AnnualIgh=0
     DiffuseFraction=0
 
-    lat = lat * pi / 180
+    lat = epw.lat * pi / 180
 
     # numhours = len(file_list)
     # numhours=0
@@ -75,14 +74,22 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
     #         numhours=numhours+1
     #     file.close()
 
+ 
     #this popuates lists with the corresponding data
-    for h in range (3, len(file_list)):
-        temp_list.append(float(file_list[h][3]))
-        rh_list.append(float(file_list[h][4]))
-        global_list.append(float(file_list[h][5]))
-        diffuse_list.append(float(file_list[h][6]))
-        winspeed_list.append(float(file_list[h][7]))
-        windir_list.append(float(file_list[h][8]))
+    # for h in range (3, len(epw.file_list)):
+    #     temp_list.append(float(epw.file_list[h][3]))
+    #     rh_list.append(float(epw.file_list[h][4]))
+    #     global_list.append(float(epw.file_list[h][5]))
+    #     diffuse_list.append(float(epw.file_list[h][6]))
+    #     winspeed_list.append(float(epw.file_list[h][7]))
+    #     windir_list.append(float(epw.file_list[h][8]))
+
+    temp_list = epw.dataframe['Dry Bulb Temperature'].values.tolist()
+    rh_list = epw.dataframe['Relative Humidity'].values.tolist()
+    global_list = epw.dataframe['Global Horizontal Radiation'].values.tolist()
+    diffuse_list = epw.dataframe['Diffuse Horizontal Radiation'].values.tolist()
+    winspeed_list = epw.dataframe['Wind Speed'].values.tolist()
+    windir_list = epw.dataframe['Wind Direction'].values.tolist()
 
     daynum_list = [31,28,31,30,31,30,31,31,30,31,30,31] 
     AnnualIgh = sum(global_list)/1000
@@ -90,7 +97,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
 
     cumday=0
     annualmeantemp=0
-    meandaytemp=0
+    # meandaytemp=0
     MonthlyHDD_list = [0 for i in range(0,12)]
     MonthlyCDD_list = [0 for i in range(0,12)]
     for i in range(1,13):
@@ -104,7 +111,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
             day_list.append(cumday)
             dec_list.append(declin_angle(cumday))
             SStime, SRtime = sunrise_time(dec_list[cumday-1],lat,cumday)
-            dT = time_diff(cumday,True,longitude,timezone,timeshift)
+            dT = time_diff(cumday,True,epw.longitude,epw.timezone,timeshift)
             SStime_list.append(min(24,SStime+dT))
             SRtime_list.append(max(1,SRtime+dT))
             for k in range(1,25):
@@ -176,16 +183,14 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
     plt.ylabel('depth below surface, m')
 
     plt.ylim(0,20)
-
     plt.ylim(plt.ylim()[::-1])
 
-    plt.legend(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
+    plt.legend(Month_list)
     # plt.show()
     st.pyplot(fig)
-    st.write(ui_helper.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
     tground_matrix.clear()
-
 
     #this plots histograms:
     fig,ax = plt.subplots(1,1, figsize = (12,6), tight_layout=True)
@@ -207,7 +212,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
 
     # plt.show()
     st.pyplot(fig)
-    st.write(ui_helper.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
     temp_list.clear()
 
@@ -229,7 +234,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
 
     # plt.show()
     st.pyplot(fig)
-    st.write(ui_helper.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
     winspeed_list.clear()
 
@@ -245,7 +250,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
 
     # plt.show()
     st.pyplot(fig)
-    st.write(ui_helper.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
 
     #plots a degree-day histograms
@@ -262,7 +267,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
     plt.legend((y1[0],y2[0]), ('Heating', 'Cooling'), loc='best')
     # plt.show()
     st.pyplot(fig)
-    st.write(ui_helper.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
 
     #this plots violin plots:
@@ -296,7 +301,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
     # plt.show()
     st.pyplot(fig)
     fig_title = 'Violin Plots'
-    st.write(ui_helper.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
     temp_matrix.clear()
     winspeed_matrix.clear()
@@ -325,7 +330,7 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
     plt.plot(day_list, SStime_list,c='red')    
     # plt.show()
     st.pyplot(fig)
-    st.write(ui_helper.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
     
     global_list.clear()
 
@@ -353,6 +358,6 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone, timesh
     plt.plot(day_list, SStime_list,c='red')    
     # plt.show()
     st.pyplot(fig)
-    st.write(ui_helper.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
     illuminance_list.clear()

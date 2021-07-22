@@ -12,15 +12,13 @@
 import streamlit as st
 import math
 import matplotlib.pyplot as plt
-import numpy as np
 
 from apps.ClimAnalFunctions import * 
 
-def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
+def app(app, epw, ui):
+    st.write("# "+app['title'])
 
-    st.write("# "+title)
-    
-    lat = st.sidebar.number_input('Latitude', -90.0, 90.0, lat)
+    lat = st.sidebar.number_input('Latitude', -90.0, 90.0, epw.lat)
     lat = lat * pi / 180    
     AzimuthIncrement = st.sidebar.slider('Azimuth Increment', 1, 45, 10)
     HorizontalProtractor = st.sidebar.checkbox("Horizontal Protractor", value=False)
@@ -173,6 +171,6 @@ def app(file_name, title, ui_helper, file_list, lat, longitude, timezone):
     plt.tight_layout()
     # plt.show()
     st.pyplot(fig)
-    st.write(ui_helper.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
 
