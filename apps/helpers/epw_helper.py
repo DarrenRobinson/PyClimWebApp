@@ -205,7 +205,7 @@ class EPWHelper(Helper):
             (self.dataframe['Hour'] <= time_var['end_hour'])       
         )
         self.dataframe = self._epw_filter_pipeline(direction, range)
-
+        
         return self.dataframe
 
     # This method filters the data
