@@ -35,7 +35,7 @@ def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
     globalirradbeta=0
     day_list = []
     dec_list = []
-    hour_list = []
+    # hour_list = []
     solalt_list = []
     solaz_list = []
     timediff_list = []
@@ -43,8 +43,8 @@ def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
     # file_list = []
     global_list = []
     diffuse_list = []
-    day_global_list = []
-    day_diffuse_list = []
+    # day_global_list = []
+    # day_diffuse_list = []
     igbeta_list = []
     annualirrad_list = []
 
@@ -61,8 +61,6 @@ def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
     timeshift = st.sidebar.slider("Timeshift", -0.5, 0.5, timeshift, 0.5, help="This is to handle timing conventions relating to climate data collection")
 
     #this popuates global and diffuse lists with the corresponding solar data
-
-
 
     # for i in range (3,len(epw.file_list)):
     #     global_list.append(float(epw.file_list[i][5]))

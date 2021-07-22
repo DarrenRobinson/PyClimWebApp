@@ -18,7 +18,18 @@ class EPWHelper(Helper):
         self.lat = None
         self.longitude = None
         self.timezone = None  
-        self.file_list = []    
+        self.file_list = []  
+
+    # This is the method (along with its subequent assisting methods) to read the epw file
+    def read_epw_f(self, url):
+        name = url[url.rfind('/') + 1:]                                         # Extract filename out of url
+        response = Request(url, headers={'User-Agent' : "Magic Browser"})     
+        with tempfile.TemporaryDirectory() as tmpdirname:                       # temp folder for storing the file during extraction
+            with open(tmpdirname + name, 'wb') as f:
+                f.write(urlopen(response).read())
+                self._read(tmpdirname+name)                                     # read file
+                f.close()
+        return self.dataframe, self.headers
     
     def _read(self,fp):
         self.headers=self._read_headers(fp)
@@ -85,6 +96,7 @@ class EPWHelper(Helper):
                        names=names,
         )
 
+        # extract only the useful columns
         df = df[
             [
             # 'Year',
@@ -124,7 +136,6 @@ class EPWHelper(Helper):
             # 'Liquid Precipitation Quantity'
             ]
         ]
-
         return df
         
     def _first_row_with_climate_data(self,fp):
@@ -136,53 +147,30 @@ class EPWHelper(Helper):
         return i 
     
 
-    # This method is called in loading sequence 2, app.run(), app.py, to read the selected weather data file from EnergyPlus
-    def read_epw_f(self, url):
-        name = url[url.rfind('/') + 1:]                                         # Extract filename out of url
-        response = Request(url, headers={'User-Agent' : "Magic Browser"})     
-        with tempfile.TemporaryDirectory() as tmpdirname:                       # temp folder for storing the file during extraction
-            with open(tmpdirname + name, 'wb') as f:
-                f.write(urlopen(response).read())
-                self._read(tmpdirname+name)                                     # read file
-                f.close()
-        return self.dataframe, self.headers
 
-    # This method is called in loading sequence 4, app.run(), app.py, to convert the weather data file dataframe to list
-    def epw_to_file_list(self):
-        # Add the first 3 rows of headings (optional(?) implemented to bridge the workflow of backend script)
-        self.file_list.extend(
-            [
-                [self.headers['LOCATION'][0], ' -', self.headers['LOCATION'][2], self.headers['LOCATION'][5], self.headers['LOCATION'][6], self.headers['LOCATION'][7]], 
-                ['month', 'day', 'hour', 'Dry Bulb Temp', 'Rel Humidity', 'Global Horiz Rad', 'Diffuse Rad', 'Wind Speed', 'Wind Direction', ''], 
-                [' ', ' ', ' ', 'degrees C', 'percent', '(Wh/sq.m)', '(Wh/sq.m)', 'ms', 'degrees', '']
-            ]
-        )
-        # This is where the unwanted columns in the dataframe gets filtered out. 
-        self.file_list.extend(
-            self.dataframe[
-                ['Month', 'Day', 'Hour', 'Dry Bulb Temperature', 'Relative Humidity', 'Global Horizontal Radiation', 'Diffuse Horizontal Radiation', 'Wind Speed', 'Wind Direction']
-            ].values.tolist()
-        )
+
+    # This method is called in loading sequence 4, app.run(), app.py, to convert the weather data file dataframe to list.
+    # It is currently of no use so it's commented
+    # def epw_to_file_list(self):
+    #     # Add the first 3 rows of headings (optional(?) implemented to bridge the workflow of backend script)
+    #     self.file_list.extend(
+    #         [
+    #             [self.headers['LOCATION'][0], ' -', self.headers['LOCATION'][2], self.headers['LOCATION'][5], self.headers['LOCATION'][6], self.headers['LOCATION'][7]], 
+    #             ['month', 'day', 'hour', 'Dry Bulb Temp', 'Rel Humidity', 'Global Horiz Rad', 'Diffuse Rad', 'Wind Speed', 'Wind Direction', ''], 
+    #             [' ', ' ', ' ', 'degrees C', 'percent', '(Wh/sq.m)', '(Wh/sq.m)', 'ms', 'degrees', '']
+    #         ]
+    #     )
+    #     # This is where the unwanted columns in the dataframe gets filtered out. 
+    #     self.file_list.extend(
+    #         self.dataframe[
+    #             ['Month', 'Day', 'Hour', 'Dry Bulb Temperature', 'Relative Humidity', 'Global Horizontal Radiation', 'Diffuse Horizontal Radiation', 'Wind Speed', 'Wind Direction']
+    #         ].values.tolist()
+    #     )
         
-        return self.file_list
+    #     return self.file_list
 
 
-    # This method filters the data
-    def _epw_filter_pipeline(self, op_cond, range):
-        #
-        # Operator AND is used (op_cond = True) if in dropdowns start month is before end month e.g. start: Feb, end: Nov
-        # e.g. May is valid out because it is after Feb **AND** before Nov
-        # 
-        # Operator OR is used (op_cond = False) if start month is after end month e.g. start: Nov, end: Feb, as it
-        # indicates the desired range is Jan to Feb and Nov to Dec
-        # e.g. Jan is valid because it is after Nov **OR** before Feb
-        #
-        filter_operator = operator.__and__ if op_cond else operator.__or__
-        self.dataframe = self.dataframe.loc[filter_operator(range[0], range[1])]
-        return self.dataframe
-
-
-    # This method passes the required parameters (direction and range) to _time_filter_pipeline
+    # This method passes the time filter parameters to _time_filter_pipeline for filtering
     def epw_filter(self, file_title):
         # Read the corresponding filter parameters from st.session_state according to feature (file_title)
         time_var = self.time_var.copy()
@@ -218,3 +206,19 @@ class EPWHelper(Helper):
         self.dataframe = self._epw_filter_pipeline(direction, range)
 
         return self.dataframe
+
+    # This method filters the data
+    def _epw_filter_pipeline(self, op_cond, range):
+        #
+        # Operator AND is used (op_cond = True) if in dropdowns start month is before end month e.g. start: Feb, end: Nov
+        # e.g. May is valid out because it is after Feb **AND** before Nov
+        # 
+        # Operator OR is used (op_cond = False) if start month is after end month e.g. start: Nov, end: Feb, as it
+        # indicates the desired range is Jan to Feb and Nov to Dec
+        # e.g. Jan is valid because it is after Nov **OR** before Feb
+        #
+        filter_operator = operator.__and__ if op_cond else operator.__or__
+        self.dataframe = self.dataframe.loc[filter_operator(range[0], range[1])]
+        return self.dataframe
+
+

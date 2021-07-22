@@ -463,38 +463,39 @@ class UIHelper(Helper):
 
 
     # This method is under construction. Currently when it's called, it outputs a map pinpointing selections in weather data file list
-    def map_viewer(self):
-        data = self._get_db()
-        coordinates = []
-        for location in data['features']:
-            # for file_type in ['epw']:
-            #     match = re.search(r'href=[\'"]?([^\'" >]+)', location['properties'][file_type])
-            #     if match:
-            #         url = match.group(1)
-            #         urls = []
-            #         urls.append(url)
-            #         url_str = url.split('/')
-            #         url_str += urls
-            # url_str += location['geometry']['coordinates']        
-            coordinates.append(location['geometry']['coordinates'])   
-        df = pd.DataFrame(coordinates)
-        df = df.rename(columns={0: 'Longitude', 1: 'Latitude'})
-        df = df[:11]
-        layer = pdk.Layer(
-            "ScatterplotLayer",
-            df,
-            pickable=True,
-            opacity=0.8,
-            filled=True,
-            radius_scale=2,
-            radius_min_pixels=10,
-            radius_max_pixels=5,
-            line_width_min_pixels=0.01,
-            get_position='[Longitude, Latitude]',
-            get_fill_color=[255, 0, 0],
-            get_line_color=[0, 0, 0],
-        )
-        view_state = pdk.ViewState(latitude=df['Latitude'].iloc[0], longitude=df['Longitude'].iloc[0], zoom=1, min_zoom= 1, max_zoom=30, height=100)
-        r = pdk.Deck(layers=[layer], map_style='mapbox://styles/mapbox/streets-v11', initial_view_state=view_state, tooltip={"html": "<b>Longitude: </b> {Longitude} <br /> " "<b>Latitude: </b>{Latitude} <br /> "})
+    # It is commented out as it's currently unused
+    # def map_viewer(self):
+    #     data = self._get_db()
+    #     coordinates = []
+    #     for location in data['features']:
+    #         # for file_type in ['epw']:
+    #         #     match = re.search(r'href=[\'"]?([^\'" >]+)', location['properties'][file_type])
+    #         #     if match:
+    #         #         url = match.group(1)
+    #         #         urls = []
+    #         #         urls.append(url)
+    #         #         url_str = url.split('/')
+    #         #         url_str += urls
+    #         # url_str += location['geometry']['coordinates']        
+    #         coordinates.append(location['geometry']['coordinates'])   
+    #     df = pd.DataFrame(coordinates)
+    #     df = df.rename(columns={0: 'Longitude', 1: 'Latitude'})
+    #     df = df[:11]
+    #     layer = pdk.Layer(
+    #         "ScatterplotLayer",
+    #         df,
+    #         pickable=True,
+    #         opacity=0.8,
+    #         filled=True,
+    #         radius_scale=2,
+    #         radius_min_pixels=10,
+    #         radius_max_pixels=5,
+    #         line_width_min_pixels=0.01,
+    #         get_position='[Longitude, Latitude]',
+    #         get_fill_color=[255, 0, 0],
+    #         get_line_color=[0, 0, 0],
+    #     )
+    #     view_state = pdk.ViewState(latitude=df['Latitude'].iloc[0], longitude=df['Longitude'].iloc[0], zoom=1, min_zoom= 1, max_zoom=30, height=100)
+    #     r = pdk.Deck(layers=[layer], map_style='mapbox://styles/mapbox/streets-v11', initial_view_state=view_state, tooltip={"html": "<b>Longitude: </b> {Longitude} <br /> " "<b>Latitude: </b>{Latitude} <br /> "})
                             
-        st.sidebar.pydeck_chart(r)
+    #     st.sidebar.pydeck_chart(r)

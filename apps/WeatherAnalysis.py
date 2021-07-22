@@ -24,19 +24,19 @@ def app(app, epw, ui, timeshift=timeshift):
     globaleff = False
     daynum_list = []
     # file_list = []
-    temp_list = []
+    # temp_list = []
     dailymeantemp_list = []
-    rh_list = []
-    global_list = []
-    diffuse_list = []
-    winspeed_list= []
-    windir_list = []
+    # rh_list = []
+    # global_list = []
+    # diffuse_list = []
+    # winspeed_list= []
+    # windir_list = []
     temp_matrix = []
     winspeed_matrix = []
     tground_matrix=[]
     depth_list = []
     Colour_list = []
-    Month_list=[]
+    # Month_list=[]
     daytempprofile = []
     Diurnal_matrix = []
     rh_matrix = []
@@ -183,16 +183,14 @@ def app(app, epw, ui, timeshift=timeshift):
     plt.ylabel('depth below surface, m')
 
     plt.ylim(0,20)
-
     plt.ylim(plt.ylim()[::-1])
 
-    plt.legend(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
+    plt.legend(Month_list)
     # plt.show()
     st.pyplot(fig)
     st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
     tground_matrix.clear()
-
 
     #this plots histograms:
     fig,ax = plt.subplots(1,1, figsize = (12,6), tight_layout=True)

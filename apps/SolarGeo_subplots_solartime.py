@@ -31,7 +31,7 @@ def app(app, epw, ui, timeshift=timeshift):
     wallaz = wallaz * pi /180
     tilt = st.sidebar.slider("Tilt", 0, 179, 90, help="This is the tilt of the wall: receiving surface (0 is flat facing up, 179 is flat almost facing down)")
     tilt = tilt * pi / 180
-    isotropic = True
+    # isotropic = True
     EqTonly=False #this is a switch that corrects for longitude difference when finding the sun position
     #groundref=0.2
 
@@ -43,11 +43,11 @@ def app(app, epw, ui, timeshift=timeshift):
     timediff_list = []
     cai_list = []
     # file_list = []
-    global_list = []
-    diffuse_list = []
-    day_global_list = []
-    day_diffuse_list = []
-    igbeta_list = []
+    # global_list = []
+    # diffuse_list = []
+    # day_global_list = []
+    # day_diffuse_list = []
+    # igbeta_list = []
     daylength_list = []
 
 
