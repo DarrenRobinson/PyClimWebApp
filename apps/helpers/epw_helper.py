@@ -146,7 +146,6 @@ class EPWHelper(Helper):
                     break
             csvfile.close()
         return i 
-    
 
 
 
@@ -196,9 +195,7 @@ class EPWHelper(Helper):
             (self.dataframe['Month'] == time_var['end_month']) & (self.dataframe['Day'] <= time_var['end_day']))
             )
         )
-
         self._epw_filter_pipeline(direction, range)
-        # self.dataframe = self._epw_filter_pipeline(direction, range)
         
         # filter by hour
         direction = (time_var['end_hour'] >= time_var['start_hour'])
@@ -207,9 +204,6 @@ class EPWHelper(Helper):
             (self.dataframe['Hour'] <= time_var['end_hour'])       
         )
         self._epw_filter_pipeline(direction, range)
-        # self.dataframe = self._epw_filter_pipeline(direction, range)
-
-        # return self.dataframe
 
     # This method filters the data
     def _epw_filter_pipeline(self, op_cond, range):
@@ -223,6 +217,5 @@ class EPWHelper(Helper):
         #
         filter_operator = operator.__and__ if op_cond else operator.__or__
         self.dataframe = self.dataframe.loc[filter_operator(range[0], range[1])]
-        # return self.dataframe
 
 
