@@ -51,5 +51,7 @@ class MultiApp:
         # self.epw.epw_to_file_list()                          # Convert the epw dataframe to list format with first two rows as header info
         
         st.sidebar.write("---")
-
+        import os, psutil
+        process = psutil.Process(os.getpid())
+        st.write(process.memory_info().rss)  # in bytes 
         app['function'](app, self.epw, self.ui)              # Run the selected feature script
