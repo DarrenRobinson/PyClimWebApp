@@ -64,13 +64,8 @@ def app(app, epw, ui):
     #     file.close()
     # numhours = len(epw.file_list)
 
-    # import time
-    # t0 = time.process_time()
-    # t1 = time.process_time()
-    # st.write("Time elapsed: ", t1 - t0) # CPU seconds elapsed (floating point)
-
     # this popuates lists with the corresponding data
-    
+
     # for i in range (3, len(epw.file_list)):
     #     temp_list.append(float(epw.file_list[i][3]))
     #     rh_list.append(float(epw.file_list[i][4]))
@@ -85,19 +80,6 @@ def app(app, epw, ui):
 
     temp_x_list = []
     g_y_list = []
-
-
-
-    # tt_df = pd.DataFrame()
-    # tt_df['temp1'] = [*range (-10,61)]
-    # for rh in range(10,110,10):
-    #     tt_df['c'] = tt_df.apply(lambda x: g(x['temp1'],rh), axis=1)
-    #     plt.plot(tt_df['temp1'].values.tolist(),tt_df['c'].values.tolist(), lw=1, color='darkgray')
-
-    # # temp_df['c'] = 2 * temp_df.apply(lambda x: math.atan2(x['a_sq'], x['one_minus_a_sq']), axis=1)
-    # # 0.10664399999996022
-    # # st.write(tt_df['c'])
-
     for rh in range (10,110,10):
         for temp in range (-10,61):
             temp_x_list.append(temp)
