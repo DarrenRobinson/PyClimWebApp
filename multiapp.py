@@ -26,14 +26,14 @@ class MultiApp:
     # This method starts the web-app
     def run(self):
         st.sidebar.write('# PyClim')
-        self.helper.features = self.apps                    # Inform helper of available features
-        self.ui.advanced_search()                           # Display sorting/filtering functionalities
-        self.epw.read_epw_f(self.ui.file_name['file_url'])  # Fetch the epw dataframe and header info 
-        st.sidebar.markdown(
-            "Latitude: "+str(self.epw.lat)+
-            " Longitude: "+str(self.epw.longitude)+
+        self.helper.features = self.apps                        # Inform helper of available features
+        self.ui.advanced_search()                               # Display sorting/filtering functionalities
+        self.epw.read_epw_f(self.ui.file_name['file_url'])      # Fetch the epw dataframe and header info 
+        st.sidebar.markdown(                                    
+            "Latitude: "+str(self.epw.lat)+                     
+            " Longitude: "+str(self.epw.longitude)+             
             "<br>Time Zone: "+str(self.epw.timezone), 
-            unsafe_allow_html=True
+            unsafe_allow_html=True                              
         )
         st.sidebar.write("---")
 

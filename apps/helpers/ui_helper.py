@@ -6,7 +6,7 @@ import base64
 import json
 import re
 from urllib.request import Request, urlopen
-import pydeck as pdk
+# import pydeck as pdk
 import pandas as pd
 from apps.helpers.helper import Helper
 
@@ -63,11 +63,10 @@ class UIHelper(Helper):
 
     # _check_day, _check_start_day, _check_end_day are callbacks from start_month and end_month dropdowns.
     def _check_day(self, start_or_end):
-        if self.session_keys[start_or_end+'_day'] in st.session_state:
-            if self.session_keys[start_or_end+'_month'] in st.session_state:
-                # If the stored day exceeds the range of days in the new selected month, it will be reset to 1.
-                if st.session_state[ self.session_keys[start_or_end+'_day'] ] > (len(self.days[ st.session_state[ self.session_keys[start_or_end+'_month'] ]['value']-1 ])): 
-                    st.session_state[ self.session_keys[start_or_end+'_day'] ] = 1        
+        if (self.session_keys[start_or_end+'_day'] in st.session_state) & (self.session_keys[start_or_end+'_month'] in st.session_state):
+            # If the stored day exceeds the range of days in the new selected month, it will be reset to 1.
+            if st.session_state[ self.session_keys[start_or_end+'_day'] ] > (len(self.days[ st.session_state[ self.session_keys[start_or_end+'_month'] ]['value']-1 ])): 
+                st.session_state[ self.session_keys[start_or_end+'_day'] ] = 1        
 
     def _check_start_day(self):
         self._check_day('start')

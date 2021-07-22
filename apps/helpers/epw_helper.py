@@ -144,6 +144,7 @@ class EPWHelper(Helper):
             for i,row in enumerate(csvreader):
                 if row[0].isdigit():
                     break
+            csvfile.close()
         return i 
     
 
