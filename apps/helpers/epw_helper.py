@@ -174,7 +174,6 @@ class EPWHelper(Helper):
     # This method passes the time filter parameters to _time_filter_pipeline for filtering
     def epw_filter(self, file_title):
         # Read the corresponding filter parameters from st.session_state according to feature (file_title)
-        st.write(st.session_state)
         time_var = self.time_var.copy()
         for feature in self.features:
             if feature['file_title'] == file_title:
@@ -184,7 +183,7 @@ class EPWHelper(Helper):
                             time_var[var] = st.session_state[feature['file_title']+"_"+var]['value']
                         else:
                             time_var[var] = st.session_state[feature['file_title']+"_"+var]
-        
+        st.write(time_var)
         # filter by day and month
         direction = (time_var['end_month'] > time_var['start_month']) | ((time_var['end_month'] == time_var['start_month']) & (time_var['end_day'] >= time_var['start_day']))
         range = (
@@ -197,6 +196,7 @@ class EPWHelper(Helper):
             (self.dataframe['Month'] == time_var['end_month']) & (self.dataframe['Day'] <= time_var['end_day']))
             )
         )
+
         self.dataframe = self._epw_filter_pipeline(direction, range)
         
         # filter by hour
