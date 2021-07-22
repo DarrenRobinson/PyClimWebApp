@@ -69,7 +69,6 @@ def app(app, epw, ui):
     # for i in range (3, len(epw.file_list)):
     #     temp_list.append(float(epw.file_list[i][3]))
     #     rh_list.append(float(epw.file_list[i][4]))
-    st.dataframe(epw.dataframe)
     temp_list = epw.dataframe['Dry Bulb Temperature'].values.tolist()
     rh_list = epw.dataframe['Relative Humidity'].values.tolist()
 
