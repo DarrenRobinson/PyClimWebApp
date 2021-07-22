@@ -134,9 +134,7 @@ def app(app, epw, ui):
     # Calculate number of days each month & number of hours daily if dataset is filtered
     filter_applied = ui.is_filter_applied(app['file_title'])
     if filter_applied:
-        daynum_list = []
         for i in range (1,13):
-            st.write(i)
             daynum_list[i-1] = len(epw.dataframe[epw.dataframe['Month'] == i]['Day'].unique()) 
         hour_range = (st.session_state.psychros_end_hour-st.session_state.psychros_start_hour+2) if (st.session_state.psychros_end_hour >= st.session_state.psychros_start_hour) else ((24-st.session_state.psychros_start_hour)+(st.session_state.psychros_end_hour-1)+2)                                     
 
