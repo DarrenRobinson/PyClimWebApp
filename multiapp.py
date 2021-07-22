@@ -26,18 +26,15 @@ class MultiApp:
     # This method starts the web-app
     def run(self):
         st.sidebar.write('# PyClim')
-
         self.helper.features = self.apps                    # Inform helper of available features
         self.ui.advanced_search()                           # Display sorting/filtering functionalities
         self.epw.read_epw_f(self.ui.file_name['file_url'])  # Fetch the epw dataframe and header info 
-        
         st.sidebar.markdown(
             "Latitude: "+str(self.epw.lat)+
             " Longitude: "+str(self.epw.longitude)+
             "<br>Time Zone: "+str(self.epw.timezone), 
             unsafe_allow_html=True
         )
-
         st.sidebar.write("---")
 
         # Display feature selection dropdown
@@ -49,9 +46,5 @@ class MultiApp:
 
         self.epw.epw_filter(app['file_title'])               # Filter dataset for selected feature if applicable
         # self.epw.epw_to_file_list()                          # Convert the epw dataframe to list format with first two rows as header info
-        
         st.sidebar.write("---")
-        import os, psutil
-        process = psutil.Process(os.getpid())
-        st.write(process.memory_info().rss)  # in bytes 
         app['function'](app, self.epw, self.ui)              # Run the selected feature script
