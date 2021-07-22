@@ -174,6 +174,7 @@ class EPWHelper(Helper):
     # This method passes the time filter parameters to _time_filter_pipeline for filtering
     def epw_filter(self, file_title):
         # Read the corresponding filter parameters from st.session_state according to feature (file_title)
+        st.write(st.session_state)
         time_var = self.time_var.copy()
         for feature in self.features:
             if feature['file_title'] == file_title:
@@ -205,7 +206,7 @@ class EPWHelper(Helper):
             (self.dataframe['Hour'] <= time_var['end_hour'])       
         )
         self.dataframe = self._epw_filter_pipeline(direction, range)
-        
+
         return self.dataframe
 
     # This method filters the data
