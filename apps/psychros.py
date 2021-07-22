@@ -14,8 +14,8 @@
 #to a defined fraction of the wbtd, to mimic adiabatic (evaporative) cooling.
 
 #imports the basic libraries
+import pandas as pd
 import streamlit as st
-import math
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -24,19 +24,6 @@ from apps.ClimAnalFunctions import *
 def app(app, epw, ui):
     st.write("# "+app['title'])
        
-    filter_applied = ui.is_filter_applied(app['file_title'])
-    daynum_list = [31,28,31,30,31,30,31,31,30,31,30,31]     # Default values if dataset is not filtered
-    hour_range = 25                                         # Default values if dataset is not filtered
-    if filter_applied:
-        # Calculate number of days each month if dataset is filtered
-        for i in range (1,13):
-            daynum_list[i-1] = len(epw.dataframe[epw.dataframe['Month'] == i]['Day'].unique()) 
-        # Calculate number of hours daily if dataset is filtered
-        hour_range = (st.session_state.psychros_end_hour-st.session_state.psychros_start_hour+2) if (st.session_state.psychros_end_hour >= st.session_state.psychros_start_hour) else ((24-st.session_state.psychros_start_hour)+(st.session_state.psychros_end_hour-1)+2)
-
-
-
-
     # Time filter
     ui.time_filter(app['file_title'])
 
@@ -51,7 +38,9 @@ def app(app, epw, ui):
     PlotMonthly = st.sidebar.checkbox("Plot Monthly", value=True, help="If FALSE then there is no distinction between data points for different months")
     PlotEvapCool = st.sidebar.checkbox("PlotEvapCool", value=True, help="Efficiency of the evaporative cooling process")
     
-    min_temp = min(np.array(epw.file_list[3:])[:,3])
+    min_temp = min(np.array(epw.dataframe['Dry Bulb Temperature']))
+    # max_temp = max(np.array(epw.dataframe['Dry Bulb Temperature']))
+    # min_temp = min(np.array(epw.file_list[3:])[:,3])
     # max_temp = max(np.array(epw.file_list[3:])[:,3])
 
     LLdbt = st.sidebar.number_input("LLdbt", min_value=float(min_temp), value=25.0, step=0.5, help="Temperature above which data points are shifted to mimic evaporative cooling") #lower limit of temperature: above which data is shifted
@@ -73,12 +62,20 @@ def app(app, epw, ui):
     #         epw.file_list.append(line)
     #         numhours=numhours+1
     #     file.close()
-    numhours = len(epw.file_list)
+    # numhours = len(epw.file_list)
 
-    #this popuates lists with the corresponding data
-    for i in range (3, len(epw.file_list)):
-        temp_list.append(float(epw.file_list[i][3]))
-        rh_list.append(float(epw.file_list[i][4]))
+    # import time
+    # t0 = time.process_time()
+    # t1 = time.process_time()
+    # st.write("Time elapsed: ", t1 - t0) # CPU seconds elapsed (floating point)
+
+    # this popuates lists with the corresponding data
+    
+    # for i in range (3, len(epw.file_list)):
+    #     temp_list.append(float(epw.file_list[i][3]))
+    #     rh_list.append(float(epw.file_list[i][4]))
+    temp_list = epw.dataframe['Dry Bulb Temperature'].values.tolist()
+    rh_list = epw.dataframe['Relative Humidity'].values.tolist()
 
     #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
     #NOW: CREATE THE PSYCHROMETRIC CHART
@@ -88,6 +85,18 @@ def app(app, epw, ui):
 
     temp_x_list = []
     g_y_list = []
+
+
+
+    # tt_df = pd.DataFrame()
+    # tt_df['temp1'] = [*range (-10,61)]
+    # for rh in range(10,110,10):
+    #     tt_df['c'] = tt_df.apply(lambda x: g(x['temp1'],rh), axis=1)
+    #     plt.plot(tt_df['temp1'].values.tolist(),tt_df['c'].values.tolist(), lw=1, color='darkgray')
+
+    # # temp_df['c'] = 2 * temp_df.apply(lambda x: math.atan2(x['a_sq'], x['one_minus_a_sq']), axis=1)
+    # # 0.10664399999996022
+    # # st.write(tt_df['c'])
 
     for rh in range (10,110,10):
         for temp in range (-10,61):
@@ -136,6 +145,17 @@ def app(app, epw, ui):
     #NOW: PLOT THE DATA
     #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
+    filter_applied = ui.is_filter_applied(app['file_title'])
+    # Calculate number of days each month & number of hours daily if dataset is filtered
+    if filter_applied:
+        daynum_list = []
+        for i in range (1,13):
+            daynum_list[i-1] = len(epw.dataframe[epw.dataframe['Month'] == i]['Day'].unique()) 
+        hour_range = (st.session_state.psychros_end_hour-st.session_state.psychros_start_hour+2) if (st.session_state.psychros_end_hour >= st.session_state.psychros_start_hour) else ((24-st.session_state.psychros_start_hour)+(st.session_state.psychros_end_hour-1)+2)
+    else:
+        # Default values if dataset is not filtered
+        daynum_list = [31,28,31,30,31,30,31,31,30,31,30,31]     
+        hour_range = 25                                         
 
     if PlotMonthly==False:
         for plotpoints in range (0,len(temp_list)):
@@ -145,9 +165,6 @@ def app(app, epw, ui):
         cumhour=0
         Colour_list = ['firebrick', 'salmon', 'darkorange', 'orange', 'gold', 'yellow', 'yellowgreen', 'green', 'olive', 'cyan', 'skyblue', 'blue']
         Month_list = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-        daynum_list = daynum_list
-        # daynum_list = [31,28,31,30,31,30,31,31,30,31,30,31]
-        hour_range = hour_range
         Monthly_g = []
         Monthly_t = []
         for month in range (1,13):

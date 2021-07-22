@@ -74,14 +74,22 @@ def app(app, epw, ui, timeshift=timeshift):
     #         numhours=numhours+1
     #     file.close()
 
+ 
     #this popuates lists with the corresponding data
-    for h in range (3, len(epw.file_list)):
-        temp_list.append(float(epw.file_list[h][3]))
-        rh_list.append(float(epw.file_list[h][4]))
-        global_list.append(float(epw.file_list[h][5]))
-        diffuse_list.append(float(epw.file_list[h][6]))
-        winspeed_list.append(float(epw.file_list[h][7]))
-        windir_list.append(float(epw.file_list[h][8]))
+    # for h in range (3, len(epw.file_list)):
+    #     temp_list.append(float(epw.file_list[h][3]))
+    #     rh_list.append(float(epw.file_list[h][4]))
+    #     global_list.append(float(epw.file_list[h][5]))
+    #     diffuse_list.append(float(epw.file_list[h][6]))
+    #     winspeed_list.append(float(epw.file_list[h][7]))
+    #     windir_list.append(float(epw.file_list[h][8]))
+
+    temp_list = epw.dataframe['Dry Bulb Temperature'].values.tolist()
+    rh_list = epw.dataframe['Relative Humidity'].values.tolist()
+    global_list = epw.dataframe['Global Horizontal Radiation'].values.tolist()
+    diffuse_list = epw.dataframe['Diffuse Horizontal Radiation'].values.tolist()
+    winspeed_list = epw.dataframe['Wind Speed'].values.tolist()
+    windir_list = epw.dataframe['Wind Direction'].values.tolist()
 
     daynum_list = [31,28,31,30,31,30,31,31,30,31,30,31] 
     AnnualIgh = sum(global_list)/1000
@@ -89,7 +97,7 @@ def app(app, epw, ui, timeshift=timeshift):
 
     cumday=0
     annualmeantemp=0
-    meandaytemp=0
+    # meandaytemp=0
     MonthlyHDD_list = [0 for i in range(0,12)]
     MonthlyCDD_list = [0 for i in range(0,12)]
     for i in range(1,13):

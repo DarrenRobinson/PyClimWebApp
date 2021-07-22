@@ -12,7 +12,6 @@
 
 #imports the basic libraries
 import streamlit as st
-import math
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -61,13 +60,15 @@ def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
     groundref = st.sidebar.number_input("groundref", 0.0, 1.0, groundref, 0.5)
     timeshift = st.sidebar.slider("Timeshift", -0.5, 0.5, timeshift, 0.5, help="This is to handle timing conventions relating to climate data collection")
 
-
-
-
     #this popuates global and diffuse lists with the corresponding solar data
-    for i in range (3,len(epw.file_list)):
-        global_list.append(float(epw.file_list[i][5]))
-        diffuse_list.append(float(epw.file_list[i][6]))
+
+
+
+    # for i in range (3,len(epw.file_list)):
+    #     global_list.append(float(epw.file_list[i][5]))
+    #     diffuse_list.append(float(epw.file_list[i][6]))
+    global_list = epw.dataframe['Global Horizontal Radiation'].values.tolist()
+    diffuse_list = epw.dataframe['Diffuse Horizontal Radiation'].values.tolist()
 
     #This is where the daily and hourly solar quantities are calculated
     for tilt in range(0,95,10):

@@ -30,7 +30,7 @@ class MultiApp:
         self.helper.features = self.apps                    # Inform helper of available features
         self.ui.advanced_search()                           # Display sorting/filtering functionalities
         self.epw.read_epw_f(self.ui.file_name['file_url'])  # Fetch the epw dataframe and header info 
-       
+        
         st.sidebar.markdown(
             "Latitude: "+str(self.epw.lat)+
             " Longitude: "+str(self.epw.longitude)+
@@ -47,8 +47,8 @@ class MultiApp:
             format_func=lambda app: app['title']
         )
 
-        self.epw.epw_filter(app['file_title'])   # Filter dataset for selected feature if applicable
-        self.epw.epw_to_file_list()                          # Convert the epw dataframe to list format with first two rows as header info
+        self.epw.epw_filter(app['file_title'])               # Filter dataset for selected feature if applicable
+        # self.epw.epw_to_file_list()                          # Convert the epw dataframe to list format with first two rows as header info
         
         st.sidebar.write("---")
 
