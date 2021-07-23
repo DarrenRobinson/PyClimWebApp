@@ -51,7 +51,7 @@ class MultiApp:
         st.sidebar.write("---")
         app['function'](app, self.epw, self.ui)              # Run the selected feature script
         # Site analytics
-        st.sidebar.markdown("""
+        components.sidebar.html("""
             <!-- Default Statcounter code for PyClim Web App
             https://share.streamlit.io/darrenrobinson/pyclimwebapp/main/app.py
             -->
@@ -72,4 +72,4 @@ class MultiApp:
             <!-- End of Statcounter Code -->
             <a href="https://statcounter.com/p12570505/?guest=1">View My
             Stats</a>
-        """,unsafe_allow_html=True)
+        """)
