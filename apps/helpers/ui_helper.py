@@ -64,8 +64,6 @@ class UIHelper(Helper):
     # _check_day, _check_start_day, _check_end_day are callbacks from start_month and end_month dropdowns.
     def _check_day(self, start_or_end):
         if (self.session_keys[start_or_end+'_day'] in st.session_state) & (self.session_keys[start_or_end+'_month'] in st.session_state):
-        # if (self.session_keys[start_or_end+'_day'] in st.session_state):
-        #     if (self.session_keys[start_or_end+'_month'] in st.session_state):
             # If the stored day exceeds the range of days in the new selected month, it will be reset to 1.
             if st.session_state[ self.session_keys[start_or_end+'_day'] ] > (len(self.days[ st.session_state[ self.session_keys[start_or_end+'_month'] ]['value']-1 ])): 
                 st.session_state[ self.session_keys[start_or_end+'_day'] ] = 1     
@@ -112,7 +110,6 @@ class UIHelper(Helper):
 
         # Dropdowns
         col1, col2 = st.sidebar.beta_columns(2)
-
         col2.selectbox(
             "Start Month", 
             months, 
@@ -122,7 +119,6 @@ class UIHelper(Helper):
             help="This filter controls the range of data points that are plotted",
             on_change=self._check_start_day
         )
-
         col2.selectbox(
             "End Month", 
             months, 
@@ -132,7 +128,6 @@ class UIHelper(Helper):
             help="This filter controls the range of data points that are plotted",
             on_change=self._check_end_day
         )
-
         col1.selectbox(
             "Start Day", 
             start_days, 
@@ -140,7 +135,6 @@ class UIHelper(Helper):
             index = start_day_index,
             help="This filter controls the range of data points that are plotted"
         )
-
         col1.selectbox(
             "End Day", 
             end_days, 
@@ -148,7 +142,6 @@ class UIHelper(Helper):
             index = end_day_index, 
             help="This filter controls the range of data points that are plotted"
         )
-        
         col1.selectbox(
             "Start Hour", 
             list(range(1,25)), 
@@ -156,7 +149,6 @@ class UIHelper(Helper):
             index = start_hour_index, 
             help="This filter controls the range of data points that are plotted"
         )
-        
         col2.selectbox(
             "End Hour",
             list(range(1,25)), 
@@ -181,7 +173,8 @@ class UIHelper(Helper):
                 show_hour, 
                 str(start_day_index+1), 
                 months[start_month_index]['title'], 
-                "to", str(end_day_index+1), 
+                "to", 
+                str(end_day_index+1), 
                 months[end_month_index]['title']
             )
         else:
@@ -304,7 +297,6 @@ class UIHelper(Helper):
 
         df = pd.DataFrame(df)
 
-        
         if 'filter_option' in st.session_state:
             if st.session_state.filter_option == self.sort_list:
                 df = self._sort_list_by_distance(df)
@@ -399,11 +391,6 @@ class UIHelper(Helper):
     # This method populates the advanced search panel and weather data file list
     def advanced_search(self):
         regions_dropdown, countries_dropdown, states_dropdown, weather_data_dropdown = self._get_advanced_search_dropdowns()
-        
-        # weather_data_dropdown = self._get_weather_data_dropdown()
-        weather_data_dropdown_options = weather_data_dropdown
-
-
 
         expander = st.sidebar.beta_expander(label='Weather Data Search')
         with expander:
@@ -412,14 +399,10 @@ class UIHelper(Helper):
 
             if 'filter_option' in st.session_state:
                 if st.session_state.filter_option == self.sort_list:
-                    # st.write(self.sort_list+':')
-
                     st.number_input("Latitude", -90.0, 90.0, 53.4, 0.1, key='user_lat')
                     st.number_input("Longitude", -180.0, 180.0, -1.5, 0.1, key='user_lng')
                     
                 if st.session_state.filter_option == self.filter_list:
-                    # st.write(self.filter_list+':')
-
                     st.selectbox(
                         "Region", 
                         regions_dropdown,
@@ -433,16 +416,15 @@ class UIHelper(Helper):
                             countries_dropdown_options = []
                         else:
                             countries_dropdown_options = countries_dropdown[st.session_state.region['pf']]
-
                     epw_col1.selectbox("Country", countries_dropdown_options, key='country')
                     
                     states_dropdown_options = []
                     if self._check_if_a_valid_option_is_selected('country', 'All in'):
                         if len(states_dropdown[st.session_state.country]) > 1:
                             states_dropdown_options = states_dropdown[st.session_state.country] 
-
                     epw_col2.selectbox("State", states_dropdown_options, key='state')
-
+                    
+                    weather_data_dropdown_options = weather_data_dropdown
                     if self._check_if_a_valid_option_is_selected('region', 'all'):
                         if self._check_if_a_valid_option_is_selected('country', 'All in'):
                             if self._check_if_a_valid_option_is_selected('state', 'All in'):
