@@ -285,12 +285,10 @@ class UIHelper(Helper):
     # it also sorts the dataframe according to the preferred order
     def _get_db_df(self):
         data = self._get_db()
+        st.write(data[0])
         df = []
         for location in data['features']:
-            st.write(location)
             match = re.search(r'href=[\'"]?([^\'" >]+)', location['properties']['epw'])
-            # st.write(match.group(1))
-
             if match:
                 url = match.group(1)
                 url_str = url.split('/')
