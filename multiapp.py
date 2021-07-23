@@ -7,6 +7,7 @@ import streamlit as st
 from apps.helpers.helper import Helper
 from apps.helpers.ui_helper import UIHelper
 from apps.helpers.epw_helper import EPWHelper
+import streamlit_analytics
 
 class MultiApp:
     def __init__(self):
@@ -25,27 +26,28 @@ class MultiApp:
 
     # This method starts the web-app
     def run(self):
-        
-        st.sidebar.write('# PyClim')
-        self.helper.features = self.apps                        # Inform helper of available features
-        self.ui.advanced_search()                               # Display sorting/filtering functionalities
-        self.epw.read_epw_f(self.ui.file_name['file_url'])      # Fetch the epw dataframe and header info 
-        st.sidebar.markdown(                                    
-            "Latitude: "+str(self.epw.lat)+                     
-            " Longitude: "+str(self.epw.longitude)+             
-            "<br>Time Zone: "+str(self.epw.timezone), 
-            unsafe_allow_html=True                              
-        )
-        st.sidebar.write("---")
 
-        # Display feature selection dropdown
-        app = st.sidebar.selectbox(
-            'Analysis Tools:',
-            self.apps,
-            format_func=lambda app: app['title']
-        )
+        with streamlit_analytics.track():
+            st.sidebar.write('# PyClim')
+            self.helper.features = self.apps                        # Inform helper of available features
+            self.ui.advanced_search()                               # Display sorting/filtering functionalities
+            self.epw.read_epw_f(self.ui.file_name['file_url'])      # Fetch the epw dataframe and header info 
+            st.sidebar.markdown(                                    
+                "Latitude: "+str(self.epw.lat)+                     
+                " Longitude: "+str(self.epw.longitude)+             
+                "<br>Time Zone: "+str(self.epw.timezone), 
+                unsafe_allow_html=True                              
+            )
+            st.sidebar.write("---")
 
-        self.epw.epw_filter(app['file_title'])               # Filter dataset for selected feature if applicable
-        # self.epw.epw_to_file_list()                          # Convert the epw dataframe to list format with first two rows as header info
-        st.sidebar.write("---")
-        app['function'](app, self.epw, self.ui)              # Run the selected feature script
+            # Display feature selection dropdown
+            app = st.sidebar.selectbox(
+                'Analysis Tools:',
+                self.apps,
+                format_func=lambda app: app['title']
+            )
+
+            self.epw.epw_filter(app['file_title'])               # Filter dataset for selected feature if applicable
+            # self.epw.epw_to_file_list()                          # Convert the epw dataframe to list format with first two rows as header info
+            st.sidebar.write("---")
+            app['function'](app, self.epw, self.ui)              # Run the selected feature script
