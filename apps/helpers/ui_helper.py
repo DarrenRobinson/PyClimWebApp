@@ -391,7 +391,7 @@ class UIHelper(Helper):
     # This method populates the advanced search panel and weather data file list
     def advanced_search(self):
         regions_dropdown, countries_dropdown, states_dropdown, weather_data_dropdown = self._get_advanced_search_dropdowns()
-
+        weather_data_dropdown_options = weather_data_dropdown
         expander = st.sidebar.beta_expander(label='Weather Data Search')
         with expander:
             st.write("Search")
@@ -424,7 +424,6 @@ class UIHelper(Helper):
                             states_dropdown_options = states_dropdown[st.session_state.country] 
                     epw_col2.selectbox("State", states_dropdown_options, key='state')
                     
-                    weather_data_dropdown_options = weather_data_dropdown
                     if self._check_if_a_valid_option_is_selected('region', 'all'):
                         if self._check_if_a_valid_option_is_selected('country', 'All in'):
                             if self._check_if_a_valid_option_is_selected('state', 'All in'):
