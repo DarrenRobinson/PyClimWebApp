@@ -25,7 +25,7 @@ app.run()
 
 components.html("""
     <!-- Default Statcounter code for PyClim
-    https://share.streamlit.io/alvin902london/pyclimwebapp/main/app.py?analytics=on
+    https://share.streamlit.io/alvin902london/pyclimwebapp/main/app.py
     -->
     <script type="text/javascript">
     var sc_project=12570287; 
@@ -33,10 +33,13 @@ components.html("""
     var sc_security="514acaac"; 
     </script>
     <script type="text/javascript"
-    src="https://www.statcounter.com/counter/counter.js" async></script>
-    <noscript><div class="statcounter"><a title="Web Analytics Made Easy -
-    StatCounter" href="https://statcounter.com/" target="_blank"><img
-    class="statcounter" src="https://c.statcounter.com/12570287/0/514acaac/1/"
-    alt="Web Analytics Made Easy - StatCounter"></a></div></noscript>
+    src="https://www.statcounter.com/counter/counter.js"
+    async></script>
+    <noscript><div class="statcounter"><a title="Web Analytics
+    Made Easy - StatCounter" href="https://statcounter.com/"
+    target="_blank"><img class="statcounter"
+    src="https://c.statcounter.com/12570287/0/514acaac/1/"
+    alt="Web Analytics Made Easy -
+    StatCounter"></a></div></noscript>
     <!-- End of Statcounter Code -->
 """)
