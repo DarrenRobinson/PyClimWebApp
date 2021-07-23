@@ -287,9 +287,9 @@ class UIHelper(Helper):
         data = self._get_db()
         df = []
         for location in data['features']:
-            # st.write(location)
+            st.write(location)
             match = re.search(r'href=[\'"]?([^\'" >]+)', location['properties']['epw'])
-            st.write(match.group(1))
+            # st.write(match.group(1))
 
             if match:
                 url = match.group(1)
