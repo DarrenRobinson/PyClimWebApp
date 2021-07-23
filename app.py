@@ -1,6 +1,7 @@
 from multiapp import MultiApp
 # 1. Import your features here using file names (without extension)
 from apps import sunpath, WindRose, SolarGeo_subplots_solartime, WeatherAnalysis, SolarIrradiation_Aniso, psychros, intro
+import streamlit.components.v1 as components
 
 app = MultiApp()
 
@@ -18,5 +19,27 @@ app.add_app("Weather Analysis", "WeatherAnalysis", WeatherAnalysis.app)
 app.add_app("Psychrometric Analysis", "psychros", psychros.app)
 app.add_app("Wind Rose", "windrose", WindRose.app)
 
+
 app.run()
 
+# Site analytics
+components.html("""
+    <!-- Default Statcounter code for PyClim
+    https://share.streamlit.io/alvin902london/pyclimwebapp/main/app.py
+    -->
+    <script type="text/javascript">
+    var sc_project=12570287; 
+    var sc_invisible=1; 
+    var sc_security="514acaac"; 
+    </script>
+    <script type="text/javascript"
+    src="https://www.statcounter.com/counter/counter.js"
+    async></script>
+    <noscript><div class="statcounter"><a title="Web Analytics
+    Made Easy - StatCounter" href="https://statcounter.com/"
+    target="_blank"><img class="statcounter"
+    src="https://c.statcounter.com/12570287/0/514acaac/1/"
+    alt="Web Analytics Made Easy -
+    StatCounter"></a></div></noscript>
+    <!-- End of Statcounter Code -->
+""")

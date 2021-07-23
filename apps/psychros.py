@@ -127,17 +127,16 @@ def app(app, epw, ui):
     #NOW: PLOT THE DATA
     #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
-    filter_applied = ui.is_filter_applied(app['file_title'])
+    
+    # Default values if dataset is not filtered
+    daynum_list = [31,28,31,30,31,30,31,31,30,31,30,31]     
+    hour_range = 25       
     # Calculate number of days each month & number of hours daily if dataset is filtered
+    filter_applied = ui.is_filter_applied(app['file_title'])
     if filter_applied:
-        daynum_list = []
         for i in range (1,13):
             daynum_list[i-1] = len(epw.dataframe[epw.dataframe['Month'] == i]['Day'].unique()) 
-        hour_range = (st.session_state.psychros_end_hour-st.session_state.psychros_start_hour+2) if (st.session_state.psychros_end_hour >= st.session_state.psychros_start_hour) else ((24-st.session_state.psychros_start_hour)+(st.session_state.psychros_end_hour-1)+2)
-    else:
-        # Default values if dataset is not filtered
-        daynum_list = [31,28,31,30,31,30,31,31,30,31,30,31]     
-        hour_range = 25                                         
+        hour_range = (st.session_state.psychros_end_hour-st.session_state.psychros_start_hour+2) if (st.session_state.psychros_end_hour >= st.session_state.psychros_start_hour) else ((24-st.session_state.psychros_start_hour)+(st.session_state.psychros_end_hour-1)+2)                                     
 
     if PlotMonthly==False:
         for plotpoints in range (0,len(temp_list)):

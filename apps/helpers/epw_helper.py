@@ -144,8 +144,8 @@ class EPWHelper(Helper):
             for i,row in enumerate(csvreader):
                 if row[0].isdigit():
                     break
+            csvfile.close()
         return i 
-    
 
 
 
@@ -182,7 +182,7 @@ class EPWHelper(Helper):
                             time_var[var] = st.session_state[feature['file_title']+"_"+var]['value']
                         else:
                             time_var[var] = st.session_state[feature['file_title']+"_"+var]
-        
+
         # filter by day and month
         direction = (time_var['end_month'] > time_var['start_month']) | ((time_var['end_month'] == time_var['start_month']) & (time_var['end_day'] >= time_var['start_day']))
         range = (
@@ -195,7 +195,7 @@ class EPWHelper(Helper):
             (self.dataframe['Month'] == time_var['end_month']) & (self.dataframe['Day'] <= time_var['end_day']))
             )
         )
-        self.dataframe = self._epw_filter_pipeline(direction, range)
+        self._epw_filter_pipeline(direction, range)
         
         # filter by hour
         direction = (time_var['end_hour'] >= time_var['start_hour'])
@@ -203,9 +203,7 @@ class EPWHelper(Helper):
             (self.dataframe['Hour'] >= time_var['start_hour']),
             (self.dataframe['Hour'] <= time_var['end_hour'])       
         )
-        self.dataframe = self._epw_filter_pipeline(direction, range)
-
-        return self.dataframe
+        self._epw_filter_pipeline(direction, range)
 
     # This method filters the data
     def _epw_filter_pipeline(self, op_cond, range):
@@ -219,6 +217,5 @@ class EPWHelper(Helper):
         #
         filter_operator = operator.__and__ if op_cond else operator.__or__
         self.dataframe = self.dataframe.loc[filter_operator(range[0], range[1])]
-        return self.dataframe
 
 
