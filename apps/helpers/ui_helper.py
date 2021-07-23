@@ -289,7 +289,7 @@ class UIHelper(Helper):
         for location in data['features']:
             # st.write(location)
             match = re.search(r'href=[\'"]?([^\'" >]+)', location['properties']['epw'])
-            st.write(match.group(0))
+            st.write(match.group(1))
 
             if match:
                 url = match.group(1)
