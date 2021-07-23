@@ -34,6 +34,7 @@ def app(app, epw, ui):
     
     Tip: if you would like to enlarge the charts, try using wide mode: simply click on the icon with the three horizontal bars to the top right of the white content area, click on settings and tick the 'Wide mode' box. 
     
+    
     THE TEAM:
     
     PyClim and this PyClim Web App interface to it were developed at and are maintained by the University of Sheffield, UK.
