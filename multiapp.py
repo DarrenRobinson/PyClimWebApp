@@ -71,6 +71,6 @@ class MultiApp:
                 src="https://c.statcounter.com/12570505/0/a197d8ba/0/"
                 alt="free web stats"></a></div></noscript>
                 <!-- End of Statcounter Code -->
-                <a href="https://statcounter.com/p12570505/?guest=1">View My
-                Stats</a>
+                
             """)
+            st.markdown('<a href="https://statcounter.com/p12570505/?guest=1">View My Stats</a>', unsafe_allow_html=True)
