@@ -51,25 +51,26 @@ class MultiApp:
         st.sidebar.write("---")
         app['function'](app, self.epw, self.ui)              # Run the selected feature script
         # Site analytics
-        components.sidebar.html("""
-            <!-- Default Statcounter code for PyClim Web App
-            https://share.streamlit.io/darrenrobinson/pyclimwebapp/main/app.py
-            -->
-            <script type="text/javascript">
-            var sc_project=12570505; 
-            var sc_invisible=0; 
-            var sc_security="a197d8ba"; 
-            var scJsHost = "https://";
-            document.write("<sc"+"ript type='text/javascript' src='" +
-            scJsHost+
-            "statcounter.com/counter/counter.js'></"+"script>");
-            </script>
-            <noscript><div class="statcounter"><a title="free web stats"
-            href="https://statcounter.com/" target="_blank"><img
-            class="statcounter"
-            src="https://c.statcounter.com/12570505/0/a197d8ba/0/"
-            alt="free web stats"></a></div></noscript>
-            <!-- End of Statcounter Code -->
-            <a href="https://statcounter.com/p12570505/?guest=1">View My
-            Stats</a>
-        """)
+        with st.sidebar:
+            components.html("""
+                <!-- Default Statcounter code for PyClim Web App
+                https://share.streamlit.io/darrenrobinson/pyclimwebapp/main/app.py
+                -->
+                <script type="text/javascript">
+                var sc_project=12570505; 
+                var sc_invisible=0; 
+                var sc_security="a197d8ba"; 
+                var scJsHost = "https://";
+                document.write("<sc"+"ript type='text/javascript' src='" +
+                scJsHost+
+                "statcounter.com/counter/counter.js'></"+"script>");
+                </script>
+                <noscript><div class="statcounter"><a title="free web stats"
+                href="https://statcounter.com/" target="_blank"><img
+                class="statcounter"
+                src="https://c.statcounter.com/12570505/0/a197d8ba/0/"
+                alt="free web stats"></a></div></noscript>
+                <!-- End of Statcounter Code -->
+                <a href="https://statcounter.com/p12570505/?guest=1">View My
+                Stats</a>
+            """)
