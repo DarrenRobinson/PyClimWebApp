@@ -25,6 +25,7 @@ class MultiApp:
 
     # This method starts the web-app
     def run(self):
+        
         st.sidebar.write('# PyClim')
         self.helper.features = self.apps                        # Inform helper of available features
         self.ui.advanced_search()                               # Display sorting/filtering functionalities
