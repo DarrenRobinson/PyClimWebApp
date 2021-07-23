@@ -1,6 +1,7 @@
 from multiapp import MultiApp
 # 1. Import your features here using file names (without extension)
 from apps import sunpath, WindRose, SolarGeo_subplots_solartime, WeatherAnalysis, SolarIrradiation_Aniso, psychros, intro
+import streamlit as st
 import streamlit.components.v1 as components
 
 app = MultiApp()
