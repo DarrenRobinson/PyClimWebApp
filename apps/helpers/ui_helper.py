@@ -285,7 +285,6 @@ class UIHelper(Helper):
     # it also sorts the dataframe according to the preferred order
     def _get_db_df(self):
         data = self._get_db()
-        st.write(data)
         df = []
         for location in data['features']:
             match = re.search(r'href=[\'"]?([^\'" >]+)', location['properties']['epw'])
