@@ -297,7 +297,6 @@ class UIHelper(Helper):
                     df.append(url_str)
 
         df = pd.DataFrame(df)
-        st.write(len(df))
         if 'filter_option' in st.session_state:
             if st.session_state.filter_option == self.sort_list:
                 df = self._sort_list_by_distance(df)
