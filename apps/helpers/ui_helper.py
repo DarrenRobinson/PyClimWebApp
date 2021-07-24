@@ -290,13 +290,13 @@ class UIHelper(Helper):
             match = re.search(r'href=[\'"]?([^\'" >]+)', location['properties']['epw'])
             if match:
                 url = match.group(1)
-                url_str = url.split('/')
-                url_str += [url]
-            url_str += location['geometry']['coordinates']        
-            df.append(url_str)
+                if 'SWEC' not in url: #Remove SWEC files
+                    url_str = url.split('/')
+                    url_str += [url]
+                    url_str += location['geometry']['coordinates']        
+                    df.append(url_str)
 
         df = pd.DataFrame(df)
-
         if 'filter_option' in st.session_state:
             if st.session_state.filter_option == self.sort_list:
                 df = self._sort_list_by_distance(df)
