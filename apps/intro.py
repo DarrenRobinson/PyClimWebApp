@@ -32,6 +32,10 @@ def app(app, epw, ui):
     
     For further advice on the interpretation of charts from the PyClim Web App please refer to: http://www.ibpsa.org/proceedings/BSO2020/BSOV2020_Robinson.pdf.
     
+    If you would like to access the source code for this app, please visit the GitHub repository: https://github.com/DarrenRobinson/PyClimWebApp.
+    
+    Tip: if you would like to enlarge the charts, try using wide mode: simply click on the icon with the three horizontal bars to the top right of the white content area, click on settings and tick the 'Wide mode' box. 
+    
     
     THE TEAM:
     
@@ -41,7 +45,7 @@ def app(app, epw, ui):
 
     The Web App front end was developed using Streamlit by Alvin Mok through an internship funded by the University of Sheffield, under the supervision of Reena Sayani and Darren Robinson.
 
-    We are grateful to the following staff and students of the Sheffield School of Architecture for their constructive feedback on earlier prototypes of this App: Elizaveta Arestova, Anupama Rao, Jonathan Sykes, Parag Wate.
+    We are grateful to the following staff and students of the Sheffield School of Architecture for their constructive feedback on earlier prototypes of this App: Elizaveta Arestova, Danni Kerr, Anupama Rao, Jonathan Sykes, Parag Wate.
 
 
 
