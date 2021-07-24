@@ -290,7 +290,7 @@ class UIHelper(Helper):
             match = re.search(r'href=[\'"]?([^\'" >]+)', location['properties']['epw'])
             if match:
                 url = match.group(1)
-                if 'SWEC' not in url:
+                if 'SWEC' not in url: #Remove SWEC files 
                     url_str = url.split('/')
                     url_str += [url]
             url_str += location['geometry']['coordinates']        
