@@ -9,6 +9,7 @@ from urllib.request import Request, urlopen
 # import pydeck as pdk
 import pandas as pd
 from apps.helpers.helper import Helper
+import numpy as np
 
 # General naming convention:
 # func(): methods to be called by user
@@ -99,7 +100,7 @@ class UIHelper(Helper):
         # Set the day range according to the month selected 
         start_days = self.days[start_month_index]
         end_days = self.days[end_month_index]
-
+        
         # Set the dropdowns to display the previously selected day if applicable
         start_day_index = st.session_state[ self.session_keys['start_day'] ]-1 if self.session_keys['start_day'] in st.session_state else 0
         end_day_index = st.session_state[ self.session_keys['end_day'] ]-1 if self.session_keys['end_day'] in st.session_state else end_days.index(max(end_days))
@@ -252,6 +253,12 @@ class UIHelper(Helper):
 
     # This method sort locations by euclidean distance
     def _sort_list_by_distance(self, df):
+        # st.dataframe(df)
+        # for key, item in df[8].items():
+        #     if type(item) != float:
+        #      st.write("key is", key)
+        #      st.write("item is", item)
+
         latlng = [0] * 2
         latlng[0] = st.session_state.user_lat if 'user_lat' in st.session_state else 53.4
         latlng[1] = st.session_state.user_lng if 'user_lng' in st.session_state else -1.5
@@ -261,9 +268,10 @@ class UIHelper(Helper):
         lat1 = math.radians(latlng[0])
         lon1 = math.radians(latlng[1])
 
-        lat2 = df[11].astype(float).apply(math.radians)
-        lon2 = df[10].astype(float).apply(math.radians)
+        lat2 = df[10].astype(float).apply(math.radians)
+        lon2 = df[9].astype(float).apply(math.radians)
 
+        
         dlat = lat2 - lat1
         dlon = lon2 - lon1
 
@@ -286,15 +294,19 @@ class UIHelper(Helper):
     def _get_db_df(self):
         data = self._get_db()
         df = []
+        counter = 0
         for location in data['features']:
             match = re.search(r'href=[\'"]?([^\'" >]+)', location['properties']['epw'])
             if match:
                 url = match.group(1)
                 if 'SWEC' not in url: #Remove SWEC files
                     url_str = url.split('/')
+                    if len(url_str) == 7:
+                        url_str = url_str[0:5]+[np.nan]+url_str[5:7]
                     url_str += [url]
-                    url_str += location['geometry']['coordinates']        
+                    url_str += location['geometry']['coordinates']
                     df.append(url_str)
+                    counter += 1
 
         df = pd.DataFrame(df)
         if 'filter_option' in st.session_state:
@@ -320,8 +332,8 @@ class UIHelper(Helper):
 
     def _get_advanced_search_dropdowns(self):
         df = self._get_db_df()
-
-        regions = df[4].unique() 
+        
+        regions = df[3].unique() 
         regions_dropdown = [{
             "title": "All",
             "pf": 'all',
@@ -329,9 +341,9 @@ class UIHelper(Helper):
         countries_dropdown = {"All": ['All']}
         states_dropdown = {"All": ['All']}
         for i in range(len(regions)):
-            countries_dropdown_individual_region = df[df[4] == regions[i]][5].unique().tolist()        
+            countries_dropdown_individual_region = df[df[3] == regions[i]][4].unique().tolist()        
             countries_dropdown[regions[i]] = ['All in Region '+regions[i][-1]] + countries_dropdown_individual_region
-            
+
             regions_str = regions[i].split('_')
             regions_str = [regions_str[j].upper() if (regions_str[j] == 'wmo') else regions_str[j].capitalize() if (regions_str[j] != 'and') else regions_str[j] for j in range(len(regions_str))]
             regions_dropdown_title = ' '.join(regions_str)
@@ -341,7 +353,7 @@ class UIHelper(Helper):
             }
 
             for j in range(len(countries_dropdown_individual_region)):        
-                states_dropdown_individual_country = df[df[5] == countries_dropdown_individual_region[j]][6].dropna().unique().tolist()
+                states_dropdown_individual_country = df[df[4] == countries_dropdown_individual_region[j]][5].dropna().unique().tolist()
                 states_dropdown_individual_country = list(filter(None, states_dropdown_individual_country))
                 states_dropdown[countries_dropdown_individual_region[j]] = ['All in '+countries_dropdown_individual_region[j]] + states_dropdown_individual_country
 
@@ -352,13 +364,13 @@ class UIHelper(Helper):
         for i in range(len(df)):
             weather_data_dropdown.append({
                 "title": weather_data_dropdown_titles[i],
-                "region": df.iloc[i,4],
-                "country": df.iloc[i,5],
-                "state": df.iloc[i,6],
-                "file_name": df.iloc[i,8],
-                "file_url": df.iloc[i,9]
+                "region": df.iloc[i,3],
+                "country": df.iloc[i,4],
+                "state": df.iloc[i,5],
+                "file_name": df.iloc[i,7],
+                "file_url": df.iloc[i,8]
             })
-                
+        
         return regions_dropdown, countries_dropdown, states_dropdown, weather_data_dropdown
    
 
