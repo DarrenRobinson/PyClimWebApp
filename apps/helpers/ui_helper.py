@@ -1,3 +1,5 @@
+import datetime
+# from altair.vegalite.v4.schema.core import Axis
 import streamlit as st
 import math
 import pandas as pd
@@ -9,7 +11,6 @@ from urllib.request import Request, urlopen
 # import pydeck as pdk
 import pandas as pd
 from apps.helpers.helper import Helper
-import numpy as np
 
 # General naming convention:
 # func(): methods to be called by user
@@ -253,11 +254,6 @@ class UIHelper(Helper):
 
     # This method sort locations by euclidean distance
     def _sort_list_by_distance(self, df):
-        # st.dataframe(df)
-        # for key, item in df[8].items():
-        #     if type(item) != float:
-        #      st.write("key is", key)
-        #      st.write("item is", item)
 
         latlng = [0] * 2
         latlng[0] = st.session_state.user_lat if 'user_lat' in st.session_state else 53.4
@@ -268,9 +264,8 @@ class UIHelper(Helper):
         lat1 = math.radians(latlng[0])
         lon1 = math.radians(latlng[1])
 
-        lat2 = df[10].astype(float).apply(math.radians)
-        lon2 = df[9].astype(float).apply(math.radians)
-
+        lat2 = df['lat'].astype(float).apply(math.radians)
+        lon2 = df['lon'].astype(float).apply(math.radians)
         
         dlat = lat2 - lat1
         dlon = lon2 - lon1
@@ -284,9 +279,8 @@ class UIHelper(Helper):
 
         distance = R * temp_df['c'] 
         
-        df[len(df.columns)] = distance
-        df = df.sort_values(len(df.columns)-1) 
-
+        df['distance'] = distance
+        df = df.sort_values('distance') 
         return df
 
     # This method converts the data object to a dataframe with columns like coordinates and epw file names;
@@ -294,7 +288,6 @@ class UIHelper(Helper):
     def _get_db_df(self):
         data = self._get_db()
         df = []
-        counter = 0
         for location in data['features']:
             match = re.search(r'href=[\'"]?([^\'" >]+)', location['properties']['epw'])
             if match:
@@ -302,20 +295,24 @@ class UIHelper(Helper):
                 if 'SWEC' not in url: #Remove SWEC files
                     url_str = url.split('/')
                     if len(url_str) == 7:
-                        url_str = url_str[0:5]+[np.nan]+url_str[5:7]
+                        url_str = url_str[0:5]+[None]+url_str[5:7]
                     url_str += [url]
                     url_str += location['geometry']['coordinates']
                     df.append(url_str)
-                    counter += 1
 
         df = pd.DataFrame(df)
+        df = df.drop([0, 1, 2, 7], axis = 1)
+        df = df.rename(columns={3: 'region', 4: 'country', 5: 'state', 6: 'title', 8: 'file_url', 9: 'lon', 10: 'lat'})
+        df['title'] = df['title'].apply(lambda x: ' '.join(re.split('_|\.', str(x))))
+
         if 'filter_option' in st.session_state:
             if st.session_state.filter_option == self.sort_list:
                 df = self._sort_list_by_distance(df)
             elif st.session_state.filter_option == self.filter_list:
-                df = df.sort_values([5, 6, 7])
+                df = df.sort_values(['region', 'country', 'state'])
         else:
             df = self._sort_list_by_distance(df)
+        
         return df
 
 
@@ -332,45 +329,37 @@ class UIHelper(Helper):
 
     def _get_advanced_search_dropdowns(self):
         df = self._get_db_df()
-        
-        regions = df[3].unique() 
+
+        # begin_time = datetime.datetime.now()
+
+        regions = df['region'].unique()
         regions_dropdown = [{
             "title": "All",
             "pf": 'all',
         }] * (len(regions)+1)
-        countries_dropdown = {"All": ['All']}
-        states_dropdown = {"All": ['All']}
         for i in range(len(regions)):
-            countries_dropdown_individual_region = df[df[3] == regions[i]][4].unique().tolist()        
-            countries_dropdown[regions[i]] = ['All in Region '+regions[i][-1]] + countries_dropdown_individual_region
-
             regions_str = regions[i].split('_')
-            regions_str = [regions_str[j].upper() if (regions_str[j] == 'wmo') else regions_str[j].capitalize() if (regions_str[j] != 'and') else regions_str[j] for j in range(len(regions_str))]
+            for j in range(len(regions_str)):
+                if (regions_str[j] == 'wmo'):
+                    regions_str[j] = regions_str[j].upper()
+                elif (regions_str[j] != 'and'):
+                    regions_str[j] = regions_str[j].capitalize()
+                else:
+                    regions_str[j] = regions_str[j]
+            # regions_str = [regions_str[j].upper() if (regions_str[j] == 'wmo') else regions_str[j].capitalize() if (regions_str[j] != 'and') else regions_str[j] for j in range(len(regions_str))]
             regions_dropdown_title = ' '.join(regions_str)
             regions_dropdown[int(regions_str[-1])] = {
                 "title": regions_dropdown_title,
                 "pf": regions[i]
             }
 
-            for j in range(len(countries_dropdown_individual_region)):        
-                states_dropdown_individual_country = df[df[4] == countries_dropdown_individual_region[j]][5].dropna().unique().tolist()
-                states_dropdown_individual_country = list(filter(None, states_dropdown_individual_country))
-                states_dropdown[countries_dropdown_individual_region[j]] = ['All in '+countries_dropdown_individual_region[j]] + states_dropdown_individual_country
+        # st.write(datetime.datetime.now() - begin_time)
 
-        weather_data_dropdown = []
-        weather_data_dropdown_titles = pd.DataFrame(df[7].apply(lambda x: re.split('_|\.', str(x))).tolist())
-        weather_data_dropdown_titles = weather_data_dropdown_titles.apply(lambda x: x.str.cat(sep=' '), axis=1)
-        
-        for i in range(len(df)):
-            weather_data_dropdown.append({
-                "title": weather_data_dropdown_titles[i],
-                "region": df.iloc[i,3],
-                "country": df.iloc[i,4],
-                "state": df.iloc[i,5],
-                "file_name": df.iloc[i,7],
-                "file_url": df.iloc[i,8]
-            })
-        
+
+        weather_data_dropdown = df.to_dict('records')
+        countries_dropdown = df[['region', 'country']].drop_duplicates()
+        states_dropdown = df[['country', 'state']].dropna().drop_duplicates()
+
         return regions_dropdown, countries_dropdown, states_dropdown, weather_data_dropdown
    
 
@@ -424,26 +413,27 @@ class UIHelper(Helper):
                     epw_col1, epw_col2 = st.beta_columns(2)
 
                     if 'region' in st.session_state:
-                        if st.session_state.region['title'] == 'All':
-                            countries_dropdown_options = []
-                        else:
-                            countries_dropdown_options = countries_dropdown[st.session_state.region['pf']]
+                        countries_dropdown_options = countries_dropdown[countries_dropdown['region'] == st.session_state.region['pf']]['country']
+
                     epw_col1.selectbox("Country", countries_dropdown_options, key='country')
-                    
-                    states_dropdown_options = []
-                    if self._check_if_a_valid_option_is_selected('country', 'All in'):
-                        if len(states_dropdown[st.session_state.country]) > 1:
-                            states_dropdown_options = states_dropdown[st.session_state.country] 
+
+                    if 'country' in st.session_state:
+                        states_dropdown_options = states_dropdown[states_dropdown['country'] == st.session_state.country]['state']
+
                     epw_col2.selectbox("State", states_dropdown_options, key='state')
                     
                     if self._check_if_a_valid_option_is_selected('region', 'all'):
                         if self._check_if_a_valid_option_is_selected('country', 'All in'):
                             if self._check_if_a_valid_option_is_selected('state', 'All in'):
-                                weather_data_dropdown_options = [ d for d in weather_data_dropdown if ((d['state'] in st.session_state.state) & (d['state'] != ''))]
+                                weather_data_dropdown = [ d for d in weather_data_dropdown if d['state'] is not None]                                
+                                weather_data_dropdown_options = [ d for d in weather_data_dropdown if d['state'] in st.session_state.state]                                
+                                # weather_data_dropdown_options = weather_data_dropdown_options[weather_data_dropdown_options['state'] == st.session_state.state]
                             else:
                                 weather_data_dropdown_options = [ d for d in weather_data_dropdown if d['country'] in st.session_state.country]
+                                # weather_data_dropdown_options = weather_data_dropdown_options[weather_data_dropdown_options['country'] == st.session_state.country]
                         else:
                             weather_data_dropdown_options = [ d for d in weather_data_dropdown if d['region'] in st.session_state.region['pf']]   
+                            # weather_data_dropdown_options = weather_data_dropdown_options[weather_data_dropdown_options['region'] == st.session_state.region['pf']]
 
         self.file_name = st.sidebar.selectbox(
             'Weather Data File List (Keyword Search Enabled)', 
@@ -451,7 +441,7 @@ class UIHelper(Helper):
             format_func=lambda x: x['title'],
             help="A list of available weather data files"
         )      
-
+        
         return self.file_name
 
 
