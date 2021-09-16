@@ -1,6 +1,4 @@
 from multiapp import MultiApp
-import streamlit as st
-import datetime
 # 1. Import your features here using file names (without extension)
 from apps import sunpath, WindRose, SolarGeo_subplots_solartime, WeatherAnalysis, SolarIrradiation_Aniso, psychros, intro
 
@@ -20,6 +18,5 @@ app.add_app("Weather Analysis", "WeatherAnalysis", WeatherAnalysis.app)
 app.add_app("Psychrometric Analysis", "psychros", psychros.app)
 app.add_app("Wind Rose", "windrose", WindRose.app)
 
-begin_time = datetime.datetime.now()
+
 app.run()
-st.write(datetime.datetime.now() - begin_time)
