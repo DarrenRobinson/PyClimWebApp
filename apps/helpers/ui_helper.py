@@ -1,4 +1,5 @@
-import datetime
+# import datetime
+# import tracemalloc
 # from altair.vegalite.v4.schema.core import Axis
 import streamlit as st
 import math
@@ -7,7 +8,7 @@ from io import BytesIO
 import base64
 import json
 import re
-from urllib.request import Request, urlopen
+from urllib.request import urlopen
 # import pydeck as pdk
 import pandas as pd
 from apps.helpers.helper import Helper
@@ -23,7 +24,9 @@ class UIHelper(Helper):
         self.sort_list = 'by distance from target site:'
         self.filter_list = 'hierarchically by region:'
         self.file_name = {}
-
+        self.df = self._get_db_df()
+        self.default_lat = 53.4
+        self.default_lon = -1.5
     #
     # The following methods
     # (
@@ -50,7 +53,6 @@ class UIHelper(Helper):
                     "start_hour": feature['file_title']+"_start_hour",
                     "end_hour": feature['file_title']+"_end_hour"
                 } 
-                
 
     # This method generates a set of number arrays for days in different months (e.g. for start and end day dropdowns)
     def _days_in_a_month(self):
@@ -251,24 +253,18 @@ class UIHelper(Helper):
         response = urlopen('https://github.com/NREL/EnergyPlus/raw/develop/weather/master.geojson')
         data = json.loads(response.read().decode('utf8'))
         return data
+    
+    # These methods (_calculate_d, _sort_list_by_distance) sort locations by euclidean distance
+    def _calculate_d(self, df_latlng, session_str, default_val):
+        latlng = st.session_state[session_str] if session_str in st.session_state else default_val
+        d1 = math.radians(latlng)
+        d2 = df_latlng.astype(float).apply(math.radians)
+        d3 = d2 - d1
+        return d3, d2, d1
 
-    # This method sort locations by euclidean distance
     def _sort_list_by_distance(self, df):
-
-        latlng = [0] * 2
-        latlng[0] = st.session_state.user_lat if 'user_lat' in st.session_state else 53.4
-        latlng[1] = st.session_state.user_lng if 'user_lng' in st.session_state else -1.5
-
-        R = 6373.0
-
-        lat1 = math.radians(latlng[0])
-        lon1 = math.radians(latlng[1])
-
-        lat2 = df['lat'].astype(float).apply(math.radians)
-        lon2 = df['lon'].astype(float).apply(math.radians)
-        
-        dlat = lat2 - lat1
-        dlon = lon2 - lon1
+        dlat, lat2, lat1 = self._calculate_d(df['lat'], 'user_lat', self.default_lat)
+        dlon, lon2, lon1 = self._calculate_d(df['lon'], 'user_lng', self.default_lon)
 
         a = ((dlat/2).apply(math.sin)**2) + math.cos(lat1) * (lat2.apply(math.cos)) * (dlon/2).apply(math.sin)**2
 
@@ -276,11 +272,11 @@ class UIHelper(Helper):
         temp_df['a_sq'] = a.apply(math.sqrt)
         temp_df['one_minus_a_sq'] = (1-a).apply(math.sqrt)
         temp_df['c'] = 2 * temp_df.apply(lambda x: math.atan2(x['a_sq'], x['one_minus_a_sq']), axis=1)
-
-        distance = R * temp_df['c'] 
         
-        df['distance'] = distance
+        R = 6373.0
+        df['distance'] = R * temp_df['c'] 
         df = df.sort_values('distance') 
+
         return df
 
     # This method converts the data object to a dataframe with columns like coordinates and epw file names;
@@ -299,20 +295,20 @@ class UIHelper(Helper):
                     url_str += [url]
                     url_str += location['geometry']['coordinates']
                     df.append(url_str)
-
+        
         df = pd.DataFrame(df)
         df = df.drop([0, 1, 2, 7], axis = 1)
         df = df.rename(columns={3: 'region', 4: 'country', 5: 'state', 6: 'title', 8: 'file_url', 9: 'lon', 10: 'lat'})
         df['title'] = df['title'].apply(lambda x: ' '.join(re.split('_|\.', str(x))))
 
         if 'filter_option' in st.session_state:
-            if st.session_state.filter_option == self.sort_list:
-                df = self._sort_list_by_distance(df)
-            elif st.session_state.filter_option == self.filter_list:
+            if st.session_state.filter_option == self.filter_list:
                 df = df.sort_values(['region', 'country', 'state'])
+            elif st.session_state.filter_option == self.sort_list:
+                df = self._sort_list_by_distance(df)
         else:
             df = self._sort_list_by_distance(df)
-        
+
         return df
 
 
@@ -328,15 +324,13 @@ class UIHelper(Helper):
     #
 
     def _get_advanced_search_dropdowns(self):
-        df = self._get_db_df()
-
-        # begin_time = datetime.datetime.now()
-
-        regions = df['region'].unique()
+        regions = self.df['region'].unique()
         regions_dropdown = [{
-            "title": "All",
-            "pf": 'all',
-        }] * (len(regions)+1)
+            "title": "All", 
+            "pf": 'all', 
+        }] * (len(regions) + 1)
+        countries_dropdown = {"All": ['All']}
+        states_dropdown = {"All": ['All']}
         for i in range(len(regions)):
             regions_str = regions[i].split('_')
             for j in range(len(regions_str)):
@@ -353,13 +347,14 @@ class UIHelper(Helper):
                 "pf": regions[i]
             }
 
-        # st.write(datetime.datetime.now() - begin_time)
+            countries_dropdown_individual_region = self.df[self.df['region'] == regions[i]]['country'].unique().tolist()        
+            countries_dropdown[regions[i]] = ['All in Region '+regions[i][-1]] + countries_dropdown_individual_region
+            for j in range(len(countries_dropdown_individual_region)):        
+                states_dropdown_individual_country = self.df[self.df['country'] == countries_dropdown_individual_region[j]]['state'].unique().tolist()
+                states_dropdown_individual_country = list(filter(None, states_dropdown_individual_country))
+                states_dropdown[countries_dropdown_individual_region[j]] = ['All in '+countries_dropdown_individual_region[j]] + states_dropdown_individual_country
 
-
-        weather_data_dropdown = df.to_dict('records')
-        countries_dropdown = df[['region', 'country']].drop_duplicates()
-        states_dropdown = df[['country', 'state']].dropna().drop_duplicates()
-
+        weather_data_dropdown = self.df[['region', 'country', 'state', 'title', 'file_url']].to_dict('records')
         return regions_dropdown, countries_dropdown, states_dropdown, weather_data_dropdown
    
 
@@ -368,9 +363,9 @@ class UIHelper(Helper):
         if 'filter_option' in st.session_state:
             if st.session_state.filter_option != self.sort_list:
                 if 'user_lat' in st.session_state:
-                    st.session_state.user_lat = 53.40
+                    st.session_state.user_lat = self.default_lat
                 if 'user_lng' in st.session_state:
-                    st.session_state.user_lng = -1.5
+                    st.session_state.user_lng = self.default_lon
             if st.session_state.filter_option != self.filter_list:
                 if 'region' in st.session_state:
                     st.session_state.region = {
@@ -392,7 +387,6 @@ class UIHelper(Helper):
     # This method populates the advanced search panel and weather data file list
     def advanced_search(self):
         regions_dropdown, countries_dropdown, states_dropdown, weather_data_dropdown = self._get_advanced_search_dropdowns()
-        weather_data_dropdown_options = weather_data_dropdown
         expander = st.sidebar.beta_expander(label='Weather Data Search')
         with expander:
             st.write("Search")
@@ -411,33 +405,38 @@ class UIHelper(Helper):
                         key='region'
                     )
                     epw_col1, epw_col2 = st.beta_columns(2)
-
+                    
                     if 'region' in st.session_state:
-                        countries_dropdown_options = countries_dropdown[countries_dropdown['region'] == st.session_state.region['pf']]['country']
+                        if st.session_state.region['title'] == 'All':
+                            countries_dropdown = []
+                        else:
+                            countries_dropdown = countries_dropdown[st.session_state.region['pf']]
+                    epw_col1.selectbox("Country", countries_dropdown, key='country')
 
-                    epw_col1.selectbox("Country", countries_dropdown_options, key='country')
-
-                    if 'country' in st.session_state:
-                        states_dropdown_options = states_dropdown[states_dropdown['country'] == st.session_state.country]['state']
-
-                    epw_col2.selectbox("State", states_dropdown_options, key='state')
+                    if self._check_if_a_valid_option_is_selected('country', 'All in'):
+                        if len(states_dropdown[st.session_state.country]) > 1:
+                            states_dropdown = states_dropdown[st.session_state.country] 
+                        else:
+                            states_dropdown = []
+                    epw_col2.selectbox("State", states_dropdown, key='state')
                     
                     if self._check_if_a_valid_option_is_selected('region', 'all'):
                         if self._check_if_a_valid_option_is_selected('country', 'All in'):
                             if self._check_if_a_valid_option_is_selected('state', 'All in'):
-                                weather_data_dropdown = [ d for d in weather_data_dropdown if d['state'] is not None]                                
-                                weather_data_dropdown_options = [ d for d in weather_data_dropdown if d['state'] in st.session_state.state]                                
-                                # weather_data_dropdown_options = weather_data_dropdown_options[weather_data_dropdown_options['state'] == st.session_state.state]
-                            else:
-                                weather_data_dropdown_options = [ d for d in weather_data_dropdown if d['country'] in st.session_state.country]
-                                # weather_data_dropdown_options = weather_data_dropdown_options[weather_data_dropdown_options['country'] == st.session_state.country]
+                                results = []
+                                for item in weather_data_dropdown:
+                                    if item['state'] is not None:
+                                        if item['state'] in st.session_state.state:
+                                            results.append(item)
+                                weather_data_dropdown = results                              
+                            else: 
+                                weather_data_dropdown = [ d for d in weather_data_dropdown if d['country'] in st.session_state.country]
                         else:
-                            weather_data_dropdown_options = [ d for d in weather_data_dropdown if d['region'] in st.session_state.region['pf']]   
-                            # weather_data_dropdown_options = weather_data_dropdown_options[weather_data_dropdown_options['region'] == st.session_state.region['pf']]
+                            weather_data_dropdown = [ d for d in weather_data_dropdown if d['region'] in st.session_state.region['pf']]   
 
         self.file_name = st.sidebar.selectbox(
             'Weather Data File List (Keyword Search Enabled)', 
-            weather_data_dropdown_options,
+            weather_data_dropdown,
             format_func=lambda x: x['title'],
             help="A list of available weather data files"
         )      

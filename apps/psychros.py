@@ -27,10 +27,9 @@ def app(app, epw, ui):
     # Time filter
     ui.time_filter(app['file_title'])
 
-    # colour = st.sidebar.color_picker(color_picker_label, value='#0C791A', help="By default when applying filters, all data should be plotted in the same colour")
-    colour = '#0C791A'
+    colour = st.sidebar.color_picker('Colour Picker', value='#0C791A', help="By default when applying filters, all data should be plotted in the same colour")
+    # colour = '#0C791A'
 
-    # file_list = []
     temp_list = []
     rh_list = []
     g_list = []
