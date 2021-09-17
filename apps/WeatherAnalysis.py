@@ -23,7 +23,6 @@ def app(app, epw, ui, timeshift=timeshift):
 
     globaleff = False
     daynum_list = []
-    # file_list = []
     # temp_list = []
     dailymeantemp_list = []
     # rh_list = []
@@ -89,7 +88,7 @@ def app(app, epw, ui, timeshift=timeshift):
     global_list = epw.dataframe['Global Horizontal Radiation'].values.tolist()
     diffuse_list = epw.dataframe['Diffuse Horizontal Radiation'].values.tolist()
     winspeed_list = epw.dataframe['Wind Speed'].values.tolist()
-    windir_list = epw.dataframe['Wind Direction'].values.tolist()
+    # windir_list = epw.dataframe['Wind Direction'].values.tolist()
 
     daynum_list = [31,28,31,30,31,30,31,31,30,31,30,31] 
     AnnualIgh = sum(global_list)/1000
@@ -115,26 +114,26 @@ def app(app, epw, ui, timeshift=timeshift):
             SStime_list.append(min(24,SStime+dT))
             SRtime_list.append(max(1,SRtime+dT))
             for k in range(1,25):
-                    temp_matrix[i-1].append(temp_list[24*(cumday-1)+k-1])
-                    winspeed_matrix[i-1].append(winspeed_list[24*(cumday-1)+k-1])
-                    rh_matrix[i-1].append(rh_list[24*(cumday-1)+k-1])
-                    WindKineticEnergy=WindKineticEnergy+0.5*Rho*winspeed_list[24*(cumday-1)+k-1]**3/1000
-                    #Accrue monthly degree days
-                    #annual mean temp for ground temperature model
-                    annualmeantemp=annualmeantemp+temp_list[24*(cumday-1)+k-1]/len(temp_list)
-                    daymeantemp = daymeantemp + temp_list[24*(cumday-1)+k-1]/24
-                    daytempprofile.append(temp_list[24*(cumday-1)+k-1])
-                    #This populates an hour list of iluminance, for an iluminance availability plot
-                    ibn=0
-                    illuminance=0
-                    solalt = solar_altitude(cumday,k + dT,lat,dec_list[cumday-1])
-                    if solalt>0 and global_list[24*(cumday-1)+k-1]>0:
-                        ibn = (global_list[24*(cumday-1)+k-1] - diffuse_list[24*(cumday-1)+k-1])/math.sin(solalt)
-                        if globaleff==True and diffuse_list[24*(cumday-1)+k-1]>0:
-                            illuminance = global_list[24*(cumday-1)+k-1]*LumEff(globaleff,cumday,solalt,diffuse_list[24*(cumday-1)+k-1],ibn)
-                        elif globaleff==False and diffuse_list[24*(cumday-1)+k-1]>0:
-                            illuminance = diffuse_list[24*(cumday-1)+k-1]*LumEff(globaleff,cumday,solalt,diffuse_list[24*(cumday-1)+k-1],ibn)
-                    illuminance_list.append(illuminance*10**-3)
+                temp_matrix[i-1].append(temp_list[24*(cumday-1)+k-1])
+                winspeed_matrix[i-1].append(winspeed_list[24*(cumday-1)+k-1])
+                rh_matrix[i-1].append(rh_list[24*(cumday-1)+k-1])
+                WindKineticEnergy=WindKineticEnergy+0.5*Rho*winspeed_list[24*(cumday-1)+k-1]**3/1000
+                #Accrue monthly degree days
+                #annual mean temp for ground temperature model
+                annualmeantemp=annualmeantemp+temp_list[24*(cumday-1)+k-1]/len(temp_list)
+                daymeantemp = daymeantemp + temp_list[24*(cumday-1)+k-1]/24
+                daytempprofile.append(temp_list[24*(cumday-1)+k-1])
+                #This populates an hour list of iluminance, for an iluminance availability plot
+                ibn=0
+                illuminance=0
+                solalt = solar_altitude(cumday,k + dT,lat,dec_list[cumday-1])
+                if solalt>0 and global_list[24*(cumday-1)+k-1]>0:
+                    ibn = (global_list[24*(cumday-1)+k-1] - diffuse_list[24*(cumday-1)+k-1])/math.sin(solalt)
+                    if globaleff==True and diffuse_list[24*(cumday-1)+k-1]>0:
+                        illuminance = global_list[24*(cumday-1)+k-1]*LumEff(globaleff,cumday,solalt,diffuse_list[24*(cumday-1)+k-1],ibn)
+                    elif globaleff==False and diffuse_list[24*(cumday-1)+k-1]>0:
+                        illuminance = diffuse_list[24*(cumday-1)+k-1]*LumEff(globaleff,cumday,solalt,diffuse_list[24*(cumday-1)+k-1],ibn)
+                illuminance_list.append(illuminance*10**-3)
             if daymeantemp > CDDbase:
                 MonthlyCDD_list[i-1] = MonthlyCDD_list[i-1] + (daymeantemp - CDDbase)
                 TotalCDD = TotalCDD + (daymeantemp - CDDbase)
