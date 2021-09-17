@@ -24,9 +24,10 @@ class UIHelper(Helper):
         self.sort_list = 'by distance from target site:'
         self.filter_list = 'hierarchically by region:'
         self.file_name = {}
-        self.df = self._get_db_df()
         self.default_lat = 53.4
         self.default_lon = -1.5
+        self.df = self._get_db_df()
+
     #
     # The following methods
     # (
