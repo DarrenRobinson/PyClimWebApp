@@ -413,13 +413,14 @@ class UIHelper(Helper):
                         else:
                             countries_dropdown = countries_dropdown[st.session_state.region['pf']]
                     epw_col1.selectbox("Country", countries_dropdown, key='country')
-
+                    
+                    
+                    states_dropdown_options = []
                     if self._check_if_a_valid_option_is_selected('country', 'All in'):
                         if len(states_dropdown[st.session_state.country]) > 1:
-                            states_dropdown = states_dropdown[st.session_state.country] 
-                        else:
-                            states_dropdown = []
-                    epw_col2.selectbox("State", states_dropdown, key='state')
+                            states_dropdown_options = states_dropdown[st.session_state.country] 
+                    
+                    epw_col2.selectbox("State", states_dropdown_options, key='state')
                     
                     if self._check_if_a_valid_option_is_selected('region', 'all'):
                         if self._check_if_a_valid_option_is_selected('country', 'All in'):
