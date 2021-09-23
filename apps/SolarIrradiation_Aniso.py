@@ -11,6 +11,8 @@
 #modelling anisotropy.
 
 #imports the basic libraries
+# import datetime
+# import tracemalloc
 import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
@@ -25,20 +27,20 @@ from apps.ClimAnalFunctions import *
 ##########################################################################################
 
 def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
+
     st.write("# "+app['title'])
 
     DiffuseOnly = st.sidebar.checkbox("DiffuseOnly", value=False, help="If TRUE then only diffuse irradiation is calculated; otherwise direct is also included")
     isotropic = st.sidebar.checkbox("isotropic", value=False, help="If TRUE then simpler calculations are used for an isotropic sky")
-    FirstSweep = True
-
+    # FirstSweep = True
+    # day_list = []
+    # dec_list = []
+    # timediff_list = []
     cumhour=0
-    globalirradbeta=0
-    day_list = []
-    dec_list = []
+    # globalirradbeta=0
     # hour_list = []
     solalt_list = []
     solaz_list = []
-    timediff_list = []
     cai_list = []
     # file_list = []
     global_list = []
@@ -61,37 +63,93 @@ def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
     timeshift = st.sidebar.slider("Timeshift", -0.5, 0.5, timeshift, 0.5, help="This is to handle timing conventions relating to climate data collection")
 
     #this popuates global and diffuse lists with the corresponding solar data
-
     # for i in range (3,len(epw.file_list)):
     #     global_list.append(float(epw.file_list[i][5]))
     #     diffuse_list.append(float(epw.file_list[i][6]))
-    global_list = epw.dataframe['Global Horizontal Radiation'].values.tolist()
-    diffuse_list = epw.dataframe['Diffuse Horizontal Radiation'].values.tolist()
+    # global_list = epw.dataframe['Global Horizontal Radiation'].values.tolist()
+    # diffuse_list = epw.dataframe['Diffuse Horizontal Radiation'].values.tolist()
+    global_list = epw.dataframe['Global Horizontal Radiation'].to_numpy()
+    diffuse_list = epw.dataframe['Diffuse Horizontal Radiation'].to_numpy()
 
+    # begin_time = datetime.datetime.now()
+
+    day_list = np.array(range(1,366))
+    dec_list = declin_angle2(day_list)
+    timediff_list = time_diff2(day_list, False, epw.longitude, epw.timezone, timeshift)
+    day_list_repeat = np.repeat(day_list, 24)
+    dec_list_repeat = np.repeat(dec_list, 24)
+    jhour = np.tile(np.array(range(1,25)), 365)
+    timediff_list_repeat = np.repeat(timediff_list, 24)
+    jhour_x_time = np.add(jhour, timediff_list_repeat)
+    solalt_list = solar_altitude2(day_list_repeat, jhour_x_time, lat, dec_list_repeat)
+    solaz_list = solar_azimuth2(day_list_repeat, jhour_x_time, lat, solalt_list, dec_list_repeat)
+
+    # wallaz = np.array(range(0,360,10))
+    # wallaz = wallaz*pi/180
+    # wallaz = np.tile(np.repeat(wallaz, 8760), 10)
+    # tilt = np.array(range(0,95,10))
+    # tilt = tilt*pi/180
+    # tilt = np.repeat(tilt, 315360)
+    # solalt_list_repeat = np.tile(solalt_list, 360)
+    # solaz_list_repeat = np.tile(solaz_list, 360)
+    # cai_list = cai2(wallaz, tilt, solalt_list_repeat, solaz_list_repeat)
+
+    # global_list_repeat = np.tile(global_list, 360)
+    # diffuse_list_repeat = np.tile(diffuse_list, 360)
+    # day_list_repeat_repeat = np.tile(day_list_repeat, 360)
+    # igbeta_list = igbeta2(day_list_repeat_repeat, cai_list, global_list_repeat, diffuse_list_repeat, solalt_list_repeat, tilt, isotropic, DiffuseOnly, groundref)
+
+    # prev = 0
+    # for i in range(360):
+    #     limit = 8760+prev
+    #     annualirrad_list.append(np.sum(igbeta_list[prev:limit]))
+    #     prev = limit
+
+    tilt = 0
+    wallaz = 0
+    counter = 1
+    for i in range(360):
+        wallaz = 0 if wallaz >= 360 else wallaz
+        cai_list = cai2(wallaz*pi/180, tilt*pi/180, solalt_list, solaz_list)
+        igbeta_list = igbeta2(day_list_repeat, cai_list, global_list, diffuse_list, solalt_list, tilt*pi/180, isotropic, DiffuseOnly, groundref)
+        annualirrad_list.append(np.sum(igbeta_list))
+        tilt = tilt + 10 if ((counter % 36) == 0) else tilt
+        wallaz += 10
+        counter+=1
+
+    # st.write('part one')
+    # st.write(datetime.datetime.now() - begin_time)
+        
+    # begin_time = datetime.datetime.now()
     #This is where the daily and hourly solar quantities are calculated
-    for tilt in range(0,95,10):
-        for wallaz in range (0,360,10):
-            for i in range(1,366):
-                if FirstSweep == True: #no need to re-calculate sun-positions
-                    day_list.append(i)
-                    dec_list.append(declin_angle(i))
-                    timediff_list.append(time_diff(i,False,epw.longitude,epw.timezone,timeshift))
+    # for tilt in range(0,95,10):
+    #     for wallaz in range(0,360,10):
+            # for i in range(1,366):
+                # if FirstSweep: #no need to re-calculate sun-positions
+                #     day_list.append(i)
+                #     dec_list.append(declin_angle(i))
+                #     timediff_list.append(time_diff(i,False,epw.longitude,epw.timezone,timeshift))
                     #This populates a list of daily SR, SS times, for the solar availability plots
-                for j in range(1,25):
-                    cumhour=cumhour+1
-                    if FirstSweep == True: #no need to re-calculate sun-positions
-                        solalt_list.append(solar_altitude(i,j+timediff_list[i-1],lat, dec_list[i-1]))
-                        solaz_list.append(solar_azimuth(i,j+timediff_list[i-1],lat,solalt_list[cumhour-1], dec_list[i-1]))
-                    cai_list.append(cai(wallaz*pi/180,tilt*pi/180,solalt_list[cumhour-1],solaz_list[cumhour-1]))
-                    igbeta_list.append(igbeta(i, cai_list[cumhour-1],global_list[cumhour-1],diffuse_list[cumhour-1],solalt_list[cumhour-1],tilt*pi/180, isotropic, DiffuseOnly, groundref))
-                    globalirradbeta = globalirradbeta + igbeta_list[cumhour-1]    
+                # for j in range(1,25):
+                #     cumhour=cumhour+1
+                    # if FirstSweep: #no need to re-calculate sun-positions
+                    #     solalt_list.append(solar_altitude(i,j+timediff_list[i-1],lat, dec_list[i-1]))
+                    #     solaz_list.append(solar_azimuth(i,j+timediff_list[i-1],lat,solalt_list[cumhour-1], dec_list[i-1]))
+                    # cai_list.append(cai(wallaz*pi/180,tilt*pi/180,solalt_list[cumhour-1],solaz_list[cumhour-1]))
+                    # igbeta_list.append(igbeta(i, cai_list[cumhour-1],global_list[cumhour-1],diffuse_list[cumhour-1],solalt_list[cumhour-1],tilt*pi/180, isotropic, DiffuseOnly, groundref))
+                    # globalirradbeta = globalirradbeta + igbeta_list[cumhour-1]    
             
-            annualirrad_list.append(globalirradbeta)
-            FirstSweep = False
-            globalirradbeta=0
-            cumhour=0
-            cai_list.clear()
-            igbeta_list.clear()
+            # annualirrad_list.append(globalirradbeta)
+
+            # FirstSweep = False
+            # globalirradbeta=0
+            # cumhour=0
+            # cai_list.clear()
+            # igbeta_list.clear()
+
+    # st.write('part two')
+    # st.write(datetime.datetime.now() - begin_time)
+
 
     if isotropic==True:
         #This creates a 2D irradiation surface plot
