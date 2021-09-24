@@ -248,7 +248,7 @@ class UIHelper(Helper):
     # are used for connecting to EnergyPlus
     #
 
-    # @st.cache
+    @st.cache
     def _get_db(self):
         # Connect to EnergyPlus
         response = urlopen('https://github.com/NREL/EnergyPlus/raw/develop/weather/master.geojson')
@@ -311,7 +311,6 @@ class UIHelper(Helper):
             df = self._sort_list_by_distance(df)
 
         return df
-
 
     #
     # The following methods

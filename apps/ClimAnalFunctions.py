@@ -12,7 +12,8 @@
 #imports the basic libraries
 import math
 # import matplotlib.pyplot as plt
-# import numpy as np
+import numpy as np
+import streamlit as st
 # import pandas as pd
 
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX########
@@ -217,15 +218,24 @@ def declin_angle(jday):
     declin_angle = 0.006918 - 0.399912 * math.cos(tau) + 0.070257 * math.sin(tau) - 0.006758 * math.cos(2 * tau) + 0.000907 * math.sin(2 * tau) - 0.002697 * math.cos(3 * tau) + 0.00148 * math.sin(3 * tau)
     return declin_angle
 
+def declin_angle2(jday):
+    tau = 2*pi*(jday-1)/365
+    declin_angle = 0.006918 - 0.399912 * np.cos(tau) + 0.070257 * np.sin(tau) - 0.006758 * np.cos(2 * tau) + 0.000907 * np.sin(2 * tau) - 0.002697 * np.cos(3 * tau) + 0.00148 * np.sin(3 * tau)
+    return declin_angle
 
 #this function calculates the solar altitude in radians
 def solar_altitude(jday, hour, latitude, Declin):
     Hourangle = pi * hour / 12
-    solar_altitude = arcsin(math.sin(latitude) * math.sin(Declin) - math.cos(latitude) * math.cos(Declin) * 	math.cos(Hourangle))
+    solar_altitude = arcsin(math.sin(latitude) * math.sin(Declin) - math.cos(latitude) * math.cos(Declin) * math.cos(Hourangle))
     if solar_altitude < 0:
         solar_altitude = 0
     return solar_altitude
 
+def solar_altitude2(jday, hour, latitude, Declin):
+    Hourangle = pi * hour / 12
+    solar_altitude = np.arcsin(np.sin(latitude) * np.sin(Declin) - np.cos(latitude) * np.cos(Declin) * np.cos(Hourangle))
+    solar_altitude = np.where(solar_altitude < 0, 0, solar_altitude)
+    return solar_altitude
 
 #this function calculates the solar azimuth
 def solar_azimuth(jday, hour, latitude, solalt, declin):
@@ -234,6 +244,11 @@ def solar_azimuth(jday, hour, latitude, solalt, declin):
         solar_azimuth = arccos((-math.sin(latitude) * math.sin(solalt) + math.sin(declin)) / (math.cos(latitude) * math.cos(solalt)))
     else:
         solar_azimuth = ((2 * pi) - arccos((-math.sin(latitude) * math.sin(solalt) + math.sin(declin)) / (math.cos(latitude) * math.cos(solalt))))    
+    return solar_azimuth
+
+def solar_azimuth2(jday, hour, latitude, solalt, declin):
+    Hourangle = pi * hour / 12
+    solar_azimuth = np.where(Hourangle < pi, ( np.arccos( (-np.sin(latitude) * np.sin(solalt) + np.sin(declin)) / (np.cos(latitude) * np.cos(solalt)) ) ),  ( (2 * pi) - np.arccos((-np.sin(latitude) * np.sin(solalt) + np.sin(declin)) / (np.cos(latitude) * np.cos(solalt))) ) )
     return solar_azimuth
 
 
@@ -245,6 +260,11 @@ def cai(wallaz, tilt, solalt, solaz):
         CAI=0
     return CAI
 
+def cai2(wallaz, tilt, solalt, solaz):
+    wallsolaz = np.fabs(solaz-wallaz)
+    CAI = np.cos(solalt)*np.cos(wallsolaz)*np.sin(tilt)+np.sin(solalt)*np.cos(tilt)
+    CAI = np.where(CAI<0, 0, CAI)
+    return CAI
 
 #this function calculates the difference between solar time and clock time
 def time_diff(jday, EqTonly, longitude, timezone, timeshift):
@@ -259,6 +279,19 @@ def time_diff(jday, EqTonly, longitude, timezone, timeshift):
     #conversion to hours:
     time_diff = deltaT / 60
     return time_diff 
+
+def time_diff2(jday, EqTonly, longitude, timezone, timeshift):
+    B = 2 * pi * (jday-1)/365
+    #The term on the left below, converts from radians, through degrees, to minutes: Earth takes 4minutes to rotate one degree.
+    EqT = (4*180/pi) * (0.000075 + 0.001868 * np.cos(B) - 0.032077 * np.sin(B) - 0.014615 * np.cos(2 * B) - 0.040849 * np.sin(2 * B))
+    if EqTonly==False:
+        #NB: timeshift accounts for the climate file time convention: hour-centred corresponds to +/-30mins
+        deltaT = 4 * longitude - 60 * timezone + (60*timeshift) + EqT
+    else:
+        deltaT = EqT
+    #conversion to hours:
+    time_diff = deltaT / 60
+    return time_diff
 
 
 #this function calculates the daynum_listber of hours that the sun is above the horizon
@@ -293,6 +326,11 @@ def igbeta(jday, cai, igh, idh, solalt, tilt, isotropic, DiffuseOnly, groundref)
         igbeta=ibbeta+idbeta+iground
     return igbeta
 
+def igbeta2(jday, cai, igh, idh, solalt, tilt, isotropic, DiffuseOnly, groundref):
+    ibn = np.where(solalt>0, (igh-idh)/np.sin(solalt), 0)
+    idbeta = np.where(isotropic==True, idh*(1+np.cos(tilt))/2, np.where(idh>0, idh_perez2(jday, cai, solalt, idh, ibn, tilt), 0))
+    igbeta = np.where(DiffuseOnly==True, idbeta+(igh*groundref*(1-np.cos(tilt))/2), idbeta+(ibn*cai)+(igh*groundref*(1-np.cos(tilt))/2))
+    return igbeta
 
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX########
 # FUNCTIONS TO CALCULATE THE INCIDENT DIFFUSE / GLOBAL ILLUMINANCE / IRRADIANCE
@@ -327,6 +365,7 @@ def LumEffCoeffs(globaleff, clearness, amc, solalt, brightness):
 def PerezClearness(solalt, idh, ibn):
     ThetaZ=((pi/2)-solalt)*180/pi
     clearness = (((idh + ibn) / idh) + 5.535 * 10 ** -6 * ThetaZ ** 3) / (1 + 5.535 * 10 ** -6 * ThetaZ ** 3)
+
     if (1 <= clearness) and (clearness < 1.065):
         PerezClearness = 1
     elif (1.065 < clearness) and (clearness < 1.23):
@@ -345,6 +384,17 @@ def PerezClearness(solalt, idh, ibn):
         PerezClearness = 8
     return PerezClearness
 
+def PerezClearness2(solalt, idh, ibn):
+    ThetaZ=((pi/2)-solalt)*180/pi
+    clearness = (((idh + ibn) / idh) + 5.535 * 10 ** -6 * ThetaZ ** 3) / (1 + 5.535 * 10 ** -6 * ThetaZ ** 3)
+    PerezClearness = np.where(np.all([(1 <= clearness), (clearness < 1.065)], axis=0), 1, 
+        np.where(np.all([(1.065 < clearness), (clearness < 1.23)], axis=0), 2, 
+        np.where(np.all([(1.23 < clearness), (clearness < 1.5)], axis=0), 3, 
+        np.where(np.all([(1.5 < clearness), (clearness < 1.95)], axis=0), 4, 
+        np.where(np.all([(1.95 < clearness), (clearness < 2.8)], axis=0), 5,
+        np.where(np.all([(2.8 < clearness), (clearness < 4.5)], axis=0), 6, 
+        np.where(np.all([(4.5 < clearness), (clearness < 6.2)], axis=0), 7, 8)))))))
+    return PerezClearness
 
 #Calculates the Perez brightness coefficient
 def PerezBrightness(jday, solalt, idh):
@@ -354,6 +404,12 @@ def PerezBrightness(jday, solalt, idh):
     return PerezBrightness
 
 
+def PerezBrightness2(jday, solalt, idh):
+    IextraT = 1367*(1+0.033*np.cos((360*jday/365)*pi/180))  
+    airmass = 1 / np.sin(solalt)
+    PerezBrightness = airmass*idh/IextraT
+    return PerezBrightness
+
 #this function calculates the Perez coefficients for use in the Perez tilted surface model
 def PerezCoefficients(clearness):
     F11_list = [-0.0083, 0.1299, 0.3297, 0.5682, 0.873, 1.1326, 1.0602, 0.6777]
@@ -362,6 +418,21 @@ def PerezCoefficients(clearness):
     F21_list = [-0.0596, -0.0189, 0.0554, 0.1089, 0.2256, 0.2878, 0.2642, 0.1561]
     F22_list = [0.0721, 0.066, -0.064, -0.1519, -0.462, -0.823, -1.1272, -1.3765]
     F23_list = [-0.022, -0.0289, -0.0261, -0.014, 0.0012, 0.0559, 0.1311, 0.2506]
+    F11 = F11_list[clearness-1]
+    F12 = F12_list[clearness-1]
+    F13 = F13_list[clearness-1]
+    F21 = F21_list[clearness-1]
+    F22 = F22_list[clearness-1]
+    F23 = F23_list[clearness-1]
+    return F11, F12, F13, F21, F22, F23
+
+def PerezCoefficients2(clearness):
+    F11_list = np.array([-0.0083, 0.1299, 0.3297, 0.5682, 0.873, 1.1326, 1.0602, 0.6777])
+    F12_list = np.array([0.5877, 0.6826, 0.4869, 0.1875, -0.392, -1.2367, -1.5999, -0.3273])
+    F13_list = np.array([-0.0621, -0.1514, -0.2211, -0.2951, -0.3616, -0.4118, -0.3589, -0.2504])
+    F21_list = np.array([-0.0596, -0.0189, 0.0554, 0.1089, 0.2256, 0.2878, 0.2642, 0.1561])
+    F22_list = np.array([0.0721, 0.066, -0.064, -0.1519, -0.462, -0.823, -1.1272, -1.3765])
+    F23_list = np.array([-0.022, -0.0289, -0.0261, -0.014, 0.0012, 0.0559, 0.1311, 0.2506])
     F11 = F11_list[clearness-1]
     F12 = F12_list[clearness-1]
     F13 = F13_list[clearness-1]
@@ -388,3 +459,17 @@ def idh_perez(jday, cai, solalt, idh, ibn, tilt):
     idh_perez = idh*((1-F1)*(1+math.cos(tilt))/2+F1*cai/a1+F2*math.sin(tilt))
     return idh_perez
 
+def idh_perez2(jday, cai, solalt, idh, ibn, tilt):
+    solalt = np.where(solalt<(5*pi/180), 5*pi/180, solalt)
+
+    F11, F12, F13, F21, F22, F23 = PerezCoefficients2(PerezClearness2(solalt, idh, ibn))
+    thetaz = (pi/2)-solalt
+    brightness = PerezBrightness2(jday, solalt, idh)
+    F1 = F11+F12*brightness+F13*thetaz
+    F1 = np.where(F1 < 0, 0, F1)
+    F2 = F21+F22*brightness + F23*thetaz
+    a1 = np.sin(solalt)
+    a1 = np.where(a1<np.sin(5*pi/180), np.sin(5*pi/180), a1)
+
+    idh_perez = idh*((1-F1)*(1+np.cos(tilt))/2+F1*cai/a1+F2*np.sin(tilt))
+    return idh_perez

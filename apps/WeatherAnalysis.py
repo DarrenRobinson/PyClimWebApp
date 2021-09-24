@@ -11,6 +11,7 @@
 #5) wind speed / temperature frequency histograms, 6) ground temperature profile. 
 
 #imports the basic libraries
+import datetime
 import streamlit as st
 import math
 import matplotlib.pyplot as plt
@@ -99,11 +100,40 @@ def app(app, epw, ui, timeshift=timeshift):
     # meandaytemp=0
     MonthlyHDD_list = [0 for i in range(0,12)]
     MonthlyCDD_list = [0 for i in range(0,12)]
+    
+    
+    # temp_matrix2 = []
+    # winspeed_matrix2 = []
+    prev = 0
     for i in range(1,13):
-        temp_matrix.append([])
-        winspeed_matrix.append([])
+        limit = 24*daynum_list[i-1]+prev
+        temp_matrix.append(temp_list[prev:limit])
+        winspeed_matrix.append(winspeed_list[prev:limit])
+        rh_matrix.append(rh_list[prev:limit])
+        prev = limit
+    
+    # st.write(temp_matrix2)
+    # st.write(datetime.datetime.now() - begin_time)
+
+    # begin_time = datetime.datetime.now()
+    # temp_matrix3 = []
+    # winspeed_matrix3 = []
+    # cumday2=0
+    # for i in range(1,13):
+    #     temp_matrix3.append([])
+    #     winspeed_matrix3.append([])
+    #     for j in range(1,daynum_list[i-1]+1):
+    #         cumday2+=1
+    #         for k in range(1,25):
+    #             temp_matrix3[i-1].append(temp_list[24*(cumday2-1)+k-1])
+    #             winspeed_matrix3[i-1].append(winspeed_list[24*(cumday2-1)+k-1])
+    # st.write(datetime.datetime.now() - begin_time)
+
+    for i in range(1,13):
+        # temp_matrix.append([])
+        # winspeed_matrix.append([])
         Diurnal_matrix.append([])
-        rh_matrix.append([])
+        # rh_matrix.append([])
         for j in range(1,daynum_list[i-1]+1):
             cumday=cumday+1
             daymeantemp=0
@@ -114,9 +144,9 @@ def app(app, epw, ui, timeshift=timeshift):
             SStime_list.append(min(24,SStime+dT))
             SRtime_list.append(max(1,SRtime+dT))
             for k in range(1,25):
-                temp_matrix[i-1].append(temp_list[24*(cumday-1)+k-1])
-                winspeed_matrix[i-1].append(winspeed_list[24*(cumday-1)+k-1])
-                rh_matrix[i-1].append(rh_list[24*(cumday-1)+k-1])
+                # temp_matrix[i-1].append(temp_list[24*(cumday-1)+k-1])
+                # winspeed_matrix[i-1].append(winspeed_list[24*(cumday-1)+k-1])
+                # rh_matrix[i-1].append(rh_list[24*(cumday-1)+k-1])
                 WindKineticEnergy=WindKineticEnergy+0.5*Rho*winspeed_list[24*(cumday-1)+k-1]**3/1000
                 #Accrue monthly degree days
                 #annual mean temp for ground temperature model
@@ -144,6 +174,8 @@ def app(app, epw, ui, timeshift=timeshift):
             Diurnal_matrix[i-1].append(max(daytempprofile)-min(daytempprofile))
             daytempprofile.clear()
 
+    
+    # st.write(temp_matrix)
     #This part calculates ground temperature profiles. 
     maxmeandaytemp=max(dailymeantemp_list)
     minmeandaytemp=min(dailymeantemp_list)
@@ -192,7 +224,7 @@ def app(app, epw, ui, timeshift=timeshift):
     tground_matrix.clear()
 
     #this plots histograms:
-    fig,ax = plt.subplots(1,1, figsize = (12,6), tight_layout=True)
+    fig, ax = plt.subplots(1,1, figsize = (12,6), tight_layout=True)
     #plots a standard frequency distribution   
 
     xrange=int(max(temp_list))-int(min(temp_list))
@@ -214,7 +246,6 @@ def app(app, epw, ui, timeshift=timeshift):
     st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
     temp_list.clear()
-
 
     fig,ax = plt.subplots(1,1, figsize = (12,6), tight_layout=True)
     #plots a standard frequency distribution

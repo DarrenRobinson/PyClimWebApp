@@ -64,7 +64,7 @@ class MultiApp:
             self.apps,
             format_func=lambda app: app['title']
         )
-
+        
         self.epw.epw_filter(app['file_title'])               # Filter dataset for selected feature if applicable
         # self.epw.epw_to_file_list()                          # Convert the epw dataframe to list format with first two rows as header info
         st.sidebar.write("---")
