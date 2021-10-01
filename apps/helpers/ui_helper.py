@@ -1,6 +1,7 @@
 # import datetime
 # import tracemalloc
 # from altair.vegalite.v4.schema.core import Axis
+import datetime
 import streamlit as st
 import math
 import pandas as pd
@@ -198,8 +199,6 @@ class UIHelper(Helper):
                 months[-1]['title']
             )
 
-
-
     # This method helps with display decisions. It checks if any time filter parameters i.e. month, day & hour are different from default.
     def is_filter_applied(self, feat):
         for var in self.time_var.keys():
@@ -210,7 +209,6 @@ class UIHelper(Helper):
                 elif st.session_state[feat+"_"+var] != self.time_var[var]:
                     return True
         return False
-
 
     #
     # The following methods
@@ -236,8 +234,23 @@ class UIHelper(Helper):
         links_str = ' '.join(links)
         hrefs = '<center>Download figures '+links_str+'</center><br>'
         return hrefs
+    
+    def generate_dl_link(self, fig, filename, format):
+        tmpfile = BytesIO()
+        fig.savefig(tmpfile, format=format, dpi=300)
+        encoded = base64.b64encode(tmpfile.getvalue()).decode('utf-8')
+        href = '<center><a href=\'data:image/{};base64,{}\' download=\'{}\'>{}</a></center><br>'.format(format, encoded, filename+"."+format, 'Download figure')
+        return href
 
-    #
+    def format_selector(self):
+        options = ['jpg', 'png', 'svg', 'pdf']
+        file_format = st.sidebar.selectbox(
+            "Figure format to download",
+            options,
+            index=0
+        )
+        return file_format
+    #   
     # The following methods
     # (
     # _get_db, 
@@ -256,7 +269,7 @@ class UIHelper(Helper):
         return data
     
     # These methods (_calculate_d, _sort_list_by_distance) sort locations by euclidean distance
-    def _calculate_d(self, df_latlng, session_str, default_val):
+    def _calculate_distance(self, df_latlng, session_str, default_val):
         latlng = st.session_state[session_str] if session_str in st.session_state else default_val
         d1 = math.radians(latlng)
         d2 = df_latlng.astype(float).apply(math.radians)
@@ -264,8 +277,8 @@ class UIHelper(Helper):
         return d3, d2, d1
 
     def _sort_list_by_distance(self, df):
-        dlat, lat2, lat1 = self._calculate_d(df['lat'], 'user_lat', self.default_lat)
-        dlon, lon2, lon1 = self._calculate_d(df['lon'], 'user_lng', self.default_lon)
+        dlat, lat2, lat1 = self._calculate_distance(df['lat'], 'user_lat', self.default_lat)
+        dlon, lon2, lon1 = self._calculate_distance(df['lon'], 'user_lng', self.default_lon)
 
         a = ((dlat/2).apply(math.sin)**2) + math.cos(lat1) * (lat2.apply(math.cos)) * (dlon/2).apply(math.sin)**2
 
@@ -357,7 +370,6 @@ class UIHelper(Helper):
         weather_data_dropdown = self.df[['region', 'country', 'state', 'title', 'file_url']].to_dict('records')
         return regions_dropdown, countries_dropdown, states_dropdown, weather_data_dropdown
    
-
     # This method is callback. This method resets the settings when another radio option is selected.
     def _filter_settings_reset(self):
         if 'filter_option' in st.session_state:

@@ -23,6 +23,7 @@ app.add_app("Psychrometric Analysis", "psychros", psychros.app)
 app.add_app("Wind Rose", "windrose", WindRose.app)
 
 
+
 begin_time = datetime.datetime.now()
 tracemalloc.start()
 app.run()

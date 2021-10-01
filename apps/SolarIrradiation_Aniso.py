@@ -36,19 +36,19 @@ def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
     # day_list = []
     # dec_list = []
     # timediff_list = []
-    cumhour=0
+    # cumhour=0
     # globalirradbeta=0
     # hour_list = []
-    solalt_list = []
-    solaz_list = []
-    cai_list = []
+    # solalt_list = []
+    # solaz_list = []
+    # cai_list = []
     # file_list = []
-    global_list = []
-    diffuse_list = []
+    # global_list = []
+    # diffuse_list = []
     # day_global_list = []
     # day_diffuse_list = []
-    igbeta_list = []
-    annualirrad_list = []
+    # igbeta_list = []
+    # annualirrad_list = []
 
     # with open(os.path.join(pathlib.Path(__file__).parent.absolute(), "Finningley.csv"), "r") as file: 
     #     for line in file:
@@ -71,16 +71,14 @@ def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
     global_list = epw.dataframe['Global Horizontal Radiation'].to_numpy()
     diffuse_list = epw.dataframe['Diffuse Horizontal Radiation'].to_numpy()
 
-    # begin_time = datetime.datetime.now()
-
     day_list = np.array(range(1,366))
     dec_list = declin_angle2(day_list)
     timediff_list = time_diff2(day_list, False, epw.longitude, epw.timezone, timeshift)
     day_list_repeat = np.repeat(day_list, 24)
     dec_list_repeat = np.repeat(dec_list, 24)
-    jhour = np.tile(np.array(range(1,25)), 365)
+    hours = np.tile(np.array(range(1,25)), 365)
     timediff_list_repeat = np.repeat(timediff_list, 24)
-    jhour_x_time = np.add(jhour, timediff_list_repeat)
+    jhour_x_time = np.add(hours, timediff_list_repeat)
     solalt_list = solar_altitude2(day_list_repeat, jhour_x_time, lat, dec_list_repeat)
     solaz_list = solar_azimuth2(day_list_repeat, jhour_x_time, lat, solalt_list, dec_list_repeat)
 
@@ -108,19 +106,15 @@ def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
     tilt = 0
     wallaz = 0
     counter = 1
+    annualirrad_list = np.array([])
     for i in range(360):
-        wallaz = 0 if wallaz >= 360 else wallaz
         cai_list = cai2(wallaz*pi/180, tilt*pi/180, solalt_list, solaz_list)
         igbeta_list = igbeta2(day_list_repeat, cai_list, global_list, diffuse_list, solalt_list, tilt*pi/180, isotropic, DiffuseOnly, groundref)
-        annualirrad_list.append(np.sum(igbeta_list))
+        annualirrad_list = np.append(annualirrad_list, np.sum(igbeta_list))
         tilt = tilt + 10 if ((counter % 36) == 0) else tilt
-        wallaz += 10
+        wallaz = wallaz + 10 if wallaz < 350 else 0
         counter+=1
-
-    # st.write('part one')
-    # st.write(datetime.datetime.now() - begin_time)
         
-    # begin_time = datetime.datetime.now()
     #This is where the daily and hourly solar quantities are calculated
     # for tilt in range(0,95,10):
     #     for wallaz in range(0,360,10):
@@ -147,10 +141,6 @@ def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
             # cai_list.clear()
             # igbeta_list.clear()
 
-    # st.write('part two')
-    # st.write(datetime.datetime.now() - begin_time)
-
-
     if isotropic==True:
         #This creates a 2D irradiation surface plot
         xlist = np.linspace(0, 350, 36)
@@ -169,7 +159,6 @@ def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
         # plt.show()
         st.pyplot(fig)
         st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
-
     else:
         #This creates a 2D irradiation surface plot
         xlist = np.linspace(0, 350, 36)
