@@ -10,13 +10,13 @@
 #SOLAR RADIATION, ILLUMINATION AND PSYCHROMETRIC PROCESSES. 
 
 #imports the basic libraries
-import datetime
+# import datetime
 import math
-from matplotlib.pyplot import axis
+# from matplotlib.pyplot import axis
 # import matplotlib.pyplot as plt
 import numpy as np
-import streamlit as st
-import pandas as pd
+# import streamlit as st
+# import pandas as pd
 # import pandas as pd
 
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX########
