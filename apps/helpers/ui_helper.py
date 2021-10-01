@@ -60,7 +60,7 @@ class UIHelper(Helper):
     def _days_in_a_month(self):
         self.days = [0] * 12
         for i in range(1,13):
-            if i in [1, 3, 5, 7, 8, 11, 12]:
+            if i in [1, 3, 5, 7, 8, 10, 12]:
                 self.days[i-1] = list(range(1,32))
             elif i == 2:
                 self.days[i-1] = list(range(1,29))
