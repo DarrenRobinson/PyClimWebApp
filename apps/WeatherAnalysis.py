@@ -11,7 +11,6 @@
 #5) wind speed / temperature frequency histograms, 6) ground temperature profile. 
 
 #imports the basic libraries
-import datetime
 import streamlit as st
 import math
 import matplotlib.pyplot as plt
@@ -64,26 +63,6 @@ def app(app, epw, ui, timeshift=timeshift):
 
     lat = epw.lat * pi / 180
 
-    # numhours = len(file_list)
-    # numhours=0
-    # with open(os.path.join(pathlib.Path(__file__).parent.absolute(), "Finningley.csv"), "r") as file: 
-    #     for line in file:
-    #         line = line.rstrip('\n')
-    #         line = line.split(',')
-    #         file_list.append(line)
-    #         numhours=numhours+1
-    #     file.close()
-
- 
-    #this popuates lists with the corresponding data
-    # for h in range (3, len(epw.file_list)):
-    #     temp_list.append(float(epw.file_list[h][3]))
-    #     rh_list.append(float(epw.file_list[h][4]))
-    #     global_list.append(float(epw.file_list[h][5]))
-    #     diffuse_list.append(float(epw.file_list[h][6]))
-    #     winspeed_list.append(float(epw.file_list[h][7]))
-    #     windir_list.append(float(epw.file_list[h][8]))
-
     temp_list = epw.dataframe['Dry Bulb Temperature'].values.tolist()
     rh_list = epw.dataframe['Relative Humidity'].values.tolist()
     global_list = epw.dataframe['Global Horizontal Radiation'].values.tolist()
@@ -112,23 +91,6 @@ def app(app, epw, ui, timeshift=timeshift):
         rh_matrix.append(rh_list[prev:limit])
         prev = limit
     
-    # st.write(temp_matrix2)
-    # st.write(datetime.datetime.now() - begin_time)
-
-    # begin_time = datetime.datetime.now()
-    # temp_matrix3 = []
-    # winspeed_matrix3 = []
-    # cumday2=0
-    # for i in range(1,13):
-    #     temp_matrix3.append([])
-    #     winspeed_matrix3.append([])
-    #     for j in range(1,daynum_list[i-1]+1):
-    #         cumday2+=1
-    #         for k in range(1,25):
-    #             temp_matrix3[i-1].append(temp_list[24*(cumday2-1)+k-1])
-    #             winspeed_matrix3[i-1].append(winspeed_list[24*(cumday2-1)+k-1])
-    # st.write(datetime.datetime.now() - begin_time)
-
     for i in range(1,13):
         # temp_matrix.append([])
         # winspeed_matrix.append([])
@@ -174,8 +136,6 @@ def app(app, epw, ui, timeshift=timeshift):
             Diurnal_matrix[i-1].append(max(daytempprofile)-min(daytempprofile))
             daytempprofile.clear()
 
-    
-    # st.write(temp_matrix)
     #This part calculates ground temperature profiles. 
     maxmeandaytemp=max(dailymeantemp_list)
     minmeandaytemp=min(dailymeantemp_list)
@@ -192,7 +152,6 @@ def app(app, epw, ui, timeshift=timeshift):
             tground_matrix[i-1].append(Tground(annualmeantemp,amplitude,cum_monthmeandaynum - daynum_list[i-1]/2,t_offset,depth, Conductivity, Density, Cp))
             if i==1:
                 depth_list.append(depth)
-
 
     #PRINT SUMMARY STATISTICS
     st.write('Annual global horizontal solar irradiation: {0:1.2f}' .format(AnnualIgh)  + ', kWh/m\u00b2')
@@ -281,7 +240,6 @@ def app(app, epw, ui, timeshift=timeshift):
     # plt.show()
     st.pyplot(fig)
     st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
-
 
     #plots a degree-day histograms
 

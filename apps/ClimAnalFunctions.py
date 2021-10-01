@@ -10,10 +10,13 @@
 #SOLAR RADIATION, ILLUMINATION AND PSYCHROMETRIC PROCESSES. 
 
 #imports the basic libraries
+# import datetime
 import math
+# from matplotlib.pyplot import axis
 # import matplotlib.pyplot as plt
 import numpy as np
-import streamlit as st
+# import streamlit as st
+# import pandas as pd
 # import pandas as pd
 
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX########
@@ -211,6 +214,11 @@ def sunrise_time(dec, lat, jday):
     SRtime = 12-DL/2
     return SStime, SRtime
 
+def sunrise_time2(dec, lat, jday):
+    DL = daylength2(dec,lat)
+    SStime = 12+DL/2
+    SRtime = 12-DL/2
+    return SStime, SRtime
 
 #this function calculates the declination angle in radians
 def declin_angle(jday):
@@ -299,6 +307,10 @@ def daylength(dec, lat):
     daylength=24*arccos(-math.tan(lat)*math.tan(dec))/pi
     return daylength
 
+def daylength2(dec, lat):
+    daylength=24*np.arccos(-np.tan(lat)*np.tan(dec))/pi
+    return daylength
+
 
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX########
 # FUNCTION TO CALCULATE THE INCIDENT GLOBAL IRRADIANCE
@@ -327,6 +339,7 @@ def igbeta(jday, cai, igh, idh, solalt, tilt, isotropic, DiffuseOnly, groundref)
     return igbeta
 
 def igbeta2(jday, cai, igh, idh, solalt, tilt, isotropic, DiffuseOnly, groundref):
+    np.seterr(divide='ignore',invalid='ignore')
     ibn = np.where(solalt>0, (igh-idh)/np.sin(solalt), 0)
     idbeta = np.where(isotropic==True, idh*(1+np.cos(tilt))/2, np.where(idh>0, idh_perez2(jday, cai, solalt, idh, ibn, tilt), 0))
     igbeta = np.where(DiffuseOnly==True, idbeta+(igh*groundref*(1-np.cos(tilt))/2), idbeta+(ibn*cai)+(igh*groundref*(1-np.cos(tilt))/2))
@@ -345,6 +358,12 @@ def LumEff(globaleff, jday, solalt, idh, ibn):
     LumEff = LumEffCoeffs(globaleff, clearness, amc, solalt, brightness)
     return LumEff
 
+def LumEff2(globaleff, jday, solalt, idh, ibn):
+    amc = 2
+    brightness = PerezBrightness2(jday, solalt, idh)
+    clearness = PerezClearness2(solalt, idh, ibn)
+    LumEff = LumEffCoeffs2(globaleff, clearness, amc, solalt, brightness)
+    return LumEff
 
 def LumEffCoeffs(globaleff, clearness, amc, solalt, brightness):
     if globaleff == True:
@@ -358,6 +377,20 @@ def LumEffCoeffs(globaleff, clearness, amc, solalt, brightness):
         LC_list = [11.962, 0.584, -5.5334, -13.951, -22.75, -36.15, -53.24, -45.27]
         LD_list = [-8.9149, -3.949, -8.7793, -13.9052, -23.74, -28.83, -14.03, -7.98]
     LumEff = LA_list[clearness-1]+LB_list[clearness-1]*amc+LC_list[clearness-1]*math.sin(solalt)+LD_list[clearness-1]*math.log(brightness)
+    return LumEff
+
+def LumEffCoeffs2(globaleff, clearness, amc, solalt, brightness):
+    if globaleff == True:
+        LA_list = np.array([96.6251, 107.5371, 98.7277, 92.721, 86.7266, 88.3516, 78.624, 99.6452])
+        LB_list = np.array([-0.4703, 0.7866, 0.6972, 0.5591, 0.9763, 1.3891, 1.4699, 1.8569])
+        LC_list = np.array([11.501, 1.7899, 4.4046, 8.3579, 7.1033, 6.0641, 4.9305, -4.4555])
+        LD_list = np.array([9.1555, -1.1892, -6.9483, -8.3063, -10.9361, -7.5967, -11.3703, -3.1465])
+    else:
+        LA_list = np.array([97.2375, 107.2129, 104.996, 102.3945, 100.71, 106.42, 141.88, 152.23])
+        LB_list = np.array([-0.4597, 1.1508, 2.9605, 5.589, 5.94, 3.83, 1.9, 0.35])
+        LC_list = np.array([11.962, 0.584, -5.5334, -13.951, -22.75, -36.15, -53.24, -45.27])
+        LD_list = np.array([-8.9149, -3.949, -8.7793, -13.9052, -23.74, -28.83, -14.03, -7.98])
+    LumEff = LA_list[clearness-1]+LB_list[clearness-1]*amc+LC_list[clearness-1]*np.sin(solalt)+LD_list[clearness-1]*np.log(brightness)
     return LumEff
 
 
@@ -382,18 +415,74 @@ def PerezClearness(solalt, idh, ibn):
         PerezClearness = 7
     else: 
         PerezClearness = 8
+
     return PerezClearness
 
 def PerezClearness2(solalt, idh, ibn):
+    # def PerezClearness(solalt, idh, ibn):
+    #     ThetaZ=((pi/2)-solalt)*180/pi
+    #     numpy_divide = np.divide((idh + ibn), idh, out=np.zeros_like(ibn), where=idh!=0)
+    #     clearness = (numpy_divide + 5.535 * 10 ** -6 * ThetaZ ** 3) / (1 + 5.535 * 10 ** -6 * ThetaZ ** 3)
+
+    #     if (1 <= clearness) and (clearness < 1.065):
+    #         PerezClearness = 1
+    #     elif (1.065 < clearness) and (clearness < 1.23):
+    #         PerezClearness = 2
+    #     elif (1.23 < clearness) and (clearness < 1.5):
+    #         PerezClearness = 3
+    #     elif (1.5 < clearness) and (clearness < 1.95):
+    #         PerezClearness = 4
+    #     elif (1.95 < clearness) and (clearness < 2.8):
+    #         PerezClearness = 5
+    #     elif (2.8 < clearness) and (clearness < 4.5):
+    #         PerezClearness = 6
+    #     elif (4.5 < clearness) and (clearness < 6.2):
+    #         PerezClearness = 7
+    #     else: 
+    #         PerezClearness = 8
+
+    #     return PerezClearness
+
+    # func = np.vectorize(PerezClearness)
+    # PerezClearness = func(solalt, idh, ibn)
+    # begin_time = datetime.datetime.now()
+
+    np.seterr(divide='ignore',invalid='ignore')
     ThetaZ=((pi/2)-solalt)*180/pi
-    clearness = (((idh + ibn) / idh) + 5.535 * 10 ** -6 * ThetaZ ** 3) / (1 + 5.535 * 10 ** -6 * ThetaZ ** 3)
-    PerezClearness = np.where(np.all([(1 <= clearness), (clearness < 1.065)], axis=0), 1, 
-        np.where(np.all([(1.065 < clearness), (clearness < 1.23)], axis=0), 2, 
-        np.where(np.all([(1.23 < clearness), (clearness < 1.5)], axis=0), 3, 
-        np.where(np.all([(1.5 < clearness), (clearness < 1.95)], axis=0), 4, 
-        np.where(np.all([(1.95 < clearness), (clearness < 2.8)], axis=0), 5,
-        np.where(np.all([(2.8 < clearness), (clearness < 4.5)], axis=0), 6, 
-        np.where(np.all([(4.5 < clearness), (clearness < 6.2)], axis=0), 7, 8)))))))
+    clearness = (((idh + ibn)/idh) + 5.535 * 10 ** -6 * ThetaZ ** 3) / (1 + 5.535 * 10 ** -6 * ThetaZ ** 3)
+    # clearness = pd.DataFrame(clearness)
+    # PerezClearness = pd.cut(clearness, [0, 2, 4, 6, 8, 10, 12, np.inf], labels=[1,2,3,4,5,6,7,8])
+    PerezClearness = np.where(
+        np.all([(1 <= clearness), (clearness < 1.065)], axis=0), 
+        1, 
+        np.where(
+            np.all([(1.065 < clearness), (clearness < 1.23)], axis=0), 
+            2, 
+            np.where(
+                np.all([(1.23 < clearness), (clearness < 1.5)], axis=0), 
+                3, 
+                np.where(
+                    np.all([(1.5 < clearness), (clearness < 1.95)], axis=0), 
+                    4, 
+                    np.where(
+                        np.all([(1.95 < clearness), (clearness < 2.8)], axis=0), 
+                        5,
+                        np.where(
+                            np.all([(2.8 < clearness), (clearness < 4.5)], axis=0), 
+                            6, 
+                            np.where(
+                                np.all([(4.5 < clearness), (clearness < 6.2)], axis=0), 
+                                7, 
+                                8
+                            )
+                        )
+                    )
+                )
+            )
+        )
+    )
+    # st.write(datetime.datetime.now() - begin_time)
+    # PerezClearness.to_numpy()
     return PerezClearness
 
 #Calculates the Perez brightness coefficient
@@ -461,7 +550,6 @@ def idh_perez(jday, cai, solalt, idh, ibn, tilt):
 
 def idh_perez2(jday, cai, solalt, idh, ibn, tilt):
     solalt = np.where(solalt<(5*pi/180), 5*pi/180, solalt)
-
     F11, F12, F13, F21, F22, F23 = PerezCoefficients2(PerezClearness2(solalt, idh, ibn))
     thetaz = (pi/2)-solalt
     brightness = PerezBrightness2(jday, solalt, idh)
