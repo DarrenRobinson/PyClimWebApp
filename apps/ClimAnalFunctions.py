@@ -10,14 +10,14 @@
 #SOLAR RADIATION, ILLUMINATION AND PSYCHROMETRIC PROCESSES. 
 
 #imports the basic libraries
-# import datetime
 import math
+# import datetime
 # from matplotlib.pyplot import axis
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import numpy as np
-# import streamlit as st
-# import pandas as pd
-# import pandas as pd
+import streamlit as st
+import pandas as pd
+import numpy as np
 
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX########
 # HERE WE OPEN THE CLIMATE FILE AND ASSIGN COORDINATES

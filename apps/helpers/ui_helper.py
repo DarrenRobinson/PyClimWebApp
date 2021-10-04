@@ -1,7 +1,3 @@
-# import datetime
-# import tracemalloc
-# from altair.vegalite.v4.schema.core import Axis
-# import datetime
 import streamlit as st
 import math
 import pandas as pd
@@ -11,6 +7,9 @@ import json
 import re
 from urllib.request import urlopen
 # import pydeck as pdk
+# import datetime
+# import tracemalloc
+# from altair.vegalite.v4.schema.core import Axis
 import pandas as pd
 from apps.helpers.helper import Helper
 
@@ -69,6 +68,7 @@ class UIHelper(Helper):
 
     # _check_day, _check_start_day, _check_end_day are callbacks from start_month and end_month dropdowns.
     def _check_day(self, start_or_end):
+        st.write(self.session_keys)
         if (self.session_keys[start_or_end+'_day'] in st.session_state) & (self.session_keys[start_or_end+'_month'] in st.session_state):
             # If the stored day exceeds the range of days in the new selected month, it will be reset to 1.
             if st.session_state[ self.session_keys[start_or_end+'_day'] ] > (len(self.days[ st.session_state[ self.session_keys[start_or_end+'_month'] ]['value']-1 ])): 
@@ -235,21 +235,21 @@ class UIHelper(Helper):
         hrefs = '<center>Download figures '+links_str+'</center><br>'
         return hrefs
     
-    def generate_dl_link(self, fig, filename, format):
-        tmpfile = BytesIO()
-        fig.savefig(tmpfile, format=format, dpi=300)
-        encoded = base64.b64encode(tmpfile.getvalue()).decode('utf-8')
-        href = '<center><a href=\'data:image/{};base64,{}\' download=\'{}\'>{}</a></center><br>'.format(format, encoded, filename+"."+format, 'Download figure')
-        return href
+    # def generate_dl_link(self, fig, filename, format):
+    #     tmpfile = BytesIO()
+    #     fig.savefig(tmpfile, format=format, dpi=300)
+    #     encoded = base64.b64encode(tmpfile.getvalue()).decode('utf-8')
+    #     href = '<center><a href=\'data:image/{};base64,{}\' download=\'{}\'>{}</a></center><br>'.format(format, encoded, filename+"."+format, 'Download figure')
+    #     return href
 
-    def format_selector(self):
-        options = ['jpg', 'png', 'svg', 'pdf']
-        file_format = st.sidebar.selectbox(
-            "Figure format to download",
-            options,
-            index=0
-        )
-        return file_format
+    # def format_selector(self):
+    #     options = ['jpg', 'png', 'svg', 'pdf']
+    #     file_format = st.sidebar.selectbox(
+    #         "Figure format to download",
+    #         options,
+    #         index=0
+    #     )
+    #     return file_format
     #   
     # The following methods
     # (

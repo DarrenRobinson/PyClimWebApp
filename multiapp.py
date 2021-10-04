@@ -10,7 +10,6 @@ from apps.helpers.ui_helper import UIHelper
 from apps.helpers.epw_helper import EPWHelper
 import streamlit.components.v1 as components
 
-
 class MultiApp:
     def __init__(self):
         self.apps = []
@@ -33,7 +32,6 @@ class MultiApp:
         self.helper.features = self.apps                        # Inform helper of available features
         self.ui.advanced_search()                               # Display sorting/filtering functionalities
         self.epw.read_epw_f(self.ui.file_name['file_url'])      # Fetch the epw dataframe and header info 
-        # self.epw.read_epw_f(self.ui.file_name[4])             # Fetch the epw dataframe and header info 
 
         st.sidebar.markdown(                                    
             "Latitude: "+str(self.epw.lat)+                     

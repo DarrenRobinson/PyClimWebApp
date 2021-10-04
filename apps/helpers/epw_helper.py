@@ -32,11 +32,11 @@ class EPWHelper(Helper):
         return self.dataframe, self.headers
     
     def _read(self,fp):
-        self.headers=self._read_headers(fp)
-        self.dataframe=self._read_data(fp)
-        self.longitude = float(self.headers['LOCATION'][6])
-        self.timezone = float(self.headers['LOCATION'][7])
-        self.lat = float(self.headers['LOCATION'][5])
+        self.headers, self.lat, self.longitude, self.timezone = self._read_headers(fp)
+        self.dataframe = self._read_data(fp)
+        # self.longitude = float(self.headers['LOCATION'][6])
+        # self.timezone = float(self.headers['LOCATION'][7])
+        # self.lat = float(self.headers['LOCATION'][5])
         
     def _read_headers(self,fp):
         d={}
@@ -48,7 +48,7 @@ class EPWHelper(Helper):
                 else:
                     d[row[0]]=row[1:]
             csvfile.close()
-        return d
+        return d, float(d['LOCATION'][5]), float(d['LOCATION'][6]), float(d['LOCATION'][7])
     
     def _read_data(self,fp):
         names=[

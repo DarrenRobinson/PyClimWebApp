@@ -15,19 +15,18 @@
 
 #imports the basic libraries
 # import pandas as pd
-import streamlit as st
-import matplotlib
-from matplotlib import pyplot as plt
-import numpy as np
-
+# import streamlit as st
+# import matplotlib
+# from matplotlib import pyplot as plt
+# import numpy as np
 from apps.ClimAnalFunctions import * 
 
 def app(app, epw, ui):
     st.write("# "+app['title'])
-    matplotlib.use('Agg')
+    # matplotlib.use('Agg')
     # Time filter
     ui.time_filter(app['file_title'])
-
+    st.write(ui.session_keys)
     # colour = st.sidebar.color_picker('Colour Picker', value='#0C791A', help="By default when applying filters, all data should be plotted in the same colour")
     colour = '#0C791A'
 
