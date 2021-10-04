@@ -128,4 +128,4 @@ def app(app, epw, ui):
     # plt.show()
     st.pyplot(fig)
     fig_title = 'Wind Rose'
-    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)

@@ -178,7 +178,7 @@ def app(app, epw, ui, timeshift=timeshift):
     plt.legend(Month_list)
     # plt.show()
     st.pyplot(fig)
-    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
     tground_matrix.clear()
 
@@ -202,7 +202,7 @@ def app(app, epw, ui, timeshift=timeshift):
 
     # plt.show()
     st.pyplot(fig)
-    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
     temp_list.clear()
 
@@ -223,7 +223,7 @@ def app(app, epw, ui, timeshift=timeshift):
 
     # plt.show()
     st.pyplot(fig)
-    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
     winspeed_list.clear()
 
@@ -239,7 +239,7 @@ def app(app, epw, ui, timeshift=timeshift):
 
     # plt.show()
     st.pyplot(fig)
-    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
     #plots a degree-day histograms
 
@@ -255,7 +255,7 @@ def app(app, epw, ui, timeshift=timeshift):
     plt.legend((y1[0],y2[0]), ('Heating', 'Cooling'), loc='best')
     # plt.show()
     st.pyplot(fig)
-    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
 
     #this plots violin plots:
@@ -289,7 +289,7 @@ def app(app, epw, ui, timeshift=timeshift):
     # plt.show()
     st.pyplot(fig)
     fig_title = 'Violin Plots'
-    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
     temp_matrix.clear()
     winspeed_matrix.clear()
@@ -318,7 +318,7 @@ def app(app, epw, ui, timeshift=timeshift):
     plt.plot(day_list, SStime_list,c='red')    
     # plt.show()
     st.pyplot(fig)
-    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
     
     global_list.clear()
 
@@ -346,6 +346,6 @@ def app(app, epw, ui, timeshift=timeshift):
     plt.plot(day_list, SStime_list,c='red')    
     # plt.show()
     st.pyplot(fig)
-    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
     illuminance_list.clear()
