@@ -6,10 +6,6 @@
 ##########################################################################################
 
 #THIS MODULE SIMPLY CREATES A POLAR WIND ROSE PLOT.
-import streamlit as st
-import matplotlib.pyplot as plt
-import numpy as np
-
 from apps.ClimAnalFunctions import *  
 
 def app(app, epw, ui):

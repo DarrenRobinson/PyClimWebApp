@@ -14,16 +14,17 @@
 #to a defined fraction of the wbtd, to mimic adiabatic (evaporative) cooling.
 
 #imports the basic libraries
-import pandas as pd
+# import pandas as pd
 import streamlit as st
-import matplotlib.pyplot as plt
+import matplotlib
+from matplotlib import pyplot as plt
 import numpy as np
 
 from apps.ClimAnalFunctions import * 
 
 def app(app, epw, ui):
     st.write("# "+app['title'])
-       
+    matplotlib.use('Agg')
     # Time filter
     ui.time_filter(app['file_title'])
 

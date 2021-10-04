@@ -9,10 +9,6 @@
 #specification of solar or clock time. It can also create shading protractors.
 
 #imports the basic libraries
-import streamlit as st
-import math
-import matplotlib.pyplot as plt
-
 from apps.ClimAnalFunctions import * 
 
 def app(app, epw, ui):

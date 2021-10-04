@@ -11,10 +11,6 @@
 #modelling anisotropy.
 
 #imports the basic libraries
-import streamlit as st
-import matplotlib.pyplot as plt
-import numpy as np
-
 from apps.ClimAnalFunctions import * 
 
 ##########################################################################################
