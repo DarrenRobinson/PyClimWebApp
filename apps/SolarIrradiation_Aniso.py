@@ -123,7 +123,7 @@ def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
         ax.set_xlabel('Collector azimuth, deg')
         ax.set_ylabel('Collector tilt, deg')
         st.pyplot(fig)
-        st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+        # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
     else:
         #This creates a 2D irradiation surface plot
         xlist = np.linspace(0, 350, 36)
@@ -140,4 +140,4 @@ def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
         ax.set_xlabel('Collector azimuth, deg')
         ax.set_ylabel('Collector tilt, deg')
         st.pyplot(fig)
-        st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+        # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)

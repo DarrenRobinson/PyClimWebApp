@@ -145,5 +145,5 @@ def app(app, epw, ui, timeshift=timeshift):
     # plt.show()
     st.pyplot(fig)
     fig_title = 'Solar Geometry Subplots'
-    st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
     
