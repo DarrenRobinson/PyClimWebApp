@@ -34,9 +34,9 @@ class EPWHelper(Helper):
     def _read(self,fp):
         self.headers=self._read_headers(fp)
         self.dataframe=self._read_data(fp)
-        self.lat = float(self.headers['LOCATION'][5])
         self.longitude = float(self.headers['LOCATION'][6])
         self.timezone = float(self.headers['LOCATION'][7])
+        self.lat = float(self.headers['LOCATION'][5])
         
     def _read_headers(self,fp):
         d={}
