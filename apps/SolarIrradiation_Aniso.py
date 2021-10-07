@@ -11,10 +11,6 @@
 #modelling anisotropy.
 
 #imports the basic libraries
-import streamlit as st
-import matplotlib.pyplot as plt
-import numpy as np
-
 from apps.ClimAnalFunctions import * 
 
 ##########################################################################################
@@ -49,7 +45,7 @@ def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
     # annualirrad_list = []
 
     #This is to access the headers from the epw file
-    lat = epw.lat * pi / 180
+    lat = st.session_state['lat'] * pi / 180
     groundref = st.sidebar.number_input("groundref", 0.0, 1.0, groundref, 0.5)
     timeshift = st.sidebar.slider("Timeshift", -0.5, 0.5, timeshift, 0.5, help="This is to handle timing conventions relating to climate data collection")
 
@@ -60,7 +56,7 @@ def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
     #This is where the daily and hourly solar quantities are calculated
     day_list = np.array(range(1,366))
     dec_list = declin_angle2(day_list)
-    timediff_list = time_diff2(day_list, False, epw.longitude, epw.timezone, timeshift)
+    timediff_list = time_diff2(day_list, False, st.session_state['longitude'], st.session_state['timezone'], timeshift)
     day_list_repeat = np.repeat(day_list, 24)
     dec_list_repeat = np.repeat(dec_list, 24)
     hours = np.tile(np.array(range(1,25)), 365)
@@ -112,7 +108,7 @@ def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
         xlist = np.linspace(0, 350, 36)
         ylist = np.linspace(0, 90, 10) #Note: theer need to be 19 subdivisions (here and for Z) for 5o bins of altitude
         X, Y = np.meshgrid(xlist, ylist)
-        fig,ax=plt.subplots(1,1, figsize=(16,8))
+        fig, ax = plt.subplots(1,1, figsize=(16,8))
         #this part converts the list into an array and reshapes it, to match the x,y dimensions
         Z = np.array(annualirrad_list)*10**-6
         Z = Z.reshape(10,36)
@@ -129,7 +125,7 @@ def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
         xlist = np.linspace(0, 350, 36)
         ylist = np.linspace(0, 90, 10) #Note: theer need to be 19 subdivisions (here and for Z) for 5o bins of altitude
         X, Y = np.meshgrid(xlist, ylist)
-        fig,ax=plt.subplots(1,1, figsize=(16,8))
+        fig, ax = plt.subplots(1,1, figsize=(16,8))
         #this part converts the list into an array and reshapes it, to match the x,y dimensions
         Zprime = np.array(annualirrad_list)*10**-6
         Zprime = Zprime.reshape(10,36)

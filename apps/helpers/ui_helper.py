@@ -1,7 +1,3 @@
-# import datetime
-# import tracemalloc
-# from altair.vegalite.v4.schema.core import Axis
-import datetime
 import streamlit as st
 import math
 import pandas as pd
@@ -11,6 +7,9 @@ import json
 import re
 from urllib.request import urlopen
 # import pydeck as pdk
+# import datetime
+# import tracemalloc
+# from altair.vegalite.v4.schema.core import Axis
 import pandas as pd
 from apps.helpers.helper import Helper
 
@@ -21,7 +20,7 @@ class UIHelper(Helper):
     def __init__(self):
         Helper.__init__(self)
         self._days_in_a_month()
-        self.session_keys = {}
+        # self.session_keys = {}
         self.sort_list = 'by distance from target site:'
         self.filter_list = 'hierarchically by region:'
         self.file_name = {}
@@ -47,14 +46,25 @@ class UIHelper(Helper):
     def _session_keys_init(self, selected_feature):
         for feature in self.features:
             if feature['file_title'] == selected_feature:
-                self.session_keys = {
-                    "start_month": feature['file_title']+"_start_month",
-                    "end_month": feature['file_title']+"_end_month",
-                    "start_day": feature['file_title']+"_start_day",
-                    "end_day": feature['file_title']+"_end_day",
-                    "start_hour": feature['file_title']+"_start_hour",
-                    "end_hour": feature['file_title']+"_end_hour"
-                } 
+                if 'session_keys' not in st.session_state:
+                    st.session_state['session_keys'] = {}
+                st.session_state['session_keys']['start_month'] = feature['file_title']+"_start_month"
+                st.session_state['session_keys']['end_month'] = feature['file_title']+"_end_month"
+                st.session_state['session_keys']['start_day'] = feature['file_title']+"_start_day"
+                st.session_state['session_keys']['end_day'] = feature['file_title']+"_end_day"
+                st.session_state['session_keys']['start_hour'] = feature['file_title']+"_start_hour"
+                st.session_state['session_keys']['end_hour'] = feature['file_title']+"_end_hour"
+                # st.write(st.session_state)
+                # st.write('session_keys' in st.session_state)
+
+                # self.session_keys = {
+                #     "start_month": feature['file_title']+"_start_month",
+                #     "end_month": feature['file_title']+"_end_month",
+                #     "start_day": feature['file_title']+"_start_day",
+                #     "end_day": feature['file_title']+"_end_day",
+                #     "start_hour": feature['file_title']+"_start_hour",
+                #     "end_hour": feature['file_title']+"_end_hour"
+                # } 
 
     # This method generates a set of number arrays for days in different months (e.g. for start and end day dropdowns)
     def _days_in_a_month(self):
@@ -69,11 +79,16 @@ class UIHelper(Helper):
 
     # _check_day, _check_start_day, _check_end_day are callbacks from start_month and end_month dropdowns.
     def _check_day(self, start_or_end):
-        if (self.session_keys[start_or_end+'_day'] in st.session_state) & (self.session_keys[start_or_end+'_month'] in st.session_state):
+        # if (self.session_keys[start_or_end+'_day'] in st.session_state) & (self.session_keys[start_or_end+'_month'] in st.session_state):
+        #     # If the stored day exceeds the range of days in the new selected month, it will be reset to 1.
+        #     if st.session_state[ self.session_keys[start_or_end+'_day'] ] > (len(self.days[ st.session_state[ self.session_keys[start_or_end+'_month'] ]['value']-1 ])): 
+        #         st.session_state[ self.session_keys[start_or_end+'_day'] ] = 1     
+        day = st.session_state['session_keys'][start_or_end+'_day']
+        month = st.session_state['session_keys'][start_or_end+'_month']
+        if (day in st.session_state) & (month in st.session_state):
             # If the stored day exceeds the range of days in the new selected month, it will be reset to 1.
-            if st.session_state[ self.session_keys[start_or_end+'_day'] ] > (len(self.days[ st.session_state[ self.session_keys[start_or_end+'_month'] ]['value']-1 ])): 
-                st.session_state[ self.session_keys[start_or_end+'_day'] ] = 1     
-
+            if st.session_state[day] > (len(self.days[ st.session_state[month]['value']-1 ])): 
+                st.session_state[day] = 1  
     def _check_start_day(self):
         self._check_day('start')
 
@@ -97,30 +112,36 @@ class UIHelper(Helper):
             {"title": "November", "value": 11}, 
             {"title": "December", "value": 12}
         ]
-        
+        start_day = st.session_state['session_keys']['start_day']
+        end_day = st.session_state['session_keys']['end_day']
+        start_month = st.session_state['session_keys']['start_month']
+        end_month = st.session_state['session_keys']['end_month']
+        start_hour = st.session_state['session_keys']['start_hour']
+        end_hour = st.session_state['session_keys']['end_hour']
+
         # Set the dropdowns to display the previously selected month if applicable
-        start_month_index = st.session_state[ self.session_keys['start_month'] ]['value']-1 if self.session_keys['start_month'] in st.session_state else 0
-        end_month_index = st.session_state[ self.session_keys['end_month'] ]['value']-1 if self.session_keys['end_month'] in st.session_state else 11
+        start_month_index = st.session_state[ start_month ]['value']-1 if start_month in st.session_state else 0
+        end_month_index = st.session_state[ end_month ]['value']-1 if end_month in st.session_state else 11
 
         # Set the day range according to the month selected 
-        start_days = self.days[start_month_index]
-        end_days = self.days[end_month_index]
+        start_days = self.days[ start_month_index ]
+        end_days = self.days[ end_month_index ]
         
         # Set the dropdowns to display the previously selected day if applicable
-        start_day_index = st.session_state[ self.session_keys['start_day'] ]-1 if self.session_keys['start_day'] in st.session_state else 0
-        end_day_index = st.session_state[ self.session_keys['end_day'] ]-1 if self.session_keys['end_day'] in st.session_state else end_days.index(max(end_days))
+        start_day_index = st.session_state[ start_day ]-1 if start_day in st.session_state else 0
+        end_day_index = st.session_state[ end_day ]-1 if end_day in st.session_state else end_days.index(max(end_days))
         
         # Set the dropdowns to display the previously selected hour if applicable
-        start_hour_index = st.session_state[ self.session_keys['start_hour'] ]-1 if self.session_keys['start_hour'] in st.session_state else 0
-        end_hour_index = st.session_state[ self.session_keys['end_hour'] ]-1 if self.session_keys['end_hour'] in st.session_state else 23
+        start_hour_index = st.session_state[ start_hour ]-1 if start_hour in st.session_state else 0
+        end_hour_index = st.session_state[ end_hour ]-1 if end_hour in st.session_state else 23
 
         # Dropdowns
-        col1, col2 = st.sidebar.beta_columns(2)
+        col1, col2 = st.sidebar.columns(2)
         col2.selectbox(
             "Start Month", 
             months, 
             format_func=lambda months: months['title'], 
-            key=self.session_keys['start_month'], 
+            key=start_month, 
             index = start_month_index, 
             help="This filter controls the range of data points that are plotted",
             on_change=self._check_start_day
@@ -129,7 +150,7 @@ class UIHelper(Helper):
             "End Month", 
             months, 
             format_func=lambda months: months['title'], 
-            key=self.session_keys['end_month'], 
+            key=end_month, 
             index = end_month_index, 
             help="This filter controls the range of data points that are plotted",
             on_change=self._check_end_day
@@ -137,28 +158,28 @@ class UIHelper(Helper):
         col1.selectbox(
             "Start Day", 
             start_days, 
-            key=self.session_keys['start_day'], 
+            key=start_day, 
             index = start_day_index,
             help="This filter controls the range of data points that are plotted"
         )
         col1.selectbox(
             "End Day", 
             end_days, 
-            key=self.session_keys['end_day'], 
+            key=end_day, 
             index = end_day_index, 
             help="This filter controls the range of data points that are plotted"
         )
         col1.selectbox(
             "Start Hour", 
             list(range(1,25)), 
-            key=self.session_keys['start_hour'], 
+            key=start_hour, 
             index = start_hour_index, 
             help="This filter controls the range of data points that are plotted"
         )
         col2.selectbox(
             "End Hour",
             list(range(1,25)), 
-            key=self.session_keys['end_hour'], 
+            key=end_hour, 
             index = end_hour_index, 
             help="This filter controls the range of data points that are plotted"
         )    
@@ -235,21 +256,21 @@ class UIHelper(Helper):
         hrefs = '<center>Download figures '+links_str+'</center><br>'
         return hrefs
     
-    def generate_dl_link(self, fig, filename, format):
-        tmpfile = BytesIO()
-        fig.savefig(tmpfile, format=format, dpi=300)
-        encoded = base64.b64encode(tmpfile.getvalue()).decode('utf-8')
-        href = '<center><a href=\'data:image/{};base64,{}\' download=\'{}\'>{}</a></center><br>'.format(format, encoded, filename+"."+format, 'Download figure')
-        return href
+    # def generate_dl_link(self, fig, filename, format):
+    #     tmpfile = BytesIO()
+    #     fig.savefig(tmpfile, format=format, dpi=300)
+    #     encoded = base64.b64encode(tmpfile.getvalue()).decode('utf-8')
+    #     href = '<center><a href=\'data:image/{};base64,{}\' download=\'{}\'>{}</a></center><br>'.format(format, encoded, filename+"."+format, 'Download figure')
+    #     return href
 
-    def format_selector(self):
-        options = ['jpg', 'png', 'svg', 'pdf']
-        file_format = st.sidebar.selectbox(
-            "Figure format to download",
-            options,
-            index=0
-        )
-        return file_format
+    # def format_selector(self):
+    #     options = ['jpg', 'png', 'svg', 'pdf']
+    #     file_format = st.sidebar.selectbox(
+    #         "Figure format to download",
+    #         options,
+    #         index=0
+    #     )
+    #     return file_format
     #   
     # The following methods
     # (
@@ -399,10 +420,10 @@ class UIHelper(Helper):
     # This method populates the advanced search panel and weather data file list
     def advanced_search(self):
         regions_dropdown, countries_dropdown, states_dropdown, weather_data_dropdown = self._get_advanced_search_dropdowns()
-        expander = st.sidebar.beta_expander(label='Weather Data Search')
+        expander = st.sidebar.expander(label='Weather Data Search')
         with expander:
-            st.write("Search")
-            st.radio("", [self.sort_list, self.filter_list], key='filter_option', on_change=self._filter_settings_reset)
+            # st.write("Search")
+            st.radio("Search", [self.sort_list, self.filter_list], key='filter_option', on_change=self._filter_settings_reset)
 
             if 'filter_option' in st.session_state:
                 if st.session_state.filter_option == self.sort_list:
@@ -416,7 +437,7 @@ class UIHelper(Helper):
                         format_func=lambda x: x['title'], 
                         key='region'
                     )
-                    epw_col1, epw_col2 = st.beta_columns(2)
+                    epw_col1, epw_col2 = st.columns(2)
                     
                     if 'region' in st.session_state:
                         if st.session_state.region['title'] == 'All':
@@ -448,10 +469,10 @@ class UIHelper(Helper):
                             weather_data_dropdown = [ d for d in weather_data_dropdown if d['region'] in st.session_state.region['pf']]   
 
         self.file_name = st.sidebar.selectbox(
-            'Weather Data File List (Keyword Search Enabled)', 
+            'Weather Data File List', 
             weather_data_dropdown,
             format_func=lambda x: x['title'],
-            help="A list of available weather data files"
+            help="A list of available weather data files (Keyword Search Enabled)"
         )      
         
         return self.file_name

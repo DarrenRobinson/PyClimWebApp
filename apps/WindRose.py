@@ -6,10 +6,7 @@
 ##########################################################################################
 
 #THIS MODULE SIMPLY CREATES A POLAR WIND ROSE PLOT.
-import streamlit as st
-import matplotlib.pyplot as plt
-import numpy as np
-
+from matplotlib.pyplot import tight_layout
 from apps.ClimAnalFunctions import *  
 
 def app(app, epw, ui):
@@ -95,7 +92,7 @@ def app(app, epw, ui):
 
     value_list[0][0]=0
 
-    fig, ax = plt.subplots(subplot_kw=dict(projection='polar'))
+    fig, ax = plt.subplots(subplot_kw=dict(projection='polar'), tight_layout=True)
 
     azimuth_list = np.radians(azimuth_list)
 
@@ -124,7 +121,7 @@ def app(app, epw, ui):
     #    ax.set_yticklabels([])
         fig.colorbar(cp, label = 'Annual hours: wind approaching from \n ith direction at jth temperature')
 
-    plt.tight_layout()
+    # plt.tight_layout()
     # plt.show()
     st.pyplot(fig)
     fig_title = 'Wind Rose'

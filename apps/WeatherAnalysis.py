@@ -11,11 +11,6 @@
 #5) wind speed / temperature frequency histograms, 6) ground temperature profile. 
 
 #imports the basic libraries
-import streamlit as st
-import math
-import matplotlib.pyplot as plt
-import numpy as np
-
 from apps.ClimAnalFunctions import * 
 
 def app(app, epw, ui, timeshift=timeshift):
@@ -61,7 +56,7 @@ def app(app, epw, ui, timeshift=timeshift):
     AnnualIgh=0
     DiffuseFraction=0
 
-    lat = epw.lat * pi / 180
+    lat = st.session_state['lat'] * pi / 180
 
     temp_list = epw.dataframe['Dry Bulb Temperature'].values.tolist()
     rh_list = epw.dataframe['Relative Humidity'].values.tolist()
@@ -102,7 +97,7 @@ def app(app, epw, ui, timeshift=timeshift):
             day_list.append(cumday)
             dec_list.append(declin_angle(cumday))
             SStime, SRtime = sunrise_time(dec_list[cumday-1],lat,cumday)
-            dT = time_diff(cumday,True,epw.longitude,epw.timezone,timeshift)
+            dT = time_diff(cumday, True, st.session_state['longitude'], st.session_state['timezone'], timeshift)
             SStime_list.append(min(24,SStime+dT))
             SRtime_list.append(max(1,SRtime+dT))
             for k in range(1,25):
@@ -162,104 +157,109 @@ def app(app, epw, ui, timeshift=timeshift):
 
     Colour_list = ['firebrick', 'salmon', 'darkorange', 'orange', 'gold', 'yellow', 'yellowgreen', 'green', 'olive', 'cyan', 'skyblue', 'blue']
     Month_list = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    fig = plt.figure(figsize=(12, 6))
+    
+    
+    
+    # fig = plt.figure(figsize=(12, 6))
+    fig_ground, ax_ground = plt.subplots(1,1, figsize = (12,6))
 
     for month in range (1,13):
         #plt.scatter(tground_matrix[month-1], depth_list, c=Colour_list[month-1], s=20)
-        plt.plot(tground_matrix[month-1], depth_list, lw=2, c=Colour_list[11-(month-1)])
+        ax_ground.plot(tground_matrix[month-1], depth_list, lw=2, c=Colour_list[11-(month-1)])
     fig_title = "Ground temperature profile"
-    plt.title(fig_title)
-    plt.xlabel('temperature, ' + '$^o$C')
-    plt.ylabel('depth below surface, m')
+    ax_ground.set_title(fig_title)
+    ax_ground.set_xlabel('temperature, ' + '$^o$C')
+    ax_ground.set_ylabel('depth below surface, m')
 
-    plt.ylim(0,20)
-    plt.ylim(plt.ylim()[::-1])
-
-    plt.legend(Month_list)
-    # plt.show()
-    st.pyplot(fig)
+    ax_ground.axis(ymin=20.0,ymax=0.0)
+    ax_ground.legend(Month_list)
+    st.pyplot(fig_ground)
+    # st.write(fig_ground)
     # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    # tground_matrix.clear()
 
-    tground_matrix.clear()
+
+
 
     #this plots histograms:
-    fig, ax = plt.subplots(1,1, figsize = (12,6), tight_layout=True)
+    fig_temp_hist, ax_temp_hist = plt.subplots(1,1, figsize = (12,6), tight_layout=True)
     #plots a standard frequency distribution   
 
     xrange=int(max(temp_list))-int(min(temp_list))
-    ax.hist(temp_list, xrange, alpha=0.3, histtype='step', color='darkgray', lw=3)
+    ax_temp_hist.hist(temp_list, xrange, alpha=0.3, histtype='step', color='darkgray', lw=3)
 
     #creates a y2 axis for the cumulative distribution
-    ax2 = ax.twinx() 
-    ax2.hist(temp_list, bins = xrange, cumulative=True, alpha=1, histtype='step', color='red', lw=3)
-    ax2.hist(temp_list, bins = xrange, cumulative=-1, alpha=1, histtype='step', color='blue', lw=3)
+    ax_temp_hist2 = ax_temp_hist.twinx() 
+    ax_temp_hist2.hist(temp_list, bins = xrange, cumulative=True, alpha=1, histtype='step', color='red', lw=3)
+    ax_temp_hist2.hist(temp_list, bins = xrange, cumulative=-1, alpha=1, histtype='step', color='blue', lw=3)
 
     fig_title = "temperature frequency histogram"
-    ax.set_title(fig_title)
-    ax.set_xlabel('temperature bins,' + '$^o$C')
-    ax.set_ylabel('counts [grey]')
-    ax2.set_ylabel('cumulative counts [red / blue]')
-
-    # plt.show()
-    st.pyplot(fig)
+    ax_temp_hist.set_title(fig_title)
+    ax_temp_hist.set_xlabel('temperature bins,' + '$^o$C')
+    ax_temp_hist.set_ylabel('counts [grey]')
+    ax_temp_hist2.set_ylabel('cumulative counts [red / blue]')
+    st.pyplot(fig_temp_hist)
+    # st.write(fig_temp_hist)
     # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    # temp_list.clear()
+    # plt.clf()
 
-    temp_list.clear()
 
-    fig,ax = plt.subplots(1,1, figsize = (12,6), tight_layout=True)
+
+    fig_wind_hist, ax_wind_hist = plt.subplots(1,1, figsize = (12,6), tight_layout=True)
     #plots a standard frequency distribution
     xrange=int(max(winspeed_list)-int(min(winspeed_list)))
-    ax.hist(winspeed_list, xrange, alpha=0.3, histtype='step', color='darkgray', lw=3)
+    ax_wind_hist.hist(winspeed_list, xrange, alpha=0.3, histtype='step', color='darkgray', lw=3)
     #creates a y2 axis for the cumulative distribution
-    ax2 = ax.twinx() 
-    ax2.hist(winspeed_list, bins = xrange, cumulative=True, alpha=1, histtype='step', color='red', lw=3)
-    #ax2.hist(winspeed_list, bins = xrange, cumulative=-1, alpha=1, histtype='step', color='blue', lw=3)
+    ax_wind_hist2 = ax_wind_hist.twinx() 
+    ax_wind_hist2.hist(winspeed_list, bins = xrange, cumulative=True, alpha=1, histtype='step', color='red', lw=3)
+    #ax_wind_hist2.hist(winspeed_list, bins = xrange, cumulative=-1, alpha=1, histtype='step', color='blue', lw=3)
 
     fig_title = "wind speed frequency histogram"
-    ax.set_title(fig_title)
-    ax.set_xlabel('wind speed bins, m/s')
-    ax.set_ylabel('counts [grey]')
-    ax2.set_ylabel('cumulative counts [red]')
-
-    # plt.show()
-    st.pyplot(fig)
+    ax_wind_hist.set_title(fig_title)
+    ax_wind_hist.set_xlabel('wind speed bins, m/s')
+    ax_wind_hist.set_ylabel('counts [grey]')
+    ax_wind_hist2.set_ylabel('cumulative counts [red]')
+    st.pyplot(fig_wind_hist)
     # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    # winspeed_list.clear()
 
-    winspeed_list.clear()
+
+
+
 
 
     #plots a decrementing illuminance histogram
-    fig,ax = plt.subplots(1,1, figsize = (12,6), tight_layout=True)
-    xrange=int((max(illuminance_list)-int(min(illuminance_list))))
-    ax.hist(illuminance_list, xrange, alpha=1, histtype='stepfilled', color='red', cumulative=-1, range = [1,max(illuminance_list)])
+    fig_illuminance, ax_illuminance = plt.subplots(1,1, figsize = (12,6), tight_layout=True)
+    xrange = int((max(illuminance_list) - int(min(illuminance_list))))
+    ax_illuminance.hist(illuminance_list, xrange, alpha=1, histtype='stepfilled', color='red', cumulative=-1, range = [1,max(illuminance_list)])
     fig_title = "inverse cumulative illuminance frequency histogram"
-    ax.set_title(fig_title)
-    ax.set_xlabel('illuminance bins, klux')
-    ax.set_ylabel('cumulative counts')
+    ax_illuminance.set_title(fig_title)
+    ax_illuminance.set_xlabel('illuminance bins, klux')
+    ax_illuminance.set_ylabel('cumulative counts')
 
     # plt.show()
-    st.pyplot(fig)
+    st.pyplot(fig_illuminance)
     # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
     #plots a degree-day histograms
 
-    fig,ax = plt.subplots(1, 1, figsize = (12,6), tight_layout=True)
+    fig_monthly_degree, ax_monthly_degree = plt.subplots(1, 1, figsize = (12,6), tight_layout=True)
     xlist = np.linspace(1, 12, 12)
-    y1 = ax.bar(xlist, MonthlyHDD_list, alpha=1, color='red')
-    y2 = ax.bar(xlist, MonthlyCDD_list, alpha=1, color='blue')
+    y1 = ax_monthly_degree.bar(xlist, MonthlyHDD_list, alpha=1, color='red')
+    y2 = ax_monthly_degree.bar(xlist, MonthlyCDD_list, alpha=1, color='blue')
     
     fig_title = "Monthly degree-days"
-    ax.set_title(fig_title)
-    ax.set_xlabel('Time, months')
-    ax.set_ylabel('Monthly degree days')
-    plt.legend((y1[0],y2[0]), ('Heating', 'Cooling'), loc='best')
-    # plt.show()
-    st.pyplot(fig)
+    ax_monthly_degree.set_title(fig_title)
+    ax_monthly_degree.set_xlabel('Time, months')
+    ax_monthly_degree.set_ylabel('Monthly degree days')
+    ax_monthly_degree.legend((y1[0],y2[0]), ('Heating', 'Cooling'), loc='best')
+    st.pyplot(fig_monthly_degree)
     # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
 
     #this plots violin plots:
-    fig,axes = plt.subplots(2,2, figsize = (12,6))
+    fig_violin, axes = plt.subplots(2,2, figsize = (12,6), tight_layout=True)
 
     temp_data_to_plot = [temp_matrix[0], temp_matrix[1], temp_matrix[2], temp_matrix[3], temp_matrix[4], temp_matrix[5], temp_matrix[6], temp_matrix[7], temp_matrix[8], temp_matrix[9], temp_matrix[10], temp_matrix[11]]
     axes[0,0].violinplot(temp_data_to_plot)
@@ -285,16 +285,14 @@ def app(app, epw, ui, timeshift=timeshift):
     axes[1,1].set_xlabel('Time, months')
     axes[1,1].set_ylabel('Wind Speed, m/s')
 
-    fig.tight_layout()
-    # plt.show()
-    st.pyplot(fig)
+    st.pyplot(fig_violin)
     fig_title = 'Violin Plots'
     # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
-    temp_matrix.clear()
-    winspeed_matrix.clear()
-    Diurnal_matrix.clear()
-    rh_matrix.clear()
+    # temp_matrix.clear()
+    # winspeed_matrix.clear()
+    # Diurnal_matrix.clear()
+    # rh_matrix.clear()
 
 
     #This creates a 2D solar availability surface plot
@@ -302,25 +300,24 @@ def app(app, epw, ui, timeshift=timeshift):
     xlist = np.linspace(0, 23, 24)
     ylist = np.linspace(1, 365, 365)
     X, Y = np.meshgrid(xlist, ylist)
-    fig,ax=plt.subplots(1,1, figsize=(12,6))
+    fig_solar, ax_solar = plt.subplots(1,1, figsize=(12,6))
     #this part converts the list into an array and reshapes it, to match the x,y dimensions
     Z = np.array(global_list)
     Z = Z.reshape(365,24)
-    cp = ax.contourf(Y, X, Z, 16, cmap='jet') #'plasma', 'jet' and 'viridis' are also good cmaps
-    fig.colorbar(cp, label = 'Global horizontal solar irradiance, W/m\u00b2') # Adds a colorbar
+    cp = ax_solar.contourf(Y, X, Z, 16, cmap='jet') #'plasma', 'jet' and 'viridis' are also good cmaps
+    fig_solar.colorbar(cp, label = 'Global horizontal solar irradiance, W/m\u00b2') # Adds a colorbar
     
     fig_title = 'Solar Availability Surface Plot'
-    ax.set_title(fig_title)
-    ax.set_xlabel('Time, days')
-    ax.set_ylabel('Time, hours')
+    ax_solar.set_title(fig_title)
+    ax_solar.set_xlabel('Time, days')
+    ax_solar.set_ylabel('Time, hours')
 
-    plt.plot(day_list, SRtime_list,c='red')
-    plt.plot(day_list, SStime_list,c='red')    
-    # plt.show()
-    st.pyplot(fig)
+    ax_solar.plot(day_list, SRtime_list,c='red')
+    ax_solar.plot(day_list, SStime_list,c='red')    
+    st.pyplot(fig_solar)
     # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
     
-    global_list.clear()
+    # global_list.clear()
 
 
     #This creates a 2D daylight availability surface plot
@@ -328,24 +325,23 @@ def app(app, epw, ui, timeshift=timeshift):
     xlist = np.linspace(0, 23, 24)
     ylist = np.linspace(1, 365, 365)
     X, Y = np.meshgrid(xlist, ylist)
-    fig,ax=plt.subplots(1,1, figsize=(12,6))
+    fig_daylight, ax_daylight = plt.subplots(1,1, figsize=(12,6))
     #this part converts the list into an array and reshapes it, to match the x,y dimensions
     Z = np.array(illuminance_list)
     Z = Z.reshape(365,24)
-    cp = ax.contourf(Y, X, Z, 16, cmap='jet') #'plasma', 'jet' and 'viridis' are also good cmaps
+    cp = ax_daylight.contourf(Y, X, Z, 16, cmap='jet') #'plasma', 'jet' and 'viridis' are also good cmaps
     if globaleff==False:
-        fig.colorbar(cp, label = 'diffuse horizontal illuminance, kLux') # Adds a colorbar
+        fig_daylight.colorbar(cp, label = 'diffuse horizontal illuminance, kLux') # Adds a colorbar
     else:
-        fig.colorbar(cp, label = 'global horizontal illuminance, kLux') # Adds a colorbar
+        fig_daylight.colorbar(cp, label = 'global horizontal illuminance, kLux') # Adds a colorbar
     fig_title = 'Daylight Availability Surface Plot'
-    ax.set_title(fig_title)
-    ax.set_xlabel('Time, days')
-    ax.set_ylabel('Time, hours')
+    ax_daylight.set_title(fig_title)
+    ax_daylight.set_xlabel('Time, days')
+    ax_daylight.set_ylabel('Time, hours')
 
-    plt.plot(day_list, SRtime_list,c='red')
-    plt.plot(day_list, SStime_list,c='red')    
-    # plt.show()
-    st.pyplot(fig)
+    ax_daylight.plot(day_list, SRtime_list,c='red')
+    ax_daylight.plot(day_list, SStime_list,c='red')    
+    st.pyplot(fig_daylight)
     # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
-    illuminance_list.clear()
+    # illuminance_list.clear()
