@@ -108,7 +108,7 @@ def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
         xlist = np.linspace(0, 350, 36)
         ylist = np.linspace(0, 90, 10) #Note: theer need to be 19 subdivisions (here and for Z) for 5o bins of altitude
         X, Y = np.meshgrid(xlist, ylist)
-        fig,ax=plt.subplots(1,1, figsize=(16,8))
+        fig, ax = plt.subplots(1,1, figsize=(16,8))
         #this part converts the list into an array and reshapes it, to match the x,y dimensions
         Z = np.array(annualirrad_list)*10**-6
         Z = Z.reshape(10,36)
@@ -125,7 +125,7 @@ def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
         xlist = np.linspace(0, 350, 36)
         ylist = np.linspace(0, 90, 10) #Note: theer need to be 19 subdivisions (here and for Z) for 5o bins of altitude
         X, Y = np.meshgrid(xlist, ylist)
-        fig,ax=plt.subplots(1,1, figsize=(16,8))
+        fig, ax = plt.subplots(1,1, figsize=(16,8))
         #this part converts the list into an array and reshapes it, to match the x,y dimensions
         Zprime = np.array(annualirrad_list)*10**-6
         Zprime = Zprime.reshape(10,36)

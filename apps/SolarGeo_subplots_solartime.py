@@ -95,7 +95,7 @@ def app(app, epw, ui, timeshift=timeshift):
     #WHEN COMPLETE, CALCULATE AND CREATE GLOBAL IRRADIATION SURFACE PLOT. 
 
     #this plots the daily declination angles, as an OO figure
-    fig,axes = plt.subplots(3,2, figsize = (15,10))
+    fig, axes = plt.subplots(3,2, figsize = (15,10))
 
     axes[0,0].plot(day_list, dec_list, 'b-')
     axes[0,0].set_title('Daily declination angles')
