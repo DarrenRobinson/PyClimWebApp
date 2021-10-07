@@ -75,7 +75,6 @@ def app(app, epw, ui, timeshift=timeshift):
     MonthlyHDD_list = [0 for i in range(0,12)]
     MonthlyCDD_list = [0 for i in range(0,12)]
     
-    
     # temp_matrix2 = []
     # winspeed_matrix2 = []
     prev = 0

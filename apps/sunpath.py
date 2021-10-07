@@ -23,12 +23,8 @@ def app(app, epw, ui):
     WallAzimuth = st.sidebar.number_input('Wall Azimuth', 0, 359, 185)
 
     EqTonly = True
-
-
-
-    Hemisphere = "N"
-    if lat<0:
-        Hemisphere="S"
+    
+    Hemisphere = "S" if lat<0 else "N"
 
     #working backwards from the winter solstice
     SunpathDay_list = [355,325,294,264,233,202,172,141,111,80,52,21]
