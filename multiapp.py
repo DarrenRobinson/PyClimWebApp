@@ -34,9 +34,9 @@ class MultiApp:
         self.epw.read_epw_f(self.ui.file_name['file_url'])      # Fetch the epw dataframe and header info 
 
         st.sidebar.markdown(                                    
-            "Latitude: "+str(self.epw.lat)+                     
-            " Longitude: "+str(self.epw.longitude)+             
-            "<br>Time Zone: "+str(self.epw.timezone), 
+            "Latitude: "+str(st.session_state['lat'])+                     
+            " Longitude: "+str(st.session_state['longitude'])+             
+            "<br>Time Zone: "+str(st.session_state['timezone']), 
             unsafe_allow_html=True                              
         )
         st.sidebar.write("---")

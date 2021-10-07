@@ -59,7 +59,7 @@ def app(app, epw, ui, timeshift=timeshift):
     day_list = np.array(range(1,366))
     dec_list = declin_angle2(day_list)
     SStime, SRtime = sunrise_time2(dec_list, lat, day_list)
-    dT = time_diff2(day_list,True,epw.longitude,epw.timezone,timeshift)
+    dT = time_diff2(day_list, True, st.session_state['longitude'], st.session_state['timezone'], timeshift)
     SStime_list = np.append(SStime_list, np.minimum(24,SStime+dT))
     SRtime_list = np.append(SRtime_list, np.maximum(1,SRtime+dT))
 

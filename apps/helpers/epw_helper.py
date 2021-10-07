@@ -15,10 +15,10 @@ class EPWHelper(Helper):
         Helper.__init__(self)
         self.headers={}
         self.dataframe=pd.DataFrame() 
-        self.lat = None
-        self.longitude = None
-        self.timezone = None  
-        self.file_list = []  
+        # self.lat = None
+        # self.longitude = None
+        # self.timezone = None
+        # self.file_list = []
 
     # This is the method (along with its subequent assisting methods) to read the epw file
     def read_epw_f(self, url):
@@ -32,11 +32,8 @@ class EPWHelper(Helper):
         return self.dataframe, self.headers
     
     def _read(self,fp):
-        self.headers, self.lat, self.longitude, self.timezone = self._read_headers(fp)
+        self.headers = self._read_headers(fp)
         self.dataframe = self._read_data(fp)
-        # self.longitude = float(self.headers['LOCATION'][6])
-        # self.timezone = float(self.headers['LOCATION'][7])
-        # self.lat = float(self.headers['LOCATION'][5])
         
     def _read_headers(self,fp):
         d={}
@@ -48,7 +45,12 @@ class EPWHelper(Helper):
                 else:
                     d[row[0]]=row[1:]
             csvfile.close()
-        return d, float(d['LOCATION'][5]), float(d['LOCATION'][6]), float(d['LOCATION'][7])
+
+        st.session_state['lat'] = float(d['LOCATION'][5])
+        st.session_state['longitude'] = float(d['LOCATION'][6])
+        st.session_state['timezone'] = float(d['LOCATION'][7])
+
+        return d
     
     def _read_data(self,fp):
         names=[
