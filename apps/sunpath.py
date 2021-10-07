@@ -140,27 +140,28 @@ def app(app, epw, ui):
     #######################################
     # THIS PLOTS THE SHADING PROTRACTORS
     #######################################
-
-    Protractor_x = []
-    Protractor_y = []
+    HorizontalProtractor_x = []
+    HorizontalProtractor_y = []
     if HorizontalProtractor == True:
         for Theta in range (10, 90, 10):
-            for Orientation in range (WallAzimuth-90, WallAzimuth+100, 10):
+            for Orientation in range(WallAzimuth-90, WallAzimuth+100, 10):
                 ThetaAdjusted = math.atan(math.tan(Theta*pi/180) * math.cos(math.fabs(Orientation-WallAzimuth)*pi/180)) * 180/pi            
-                Protractor_x.append((90-ThetaAdjusted)*math.sin(Orientation*pi/180))
-                Protractor_y.append((90-ThetaAdjusted)*math.cos(Orientation*pi/180))
-            ax_sun.plot(Protractor_x, Protractor_y, c='darkorange', lw=2, linestyle=':')
-            Protractor_x = []
-            Protractor_y = []
+                HorizontalProtractor_x.append((90-ThetaAdjusted)*math.sin(Orientation*pi/180))
+                HorizontalProtractor_y.append((90-ThetaAdjusted)*math.cos(Orientation*pi/180))
+            ax_sun.plot(HorizontalProtractor_x, HorizontalProtractor_y, c='darkorange', lw=2, linestyle=':')
+            HorizontalProtractor_x = []
+            HorizontalProtractor_y = []
+    VerticalProtractor_x = []
+    VerticalProtractor_y = []
     if VerticalProtractor == True:
-        for Orientation in range (WallAzimuth-90, WallAzimuth+100, 10):
-            Protractor_x.append(90*math.sin(Orientation*pi/180))
-            Protractor_y.append(90*math.cos(Orientation*pi/180))
-            Protractor_x.append(0*math.sin(Orientation*pi/180))
-            Protractor_y.append(0*math.cos(Orientation*pi/180))        
-            ax_sun.plot(Protractor_x, Protractor_y, c='darkorange', lw=2, linestyle=':')
-            Protractor_x = []
-            Protractor_y = []
+        for Orientation in range(WallAzimuth-90, WallAzimuth+100, 10):
+            VerticalProtractor_x.append(90*math.sin(Orientation*pi/180))
+            VerticalProtractor_y.append(90*math.cos(Orientation*pi/180))
+            VerticalProtractor_x.append(0*math.sin(Orientation*pi/180))
+            VerticalProtractor_y.append(0*math.cos(Orientation*pi/180))        
+            ax_sun.plot(VerticalProtractor_x, VerticalProtractor_y, c='darkorange', lw=2, linestyle=':')
+            VerticalProtractor_x = []
+            VerticalProtractor_y = []
     fig_title = 'Stereographic sunpath diagram, for latitude: ' + str(int(180*math.fabs(lat)/pi)) +'$^o$' + str(Hemisphere)
     ax_sun.set_title(fig_title, loc='center')
     ax_sun.legend(loc = 'lower left', frameon=False)
