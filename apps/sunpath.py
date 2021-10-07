@@ -105,10 +105,10 @@ def app(app, epw, ui):
 
         ax_sun.plot(sunpath_x, sunpath_y, c=Colour_list[7-month], label = (Month_list[month-1]), marker='o')
         
-        alt_list.clear()
-        azi_list.clear()
-        sunpath_x.clear()
-        sunpath_y.clear()
+        alt_list = []
+        azi_list = []
+        sunpath_x = []
+        sunpath_y = []
 
     time_curve_x = []
     time_curve_y = []
@@ -132,8 +132,8 @@ def app(app, epw, ui):
                     time_curve_x.append((90-(Solalt*180/pi))*math.sin(Solaz))
                     time_curve_y.append((90-(Solalt*180/pi))*math.cos(Solaz))
         ax_sun.plot(time_curve_x, time_curve_y, c='darkblue')
-        time_curve_x.clear()
-        time_curve_y.clear()
+        time_curve_x = []
+        time_curve_y = []
     #WEIRD PROBLEM: EQT FOR FIRST HOUR IN (ANT)ARCTIC CIRCLE ISN'T CORRECT (IT MIRRORS ABOUT THE HALF YEAR).
 
 
@@ -150,8 +150,8 @@ def app(app, epw, ui):
                 Protractor_x.append((90-ThetaAdjusted)*math.sin(Orientation*pi/180))
                 Protractor_y.append((90-ThetaAdjusted)*math.cos(Orientation*pi/180))
             ax_sun.plot(Protractor_x, Protractor_y, c='darkorange', lw=2, linestyle=':')
-            Protractor_x.clear()
-            Protractor_y.clear()
+            Protractor_x = []
+            Protractor_y = []
     if VerticalProtractor == True:
         for Orientation in range (WallAzimuth-90, WallAzimuth+100, 10):
             Protractor_x.append(90*math.sin(Orientation*pi/180))
@@ -159,8 +159,8 @@ def app(app, epw, ui):
             Protractor_x.append(0*math.sin(Orientation*pi/180))
             Protractor_y.append(0*math.cos(Orientation*pi/180))        
             ax_sun.plot(Protractor_x, Protractor_y, c='darkorange', lw=2, linestyle=':')
-            Protractor_x.clear()
-            Protractor_y.clear()
+            Protractor_x = []
+            Protractor_y = []
     fig_title = 'Stereographic sunpath diagram, for latitude: ' + str(int(180*math.fabs(lat)/pi)) +'$^o$' + str(Hemisphere)
     ax_sun.set_title(fig_title, loc='center')
     ax_sun.legend(loc = 'lower left', frameon=False)
