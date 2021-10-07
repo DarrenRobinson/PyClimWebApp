@@ -24,10 +24,7 @@ def app(app, epw, ui):
 
     EqTonly = True
 
-    circles_x = []
-    circles_y = []
-    spokes_x = []
-    spokes_y = []
+
 
     Hemisphere = "N"
     if lat<0:
@@ -35,10 +32,7 @@ def app(app, epw, ui):
 
     #working backwards from the winter solstice
     SunpathDay_list = [355,325,294,264,233,202,172,141,111,80,52,21]
-    azi_list = []
-    alt_list = []
-    sunpath_x = []
-    sunpath_y = []
+
 
     Colour_list = ['firebrick', 'darkorange', 'orange', 'gold', 'green', 'cyan', 'blue']
     Month_list = ['Dec', 'Nov/Jan', 'Oct/Feb', 'Sep/Mar', 'Aug/Apr', 'Jul/May', 'Jun']
@@ -48,8 +42,11 @@ def app(app, epw, ui):
     #######################################
     # THIS PLOTS THE ISO-ALTITUDE CIRCLES AND RADIAL AZIMUTH LINES
     #######################################
-
-    for circle in range (90,0,-10):
+    circles_x = []
+    circles_y = []
+    spokes_x = []
+    spokes_y = []
+    for circle in range(90,0,-10):
         for orientation in range (0,360+AzimuthIncrement, AzimuthIncrement):
             circles_x.append(circle*math.sin(orientation*pi/180))
             circles_y.append(circle*math.cos(orientation*pi/180))
@@ -65,12 +62,17 @@ def app(app, epw, ui):
 
         ax_sun.plot(circles_x,circles_y, lw=1, color='darkgray')
         ax_sun.plot(spokes_x,spokes_y, lw=1, color='darkgray')
-        # circles_x.clear()
-        # circles_y.clear()
-        # spokes_x.clear()
-        # spokes_y.clear()
 
-    for month in range (1,8):
+        circles_x = []
+        circles_y = []
+        spokes_x = []
+        spokes_y = []
+
+    azi_list = []
+    alt_list = []
+    sunpath_x = []
+    sunpath_y = []
+    for month in range(1,8):
         position=0
         day = SunpathDay_list[month-1]
         dec = declin_angle(day)
@@ -112,7 +114,7 @@ def app(app, epw, ui):
 
     time_curve_x = []
     time_curve_y = []
-    for hour in range (0,25):
+    for hour in range(0,25):
         for day in range(1,366):
             #if the sun is below the horizon during the summer solstice for this hour then skip
             if Hemisphere=="N":
@@ -143,7 +145,7 @@ def app(app, epw, ui):
     HorizontalProtractor_x = []
     HorizontalProtractor_y = []
     if HorizontalProtractor == True:
-        for Theta in range (10, 90, 10):
+        for Theta in range(10, 90, 10):
             for Orientation in range(WallAzimuth-90, WallAzimuth+100, 10):
                 ThetaAdjusted = math.atan(math.tan(Theta*pi/180) * math.cos(math.fabs(Orientation-WallAzimuth)*pi/180)) * 180/pi            
                 HorizontalProtractor_x.append((90-ThetaAdjusted)*math.sin(Orientation*pi/180))
@@ -151,6 +153,7 @@ def app(app, epw, ui):
             ax_sun.plot(HorizontalProtractor_x, HorizontalProtractor_y, c='darkorange', lw=2, linestyle=':')
             HorizontalProtractor_x = []
             HorizontalProtractor_y = []
+
     VerticalProtractor_x = []
     VerticalProtractor_y = []
     if VerticalProtractor == True:
@@ -162,12 +165,12 @@ def app(app, epw, ui):
             ax_sun.plot(VerticalProtractor_x, VerticalProtractor_y, c='darkorange', lw=2, linestyle=':')
             VerticalProtractor_x = []
             VerticalProtractor_y = []
+
     fig_title = 'Stereographic sunpath diagram, for latitude: ' + str(int(180*math.fabs(lat)/pi)) +'$^o$' + str(Hemisphere)
     ax_sun.set_title(fig_title, loc='center')
     ax_sun.legend(loc = 'lower left', frameon=False)
     ax_sun.axis('off')
     # ax.tight_layout()
-    # plt.show()
     st.pyplot(fig_sun)
     # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
