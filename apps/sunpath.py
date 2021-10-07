@@ -43,7 +43,7 @@ def app(app, epw, ui):
     Colour_list = ['firebrick', 'darkorange', 'orange', 'gold', 'green', 'cyan', 'blue']
     Month_list = ['Dec', 'Nov/Jan', 'Oct/Feb', 'Sep/Mar', 'Aug/Apr', 'Jul/May', 'Jun']
     # fig = plt.figure(figsize=(9, 9))
-    fig, ax = plt.subplots(1,1, figsize = (9, 9), tight_layout=True)
+    fig_sun, ax_sun = plt.subplots(1,1, figsize = (9, 9), tight_layout=True)
 
     #######################################
     # THIS PLOTS THE ISO-ALTITUDE CIRCLES AND RADIAL AZIMUTH LINES
@@ -59,16 +59,16 @@ def app(app, epw, ui):
                 spokes_x.append(0*math.sin(orientation*pi/180))
                 spokes_y.append(0*math.cos(orientation*pi/180))
             if circle==90 and orientation < 360:
-                ax.text(95*math.sin(orientation*pi/180),95*math.cos(orientation*pi/180),str(orientation)+ '$^o$', c = 'darkgray', horizontalalignment='center', fontsize=8)
+                ax_sun.text(95*math.sin(orientation*pi/180),95*math.cos(orientation*pi/180),str(orientation)+ '$^o$', c = 'darkgray', horizontalalignment='center', fontsize=8)
         if circle<90 and circle!=0:
-            ax.text((circle+1)*math.sin(5*pi/180),(circle+1)*math.cos(orientation*pi/180),str(90-circle)+ '$^o$', c = 'darkgray', horizontalalignment='center', fontsize=8)
+            ax_sun.text((circle+1)*math.sin(5*pi/180),(circle+1)*math.cos(orientation*pi/180),str(90-circle)+ '$^o$', c = 'darkgray', horizontalalignment='center', fontsize=8)
 
-        ax.plot(circles_x,circles_y, lw=1, color='darkgray')
-        ax.plot(spokes_x,spokes_y, lw=1, color='darkgray')
-        circles_x.clear()
-        circles_y.clear()
-        spokes_x.clear()
-        spokes_y.clear()
+        ax_sun.plot(circles_x,circles_y, lw=1, color='darkgray')
+        ax_sun.plot(spokes_x,spokes_y, lw=1, color='darkgray')
+        # circles_x.clear()
+        # circles_y.clear()
+        # spokes_x.clear()
+        # spokes_y.clear()
 
     for month in range (1,8):
         position=0
@@ -103,7 +103,7 @@ def app(app, epw, ui):
                 sunpath_y.append((90-alt_list[position])*math.cos(azi_list[position]))
                 position=position+1
 
-        ax.plot(sunpath_x, sunpath_y, c=Colour_list[7-month], label = (Month_list[month-1]), marker='o')
+        ax_sun.plot(sunpath_x, sunpath_y, c=Colour_list[7-month], label = (Month_list[month-1]), marker='o')
         
         alt_list.clear()
         azi_list.clear()
@@ -131,7 +131,7 @@ def app(app, epw, ui):
                     Solaz = solar_azimuth(day,hour+EqT,lat,Solalt,Dec)
                     time_curve_x.append((90-(Solalt*180/pi))*math.sin(Solaz))
                     time_curve_y.append((90-(Solalt*180/pi))*math.cos(Solaz))
-        ax.plot(time_curve_x, time_curve_y, c='darkblue')
+        ax_sun.plot(time_curve_x, time_curve_y, c='darkblue')
         time_curve_x.clear()
         time_curve_y.clear()
     #WEIRD PROBLEM: EQT FOR FIRST HOUR IN (ANT)ARCTIC CIRCLE ISN'T CORRECT (IT MIRRORS ABOUT THE HALF YEAR).
@@ -149,7 +149,7 @@ def app(app, epw, ui):
                 ThetaAdjusted = math.atan(math.tan(Theta*pi/180) * math.cos(math.fabs(Orientation-WallAzimuth)*pi/180)) * 180/pi            
                 Protractor_x.append((90-ThetaAdjusted)*math.sin(Orientation*pi/180))
                 Protractor_y.append((90-ThetaAdjusted)*math.cos(Orientation*pi/180))
-            ax.plot(Protractor_x, Protractor_y, c='darkorange', lw=2, linestyle=':')
+            ax_sun.plot(Protractor_x, Protractor_y, c='darkorange', lw=2, linestyle=':')
             Protractor_x.clear()
             Protractor_y.clear()
     if VerticalProtractor == True:
@@ -158,16 +158,16 @@ def app(app, epw, ui):
             Protractor_y.append(90*math.cos(Orientation*pi/180))
             Protractor_x.append(0*math.sin(Orientation*pi/180))
             Protractor_y.append(0*math.cos(Orientation*pi/180))        
-            ax.plot(Protractor_x, Protractor_y, c='darkorange', lw=2, linestyle=':')
+            ax_sun.plot(Protractor_x, Protractor_y, c='darkorange', lw=2, linestyle=':')
             Protractor_x.clear()
             Protractor_y.clear()
     fig_title = 'Stereographic sunpath diagram, for latitude: ' + str(int(180*math.fabs(lat)/pi)) +'$^o$' + str(Hemisphere)
-    ax.set_title(fig_title, loc='center')
-    ax.legend(loc = 'lower left', frameon=False)
-    ax.axis('off')
+    ax_sun.set_title(fig_title, loc='center')
+    ax_sun.legend(loc = 'lower left', frameon=False)
+    ax_sun.axis('off')
     # ax.tight_layout()
     # plt.show()
-    st.pyplot(fig)
+    st.pyplot(fig_sun)
     # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
 
 
