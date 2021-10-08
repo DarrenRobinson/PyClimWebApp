@@ -250,5 +250,5 @@ def app(app, epw, ui):
         
         # st.pyplot(fig)
         # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
-        graph, href = ui.base64_to_link_and_graph(fig, fig_title, 'jpg', 800, 600)
+        graph, href = ui.base64_to_link_and_graph(fig, fig_title, 'jpg', 700, 700/3*2)
         st.write(graph, href, unsafe_allow_html=True)
