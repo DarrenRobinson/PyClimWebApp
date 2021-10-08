@@ -15,10 +15,6 @@ class EPWHelper(Helper):
         Helper.__init__(self)
         self.headers={}
         self.dataframe=pd.DataFrame() 
-        # self.lat = None
-        # self.longitude = None
-        # self.timezone = None
-        # self.file_list = []
 
     # This is the method (along with its subequent assisting methods) to read the epw file
     def read_epw_f(self, url):
@@ -29,6 +25,7 @@ class EPWHelper(Helper):
                 f.write(urlopen(response).read())
                 self._read(tmpdirname+name)                                     # read file
                 f.close()
+        
         return self.dataframe, self.headers
     
     def _read(self,fp):

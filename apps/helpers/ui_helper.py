@@ -1,3 +1,5 @@
+import io
+import os
 import streamlit as st
 import math
 import pandas as pd
@@ -20,7 +22,6 @@ class UIHelper(Helper):
     def __init__(self):
         Helper.__init__(self)
         self._days_in_a_month()
-        # self.session_keys = {}
         self.sort_list = 'by distance from target site:'
         self.filter_list = 'hierarchically by region:'
         self.file_name = {}
@@ -54,17 +55,6 @@ class UIHelper(Helper):
                 st.session_state['session_keys']['end_day'] = feature['file_title']+"_end_day"
                 st.session_state['session_keys']['start_hour'] = feature['file_title']+"_start_hour"
                 st.session_state['session_keys']['end_hour'] = feature['file_title']+"_end_hour"
-                # st.write(st.session_state)
-                # st.write('session_keys' in st.session_state)
-
-                # self.session_keys = {
-                #     "start_month": feature['file_title']+"_start_month",
-                #     "end_month": feature['file_title']+"_end_month",
-                #     "start_day": feature['file_title']+"_start_day",
-                #     "end_day": feature['file_title']+"_end_day",
-                #     "start_hour": feature['file_title']+"_start_hour",
-                #     "end_hour": feature['file_title']+"_end_hour"
-                # } 
 
     # This method generates a set of number arrays for days in different months (e.g. for start and end day dropdowns)
     def _days_in_a_month(self):
@@ -256,6 +246,19 @@ class UIHelper(Helper):
         hrefs = '<center>Download figures '+links_str+'</center><br>'
         return hrefs
     
+    def _fig_to_base64(self, figure, format):
+        img = io.BytesIO()
+        figure.savefig(img, format=format, dpi=300)
+        img.seek(0)
+        return base64.b64encode(img.getvalue())
+
+    def base64_to_link_and_graph(self, figure, filename, format, width, height):
+        decoded = self._fig_to_base64(figure, format).decode('utf-8')
+        graph = '<img width={} height={} src="data:image/jpg;base64, {}">'.format(width, height, decoded)
+        href = '<center>Download figure <a href=\'data:image/{};base64,{}\' download=\'{}\'>{}</a></center><br>'.format(format, decoded, filename+"."+format, format.upper())
+        return graph, href
+
+            
     # def generate_dl_link(self, fig, filename, format):
     #     tmpfile = BytesIO()
     #     fig.savefig(tmpfile, format=format, dpi=300)
@@ -272,6 +275,7 @@ class UIHelper(Helper):
     #     )
     #     return file_format
     #   
+
     # The following methods
     # (
     # _get_db, 
@@ -287,6 +291,12 @@ class UIHelper(Helper):
         # Connect to EnergyPlus
         response = urlopen('https://github.com/NREL/EnergyPlus/raw/develop/weather/master.geojson')
         data = json.loads(response.read().decode('utf8'))
+        # script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
+        # rel_path = "master.geojson"
+        # abs_file_path = os.path.join(script_dir, rel_path)
+        # with open(abs_file_path) as fp:
+        #     data = json.loads(fp)
+
         return data
     
     # These methods (_calculate_d, _sort_list_by_distance) sort locations by euclidean distance
