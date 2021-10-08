@@ -139,8 +139,8 @@ def app(app, epw, ui, timeshift=timeshift):
     #axes[3,0].set_ylabel('Ig_beta')
 
     fig.tight_layout()
-    # plt.show()
-    st.pyplot(fig)
+    # st.pyplot(fig)
     fig_title = 'Solar Geometry Subplots'
     # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
-    
+    graph, href = ui.base64_to_link_and_graph(fig, fig_title, 'jpg', 700, 700/15*10)
+    st.write(graph, href, unsafe_allow_html=True)

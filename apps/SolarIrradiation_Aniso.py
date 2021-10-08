@@ -11,6 +11,7 @@
 #modelling anisotropy.
 
 #imports the basic libraries
+from matplotlib.pyplot import tight_layout
 from apps.ClimAnalFunctions import * 
 
 ##########################################################################################
@@ -108,7 +109,7 @@ def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
         xlist = np.linspace(0, 350, 36)
         ylist = np.linspace(0, 90, 10) #Note: theer need to be 19 subdivisions (here and for Z) for 5o bins of altitude
         X, Y = np.meshgrid(xlist, ylist)
-        fig, ax = plt.subplots(1,1, figsize=(16,8))
+        fig, ax = plt.subplots(1,1, figsize=(16,8), tight_layout=True)
         #this part converts the list into an array and reshapes it, to match the x,y dimensions
         Z = np.array(annualirrad_list)*10**-6
         Z = Z.reshape(10,36)
@@ -125,7 +126,7 @@ def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
         xlist = np.linspace(0, 350, 36)
         ylist = np.linspace(0, 90, 10) #Note: theer need to be 19 subdivisions (here and for Z) for 5o bins of altitude
         X, Y = np.meshgrid(xlist, ylist)
-        fig, ax = plt.subplots(1,1, figsize=(16,8))
+        fig, ax = plt.subplots(1,1, figsize=(16,8), tight_layout=True)
         #this part converts the list into an array and reshapes it, to match the x,y dimensions
         Zprime = np.array(annualirrad_list)*10**-6
         Zprime = Zprime.reshape(10,36)
@@ -135,5 +136,7 @@ def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
         ax.set_title(fig_title)
         ax.set_xlabel('Collector azimuth, deg')
         ax.set_ylabel('Collector tilt, deg')
-        st.pyplot(fig)
+        # st.pyplot(fig)
         # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+    graph, href = ui.base64_to_link_and_graph(fig, fig_title, 'jpg', 800, 400)
+    st.write(graph, href, unsafe_allow_html=True)
