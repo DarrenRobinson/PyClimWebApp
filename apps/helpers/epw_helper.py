@@ -6,6 +6,8 @@ import csv
 import operator
 from apps.helpers.helper import Helper
 
+from ladybug.epw import EPW
+
 # -*- coding: utf-8 -*-
 # General naming convention:
 # func(): methods to be called by user
@@ -25,7 +27,14 @@ class EPWHelper(Helper):
                 f.write(urlopen(response).read())
                 self._read(tmpdirname+name)                                     # read file
                 f.close()
-        
+
+        with tempfile.TemporaryDirectory() as tmpdirname:                       # temp folder for storing the file during extraction
+            with open(tmpdirname + name, 'wb') as f:
+                f.write(urlopen(response).read())
+                data = EPW(tmpdirname+name)
+                f.close()
+    
+        st.write(data)
         # return self.dataframe, self.headers
     
     def _read(self,fp):
@@ -41,7 +50,7 @@ class EPWHelper(Helper):
                     break
                 else:
                     d[row[0]]=row[1:]
-            csvfile.close()
+            csvfile.close()          
 
         st.session_state['lat'] = float(d['LOCATION'][5])
         st.session_state['longitude'] = float(d['LOCATION'][6])
@@ -145,29 +154,6 @@ class EPWHelper(Helper):
                     break
             csvfile.close()
         return i 
-
-
-
-    # This method is called in loading sequence 4, app.run(), app.py, to convert the weather data file dataframe to list.
-    # It is currently of no use so it's commented
-    # def epw_to_file_list(self):
-    #     # Add the first 3 rows of headings (optional(?) implemented to bridge the workflow of backend script)
-    #     self.file_list.extend(
-    #         [
-    #             [self.headers['LOCATION'][0], ' -', self.headers['LOCATION'][2], self.headers['LOCATION'][5], self.headers['LOCATION'][6], self.headers['LOCATION'][7]], 
-    #             ['month', 'day', 'hour', 'Dry Bulb Temp', 'Rel Humidity', 'Global Horiz Rad', 'Diffuse Rad', 'Wind Speed', 'Wind Direction', ''], 
-    #             [' ', ' ', ' ', 'degrees C', 'percent', '(Wh/sq.m)', '(Wh/sq.m)', 'ms', 'degrees', '']
-    #         ]
-    #     )
-    #     # This is where the unwanted columns in the dataframe gets filtered out. 
-    #     self.file_list.extend(
-    #         self.dataframe[
-    #             ['Month', 'Day', 'Hour', 'Dry Bulb Temperature', 'Relative Humidity', 'Global Horizontal Radiation', 'Diffuse Horizontal Radiation', 'Wind Speed', 'Wind Direction']
-    #         ].values.tolist()
-    #     )
-        
-    #     return self.file_list
-
 
     # This method passes the time filter parameters to _time_filter_pipeline for filtering
     def epw_filter(self, file_title):
