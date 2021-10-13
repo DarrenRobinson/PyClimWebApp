@@ -13,9 +13,6 @@ import streamlit.components.v1 as components
 class MultiApp:
     def __init__(self):
         self.apps = []
-        self.helper = Helper()
-        self.ui = UIHelper() 
-        self.epw = EPWHelper()
 
     # This method allows you to add features (script files) to the 'Select Feature' dropdown menu on the sidebar
     def add_app(self, title, file_title, func):
@@ -29,9 +26,13 @@ class MultiApp:
     def run(self):
         st.sidebar.write('# PyClim')
 
-        self.helper.features = self.apps                        # Inform helper of available features
-        self.ui.advanced_search()                               # Display sorting/filtering functionalities
-        self.epw.read_epw_f(self.ui.file_name['file_url'])      # Fetch the epw dataframe and header info 
+        helper = Helper()
+        ui = UIHelper() 
+        epw = EPWHelper()
+
+        helper.features = self.apps                        # Inform helper of available features
+        ui.advanced_search()                               # Display sorting/filtering functionalities
+        epw.read_epw_f(self.ui.file_name['file_url'])      # Fetch the epw dataframe and header info 
 
         st.sidebar.markdown(                                    
             "Latitude: "+str(st.session_state['lat'])+                     
@@ -50,7 +51,7 @@ class MultiApp:
         
         self.epw.epw_filter(app['file_title'])               # Filter dataset for selected feature if applicable
         st.sidebar.write("---")
-        app['function'](app, self.epw, self.ui)              # Run the selected feature script
+        app['function'](app, epw, ui)              # Run the selected feature script
 
         # Site analytics
         with st.sidebar:
