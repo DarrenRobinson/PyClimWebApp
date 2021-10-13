@@ -49,7 +49,7 @@ class MultiApp:
             format_func=lambda app: app['title']
         )
         
-        self.epw.epw_filter(app['file_title'])               # Filter dataset for selected feature if applicable
+        epw.epw_filter(app['file_title'])               # Filter dataset for selected feature if applicable
         st.sidebar.write("---")
         app['function'](app, epw, ui)              # Run the selected feature script
 
