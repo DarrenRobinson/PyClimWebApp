@@ -28,13 +28,13 @@ class EPWHelper(Helper):
                 self._read(tmpdirname+name)                                     # read file
                 f.close()
 
-        with tempfile.TemporaryDirectory() as tmpdirname:                       # temp folder for storing the file during extraction
-            with open(tmpdirname + name, 'wb') as f:
-                f.write(urlopen(response).read())
-                data = EPW(tmpdirname+name)
-                f.close()
+        # with tempfile.TemporaryDirectory() as tmpdirname:                       # temp folder for storing the file during extraction
+        #     with open(tmpdirname + name, 'wb') as f:
+        #         f.write(urlopen(response).read())
+        #         data = EPW(tmpdirname+name)
+        #         f.close()
     
-        st.write(data)
+        # st.write(data)
         # return self.dataframe, self.headers
     
     def _read(self,fp):
