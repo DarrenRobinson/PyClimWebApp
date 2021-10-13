@@ -9,8 +9,6 @@
 #specification of solar or clock time. It can also create shading protractors.
 
 #imports the basic libraries
-import base64
-import io
 from apps.ClimAnalFunctions import * 
 
 def app(app, epw, ui):
