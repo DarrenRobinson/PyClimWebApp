@@ -432,7 +432,6 @@ class UIHelper(Helper):
         regions_dropdown, countries_dropdown, states_dropdown, weather_data_dropdown = self._get_advanced_search_dropdowns()
         expander = st.sidebar.expander(label='Weather Data Search')
         with expander:
-            # st.write("Search")
             st.radio("Search", [self.sort_list, self.filter_list], key='filter_option', on_change=self._filter_settings_reset)
 
             if 'filter_option' in st.session_state:
@@ -455,7 +454,6 @@ class UIHelper(Helper):
                         else:
                             countries_dropdown = countries_dropdown[st.session_state.region['pf']]
                     epw_col1.selectbox("Country", countries_dropdown, key='country')
-                    
                     
                     states_dropdown_options = []
                     if self._check_if_a_valid_option_is_selected('country', 'All in'):
@@ -485,7 +483,7 @@ class UIHelper(Helper):
             help="A list of available weather data files (Keyword Search Enabled)"
         )      
         
-        return self.file_name
+        # return file_name
 
 
 
