@@ -65,7 +65,7 @@ def app(app, epw, ui, timeshift=timeshift):
     diffuse_list = epw.dataframe['Diffuse Horizontal Radiation'].values.tolist()
     winspeed_list = epw.dataframe['Wind Speed'].values.tolist()
     # windir_list = epw.dataframe['Wind Direction'].values.tolist()
-
+    
     daynum_list = [31,28,31,30,31,30,31,31,30,31,30,31] 
     AnnualIgh = sum(global_list)/1000
     DiffuseFraction = sum(diffuse_list)/sum(global_list)
@@ -200,10 +200,8 @@ def app(app, epw, ui, timeshift=timeshift):
     ax_temp_hist.set_ylabel('counts [grey]')
     ax_temp_hist2.set_ylabel('cumulative counts [red / blue]')
     # st.pyplot(fig_temp_hist)
-    # st.write(fig_temp_hist)
     # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
     # temp_list.clear()
-    # plt.clf()
     graph, href = ui.base64_to_link_and_graph(fig_temp_hist, fig_title, 'jpg', 700, 350)
     st.write(graph, href, unsafe_allow_html=True)
 
@@ -241,7 +239,6 @@ def app(app, epw, ui, timeshift=timeshift):
     ax_illuminance.set_xlabel('illuminance bins, klux')
     ax_illuminance.set_ylabel('cumulative counts')
 
-    # plt.show()
     # st.pyplot(fig_illuminance)
     # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
     graph, href = ui.base64_to_link_and_graph(fig_illuminance, fig_title, 'jpg', 700, 350)
@@ -298,8 +295,7 @@ def app(app, epw, ui, timeshift=timeshift):
     # temp_matrix.clear()
     # winspeed_matrix.clear()
     # Diurnal_matrix.clear()
-    # rh_matrix.clear()
-
+    # rh_matrix.clear() 
 
     #This creates a 2D solar availability surface plot
     #NOTE: the chart is asymmetric because of the hour-centred convention.
@@ -352,4 +348,4 @@ def app(app, epw, ui, timeshift=timeshift):
     # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
     graph, href = ui.base64_to_link_and_graph(fig_daylight, fig_title, 'jpg', 800, 400)
     st.write(graph, href, unsafe_allow_html=True)
-    # illuminance_list.clear()
+    # illuminance_list.clear()  

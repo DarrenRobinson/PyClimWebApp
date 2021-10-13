@@ -59,9 +59,10 @@ def app(app, epw, ui):
     #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
     fig, ax = plt.subplots(1,1, figsize = (12,8), tight_layout=True)
+
     # Default values if dataset is not filtered
     daynum_list = [31,28,31,30,31,30,31,31,30,31,30,31]     
-    hour_range = 25   
+    hour_range = 25
     # Calculate number of days each month & number of hours daily if dataset is filtered
     filter_applied = ui.is_filter_applied(app['file_title'])
     if filter_applied:
@@ -145,15 +146,12 @@ def app(app, epw, ui):
             Monthly_t.clear()
             Monthly_g.clear()
 
-    # plt.ylim(0,0.03)
-    # plt.xlim(-10,60)
     ax.axis(ymin=-0,ymax=0.03)
     ax.axis(xmin=-10,xmax=60)
     ax.set_xlabel('Dry bulb temperature, $^o$C')
     ax.set_ylabel('Moisture content, kg/kg (dry air)')
 
     ax.axvline(x=60, color='lightgrey')
-    #plt.axis('off')
     fig_title = 'Hourly climate data plotted on a psychrometric chart (raw weather data, not transformed)'
     ax.set_title(fig_title, loc='center')    
     ax.legend(loc = 'upper left', frameon=False)
@@ -163,7 +161,7 @@ def app(app, epw, ui):
     graph, href = ui.base64_to_link_and_graph(fig, fig_title, 'jpg', 700, 700/3*2)
     st.write(graph, href, unsafe_allow_html=True)
 
-    if PlotEvapCool == True:
+    if PlotEvapCool:
         
         #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
         #RE-CREATE THE PSYCHROMETRIC CHART AND PLOT EVAP-COOLED DATA
@@ -174,7 +172,7 @@ def app(app, epw, ui):
         
         temp_x_list = []
         g_y_list = []
-        for rh in range (10,110,10):
+        for rh in range(10,110,10):
             for temp in range (-10,61):
                 temp_x_list.append(temp)
                 g_y_list.append(g(temp,rh))
@@ -205,8 +203,8 @@ def app(app, epw, ui):
             temp_x_list.clear()
             g_y_list.clear()
         
-        for wbt in range (-10,40,5):
-            for dbt in range (-10, 61, 1):
+        for wbt in range(-10,40,5):
+            for dbt in range(-10, 61, 1):
                 mc = g_dry_wet(dbt,wbt)
                 if dbt>=wbt:
                     temp_x_list.append(dbt)
@@ -218,12 +216,11 @@ def app(app, epw, ui):
         shifted_temp_list = []
         shifted_g_list = []
         
-        for plotpoints in range (0,len(temp_list)):
+        for plotpoints in range(0,len(temp_list)):
             g_list.append(g(temp_list[plotpoints],rh_list[plotpoints]))
             tdry = temp_list[plotpoints]
             twet = twetrh(temp_list[plotpoints], rh_list[plotpoints], Screen)
             wbtd = tdry-twet
-            
             if MartinezLimit==True:
                 LLdbt = 29 + g_list[plotpoints] / -0.0055 #where -0.0055 = dy/dx of PDEC line
             
@@ -234,10 +231,8 @@ def app(app, epw, ui):
             else:
                 shifted_temp_list.append(temp_list[plotpoints])
                 shifted_g_list.append(g_list[plotpoints])
+
         ax.scatter(shifted_temp_list, shifted_g_list, c='red', alpha=0.5, s=5)
-        
-        # plt.ylim(0,0.03)
-        # plt.xlim(-10,60)
         ax.axis(ymin=-0,ymax=0.03)
         ax.axis(xmin=-10,xmax=60)
         ax.set_xlabel('Dry bulb temperature, $^o$C')
@@ -252,3 +247,5 @@ def app(app, epw, ui):
         # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
         graph, href = ui.base64_to_link_and_graph(fig, fig_title, 'jpg', 700, 700/3*2)
         st.write(graph, href, unsafe_allow_html=True)
+
+
