@@ -32,7 +32,7 @@ class MultiApp:
 
         helper.features = self.apps                        # Inform helper of available features
         ui.advanced_search()                               # Display sorting/filtering functionalities
-        epw.read_epw_f(self.ui.file_name['file_url'])      # Fetch the epw dataframe and header info 
+        epw.read_epw_f(ui.file_name['file_url'])      # Fetch the epw dataframe and header info 
 
         st.sidebar.markdown(                                    
             "Latitude: "+str(st.session_state['lat'])+                     
