@@ -3,7 +3,6 @@ This class is the framework of the web-app.
 It is called and run (instantiated) in app.py.
 '''
 
-# import datetime
 import streamlit as st
 from apps.helpers.helper import Helper
 from apps.helpers.ui_helper import UIHelper
@@ -40,6 +39,7 @@ class MultiApp:
             "<br>Time Zone: "+str(st.session_state['timezone']), 
             unsafe_allow_html=True                              
         )
+
         st.sidebar.write("---")
 
         # Display feature selection dropdown
@@ -48,10 +48,11 @@ class MultiApp:
             self.apps,
             format_func=lambda app: app['title']
         )
+        epw.epw_filter(app['file_title'])                   # Filter dataset for selected feature if applicable
         
-        epw.epw_filter(app['file_title'])               # Filter dataset for selected feature if applicable
         st.sidebar.write("---")
-        app['function'](app, epw, ui)              # Run the selected feature script
+        
+        app['function'](app, epw, ui)                       # Run the selected feature script
 
         # Site analytics
         with st.sidebar:
