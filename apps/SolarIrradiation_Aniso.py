@@ -22,31 +22,13 @@ from apps.ClimAnalFunctions import *
 ##########################################################################################
 
 def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
-
     st.write("# "+app['title'])
 
     DiffuseOnly = st.sidebar.checkbox("DiffuseOnly", value=False, help="If TRUE then only diffuse irradiation is calculated; otherwise direct is also included")
     isotropic = st.sidebar.checkbox("isotropic", value=False, help="If TRUE then simpler calculations are used for an isotropic sky")
-    # FirstSweep = True
-    # day_list = []
-    # dec_list = []
-    # timediff_list = []
-    # cumhour=0
-    # globalirradbeta=0
-    # hour_list = []
-    # solalt_list = []
-    # solaz_list = []
-    # cai_list = []
-    # file_list = []
-    # global_list = []
-    # diffuse_list = []
-    # day_global_list = []
-    # day_diffuse_list = []
-    # igbeta_list = []
-    # annualirrad_list = []
 
     #This is to access the headers from the epw file
-    lat = st.session_state['lat'] * pi / 180
+    lat = epw.lat * pi / 180
     groundref = st.sidebar.number_input("groundref", 0.0, 1.0, groundref, 0.5)
     timeshift = st.sidebar.slider("Timeshift", -0.5, 0.5, timeshift, 0.5, help="This is to handle timing conventions relating to climate data collection")
 
@@ -57,7 +39,7 @@ def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
     #This is where the daily and hourly solar quantities are calculated
     day_list = np.array(range(1,366))
     dec_list = declin_angle2(day_list)
-    timediff_list = time_diff2(day_list, False, st.session_state['longitude'], st.session_state['timezone'], timeshift)
+    timediff_list = time_diff2(day_list, False, epw.lng, epw.timezone, timeshift)
     day_list_repeat = np.repeat(day_list, 24)
     dec_list_repeat = np.repeat(dec_list, 24)
     hours = np.tile(np.array(range(1,25)), 365)
@@ -77,6 +59,24 @@ def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
         tilt = tilt + 10 if ((counter % 36) == 0) else tilt
         wallaz = wallaz + 10 if wallaz < 350 else 0
         counter += 1
+
+    # FirstSweep = True
+    # day_list = []
+    # dec_list = []
+    # timediff_list = []
+    # cumhour=0
+    # globalirradbeta=0
+    # hour_list = []
+    # solalt_list = []
+    # solaz_list = []
+    # cai_list = []
+    # file_list = []
+    # global_list = []
+    # diffuse_list = []
+    # day_global_list = []
+    # day_diffuse_list = []
+    # igbeta_list = []
+    # annualirrad_list = []
         
     #This is where the daily and hourly solar quantities are calculated
     # for tilt in range(0,95,10):
@@ -119,8 +119,6 @@ def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
         ax.set_title(fig_title)
         ax.set_xlabel('Collector azimuth, deg')
         ax.set_ylabel('Collector tilt, deg')
-        # st.pyplot(fig)
-        # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
     else:
         #This creates a 2D irradiation surface plot
         xlist = np.linspace(0, 350, 36)
@@ -136,7 +134,6 @@ def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
         ax.set_title(fig_title)
         ax.set_xlabel('Collector azimuth, deg')
         ax.set_ylabel('Collector tilt, deg')
-        # st.pyplot(fig)
-        # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+
     graph, href = ui.base64_to_link_and_graph(fig, fig_title, 'jpg', 800, 400)
     st.write(graph, href, unsafe_allow_html=True)

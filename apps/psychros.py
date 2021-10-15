@@ -14,11 +14,6 @@
 #to a defined fraction of the wbtd, to mimic adiabatic (evaporative) cooling.
 
 #imports the basic libraries
-# import pandas as pd
-# import streamlit as st
-# import matplotlib
-# from matplotlib import pyplot as plt
-# import numpy as np
 from apps.ClimAnalFunctions import * 
 
 def app(app, epw, ui):
@@ -154,8 +149,7 @@ def app(app, epw, ui):
     if not filter_applied:  
         ax.legend(loc = 'upper left', frameon=False)
 
-    # st.pyplot(fig)
-    # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+
     graph, href = ui.base64_to_link_and_graph(fig, fig_title, 'jpg', 700, 700/3*2)
     st.write(graph, href, unsafe_allow_html=True)
 
@@ -240,8 +234,7 @@ def app(app, epw, ui):
         #plt.axis('off')
         fig_title = 'Hourly climate data plotted on a psychrometric chart (data transformed to emulate direct evaporative cooling)'
         ax.set_title(fig_title, loc='center')
-        # st.pyplot(fig)
-        # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+
         graph, href = ui.base64_to_link_and_graph(fig, fig_title, 'jpg', 700, 700/3*2)
         st.write(graph, href, unsafe_allow_html=True)
 

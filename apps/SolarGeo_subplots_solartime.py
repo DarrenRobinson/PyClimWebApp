@@ -14,14 +14,14 @@
 # DAILY TO INCLUDE: WALL-SOLAR AZIMUTH, ALTITUDE, CAI AND IGBETA / IDBETA / IBBETA.
 ############################################
 
-
 #imports the basic libraries
+from matplotlib.pyplot import tight_layout
 from apps.ClimAnalFunctions import * 
 
 def app(app, epw, ui, timeshift=timeshift):
     st.write("# "+app['title'])
-    
-    lat = st.sidebar.number_input('Latitude', -90.0, 90.0, st.session_state['lat'], help="Whilst these charts can be informed by climate data (global coordinates), they can also be generated independently here manually")
+
+    lat = st.sidebar.number_input('Latitude', -90.0, 90.0, epw.lat, help="Whilst these charts can be informed by climate data (global coordinates), they can also be generated independently here manually")
     lat = lat * pi / 180
     DayChoice = st.sidebar.slider('Julian Day Number', 1, 365, 172)
     wallaz = st.sidebar.slider("WallAz", 0, 359, 180, help="This is the orientation of the wall: receiving surface")
@@ -55,28 +55,17 @@ def app(app, epw, ui, timeshift=timeshift):
     #for a separate results window, type the following in the console
     #matplotlib qt
 
-    ##this reads climate data file
-    #for line in file:
-    #    line = line.rstrip('\n')
-    #    line = line.split(',')
-    #    file_list.append(line)
-    #file.close()
-
     ##this popuates global and diffuse lists with the corresponding solar data
     #for i in range (3,len(file_list)):
     #    global_list.append(float(file_list[i][5]))
     #    diffuse_list.append(float(file_list[i][6]))
-
-    #This prompts the user to enter a day, to be later used to generate plots
-    #DayChoice = input('Choose a day that you would like hourly plots for: ')
-    #DayChoice = int(DayChoice)
 
     #This is where the daily and hourly solar quantities are calculated, to be ;ater plotted
     for i in range(1,365):
         day_list.append(i)
         dec_list.append(declin_angle(i))
         daylength_list.append(daylength(dec_list[i-1],lat))
-        timediff_list.append(time_diff(i, EqTonly, st.session_state['longitude'], st.session_state['timezone'], timeshift))
+        timediff_list.append(time_diff(i, EqTonly, epw.lng, epw.timezone, timeshift))
 
         if i == DayChoice:
         #this loop populates lists for daynuber, solar altitude and solar azimuth for a user-defined day
@@ -95,7 +84,7 @@ def app(app, epw, ui, timeshift=timeshift):
     #WHEN COMPLETE, CALCULATE AND CREATE GLOBAL IRRADIATION SURFACE PLOT. 
 
     #this plots the daily declination angles, as an OO figure
-    fig, axes = plt.subplots(3,2, figsize = (15,10))
+    fig, axes = plt.subplots(3,2, figsize = (15,10), tight_layout=True)
 
     axes[0,0].plot(day_list, dec_list, 'b-')
     axes[0,0].set_title('Daily declination angles')
@@ -138,9 +127,6 @@ def app(app, epw, ui, timeshift=timeshift):
     #axes[3,0].set_xlabel('time, hours')
     #axes[3,0].set_ylabel('Ig_beta')
 
-    fig.tight_layout()
-    # st.pyplot(fig)
     fig_title = 'Solar Geometry Subplots'
-    # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
     graph, href = ui.base64_to_link_and_graph(fig, fig_title, 'jpg', 700, 700/15*10)
     st.write(graph, href, unsafe_allow_html=True)

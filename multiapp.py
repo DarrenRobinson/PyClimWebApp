@@ -4,9 +4,8 @@ It is called and run (instantiated) in app.py.
 '''
 
 import streamlit as st
-from apps.helpers.helper import Helper
-from apps.helpers.ui_helper import UIHelper
 from apps.helpers.epw_helper import EPWHelper
+from apps.helpers.ui_helper import UIHelper
 import streamlit.components.v1 as components
 
 class MultiApp:
@@ -25,22 +24,18 @@ class MultiApp:
     def run(self):
         st.sidebar.write('# PyClim')
 
-        helper = Helper()
-        ui = UIHelper() 
-        epw = EPWHelper()
-
-        # Inform helper of available features
-        helper.features = self.apps   
+        epw = EPWHelper() 
+        ui = UIHelper()   
 
         # Display sorting/filtering functionalities                
-        ui.advanced_search()   
+        epw.advanced_search()   
             
         if 'epw_valid' not in st.session_state:
             st.session_state['epw_valid'] = True
 
         try:
             # Fetch the epw dataframe and header info
-            epw.read_epw_f(ui.file_name['file_url'])     
+            epw.read_epw_f(epw.file_name['file_url'])     
         except:
             st.session_state['epw_valid'] = False
         else:
@@ -49,9 +44,9 @@ class MultiApp:
             
         if st.session_state['epw_valid']:
             st.sidebar.markdown(                                    
-                "Latitude: "+str(st.session_state['lat'])+                     
-                " Longitude: "+str(st.session_state['longitude'])+             
-                "<br>Time Zone: "+str(st.session_state['timezone']), 
+                "Latitude: "+str(epw.lat)+                     
+                " Longitude: "+str(epw.lng)+             
+                "<br>Time Zone: "+str(epw.timezone), 
                 unsafe_allow_html=True                              
             )
 
@@ -66,7 +61,7 @@ class MultiApp:
 
             # Filter dataset if applicable
             if (app['file_title'] == 'windrose') or (app['file_title'] == 'psychros'):
-                epw.epw_filter(app['file_title'])             
+                epw.df_filter(app['file_title'])             
             
             st.sidebar.write("---")
 

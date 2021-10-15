@@ -1,9 +1,9 @@
 from multiapp import MultiApp
 # import random
-# import datetime
+import datetime
 # import psutil
 # import tracemalloc
-# import streamlit as st
+import streamlit as st
 
 # 1. Import your features here using file names (without extension)
 from apps import sunpath, WindRose, SolarGeo_subplots_solartime, WeatherAnalysis, SolarIrradiation_Aniso, psychros, intro
@@ -43,10 +43,10 @@ app.add_app("Wind Rose", "windrose", WindRose.app)
 #     app.add_app(rand_list[num[i]][0], rand_list[num[i]][1], rand_list[num[i]][2])
 
 
-# begin_time = datetime.datetime.now()
+begin_time = datetime.datetime.now()
 # tracemalloc.start()
 app.run()
-# st.write(datetime.datetime.now() - begin_time)
+st.write(datetime.datetime.now() - begin_time)
 # current, peak = tracemalloc.get_traced_memory()
 # st.write(f"Current memory usage is {current / 10**6}MB; Peak was {peak / 10**6}MB")
 # tracemalloc.stop()

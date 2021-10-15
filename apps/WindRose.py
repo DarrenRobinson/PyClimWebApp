@@ -107,10 +107,7 @@ def app(app, epw, ui):
     #    ax.set_yticklabels([])
         fig.colorbar(cp, label = 'Annual hours: wind approaching from \n ith direction at jth temperature')
 
-    # plt.tight_layout()
-    # plt.show()
-    # st.pyplot(fig)
     fig_title = 'Wind Rose'
-    # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+
     graph, href = ui.base64_to_link_and_graph(fig, fig_title, 'jpg', 700, 520)
     st.write(graph, href, unsafe_allow_html=True)

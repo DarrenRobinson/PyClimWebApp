@@ -57,7 +57,7 @@ def app(app, epw, ui, timeshift=timeshift):
     AnnualIgh=0
     DiffuseFraction=0
 
-    lat = st.session_state['lat'] * pi / 180
+    lat = epw.lat * pi / 180
 
     temp_list = epw.dataframe['Dry Bulb Temperature'].values.tolist()
     rh_list = epw.dataframe['Relative Humidity'].values.tolist()
@@ -97,7 +97,7 @@ def app(app, epw, ui, timeshift=timeshift):
             day_list.append(cumday)
             dec_list.append(declin_angle(cumday))
             SStime, SRtime = sunrise_time(dec_list[cumday-1],lat,cumday)
-            dT = time_diff(cumday, True, st.session_state['longitude'], st.session_state['timezone'], timeshift)
+            dT = time_diff(cumday, True, epw.lng, epw.timezone, timeshift)
             SStime_list.append(min(24,SStime+dT))
             SRtime_list.append(max(1,SRtime+dT))
             for k in range(1,25):
@@ -173,10 +173,7 @@ def app(app, epw, ui, timeshift=timeshift):
 
     ax_ground.axis(ymin=20.0,ymax=0.0)
     ax_ground.legend(Month_list)
-    # st.pyplot(fig_ground)
-    # st.write(fig_ground)
-    # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
-    # tground_matrix.clear()
+
     graph, href = ui.base64_to_link_and_graph(fig_ground, fig_title, 'jpg', 700, 350)
     st.write(graph, href, unsafe_allow_html=True)
 
@@ -199,9 +196,7 @@ def app(app, epw, ui, timeshift=timeshift):
     ax_temp_hist.set_xlabel('temperature bins,' + '$^o$C')
     ax_temp_hist.set_ylabel('counts [grey]')
     ax_temp_hist2.set_ylabel('cumulative counts [red / blue]')
-    # st.pyplot(fig_temp_hist)
-    # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
-    # temp_list.clear()
+
     graph, href = ui.base64_to_link_and_graph(fig_temp_hist, fig_title, 'jpg', 700, 350)
     st.write(graph, href, unsafe_allow_html=True)
 
@@ -220,9 +215,7 @@ def app(app, epw, ui, timeshift=timeshift):
     ax_wind_hist.set_xlabel('wind speed bins, m/s')
     ax_wind_hist.set_ylabel('counts [grey]')
     ax_wind_hist2.set_ylabel('cumulative counts [red]')
-    # st.pyplot(fig_wind_hist)
-    # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
-    # winspeed_list.clear()
+
     graph, href = ui.base64_to_link_and_graph(fig_wind_hist, fig_title, 'jpg', 700, 350)
     st.write(graph, href, unsafe_allow_html=True)
 
@@ -239,8 +232,6 @@ def app(app, epw, ui, timeshift=timeshift):
     ax_illuminance.set_xlabel('illuminance bins, klux')
     ax_illuminance.set_ylabel('cumulative counts')
 
-    # st.pyplot(fig_illuminance)
-    # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
     graph, href = ui.base64_to_link_and_graph(fig_illuminance, fig_title, 'jpg', 700, 350)
     st.write(graph, href, unsafe_allow_html=True)
     #plots a degree-day histograms
@@ -255,8 +246,7 @@ def app(app, epw, ui, timeshift=timeshift):
     ax_monthly_degree.set_xlabel('Time, months')
     ax_monthly_degree.set_ylabel('Monthly degree days')
     ax_monthly_degree.legend((y1[0],y2[0]), ('Heating', 'Cooling'), loc='best')
-    # st.pyplot(fig_monthly_degree)
-    # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+
     graph, href = ui.base64_to_link_and_graph(fig_monthly_degree, fig_title, 'jpg', 700, 350)
     st.write(graph, href, unsafe_allow_html=True)
 
@@ -287,15 +277,11 @@ def app(app, epw, ui, timeshift=timeshift):
     axes[1,1].set_xlabel('Time, months')
     axes[1,1].set_ylabel('Wind Speed, m/s')
 
-    # st.pyplot(fig_violin)
     fig_title = 'Violin Plots'
-    # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+
     graph, href = ui.base64_to_link_and_graph(fig_violin, fig_title, 'jpg', 700, 350)
     st.write(graph, href, unsafe_allow_html=True)
-    # temp_matrix.clear()
-    # winspeed_matrix.clear()
-    # Diurnal_matrix.clear()
-    # rh_matrix.clear() 
+
 
     #This creates a 2D solar availability surface plot
     #NOTE: the chart is asymmetric because of the hour-centred convention.
@@ -316,11 +302,9 @@ def app(app, epw, ui, timeshift=timeshift):
 
     ax_solar.plot(day_list, SRtime_list,c='red')
     ax_solar.plot(day_list, SStime_list,c='red')    
-    # st.pyplot(fig_solar)
-    # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+
     graph, href = ui.base64_to_link_and_graph(fig_solar, fig_title, 'jpg', 800, 400)
     st.write(graph, href, unsafe_allow_html=True)
-    # global_list.clear()
 
 
     #This creates a 2D daylight availability surface plot
@@ -344,8 +328,6 @@ def app(app, epw, ui, timeshift=timeshift):
 
     ax_daylight.plot(day_list, SRtime_list,c='red')
     ax_daylight.plot(day_list, SStime_list,c='red')    
-    # st.pyplot(fig_daylight)
-    # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+
     graph, href = ui.base64_to_link_and_graph(fig_daylight, fig_title, 'jpg', 800, 400)
     st.write(graph, href, unsafe_allow_html=True)
-    # illuminance_list.clear()  
