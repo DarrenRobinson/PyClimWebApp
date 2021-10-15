@@ -58,7 +58,7 @@ class MultiApp:
         with st.sidebar:
             if app['file_title'] != 'intro':
                 st.write("---")
-            st.markdown('<center><a href="https://statcounter.com/p12570505/?guest=1" id="load_test" target="_blank">View Visitor Stats</a></center>', unsafe_allow_html=True)
+            st.markdown('<center><a href="https://statcounter.com/p12570505/?guest=1" target="_blank">View Visitor Stats</a></center>', unsafe_allow_html=True)
             components.html("""
                 <!-- Default Statcounter code for PyClim Web App
                 https://share.streamlit.io/darrenrobinson/pyclimwebapp/main/app.py
