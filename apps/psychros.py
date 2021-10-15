@@ -122,6 +122,7 @@ def app(app, epw, ui):
         for plotpoints in range (0,len(temp_list)):
             g_list.append(g(temp_list[plotpoints],rh_list[plotpoints]))
         ax.scatter(temp_list,g_list, c='red', alpha=0.5, s=5)
+        # ax.legend()
     else:
         cumhour=0
         Colour_list = ['firebrick', 'salmon', 'darkorange', 'orange', 'gold', 'yellow', 'yellowgreen', 'green', 'olive', 'cyan', 'skyblue', 'blue']
@@ -153,8 +154,9 @@ def app(app, epw, ui):
 
     ax.axvline(x=60, color='lightgrey')
     fig_title = 'Hourly climate data plotted on a psychrometric chart (raw weather data, not transformed)'
-    ax.set_title(fig_title, loc='center')    
-    ax.legend(loc = 'upper left', frameon=False)
+    ax.set_title(fig_title, loc='center')  
+    if not filter_applied:  
+        ax.legend(loc = 'upper left', frameon=False)
 
     # st.pyplot(fig)
     # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
@@ -242,6 +244,7 @@ def app(app, epw, ui):
         #plt.axis('off')
         fig_title = 'Hourly climate data plotted on a psychrometric chart (data transformed to emulate direct evaporative cooling)'
         ax.set_title(fig_title, loc='center')
+        # ax.legend()
         # st.pyplot(fig)
         # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
         graph, href = ui.base64_to_link_and_graph(fig, fig_title, 'jpg', 700, 700/3*2)
