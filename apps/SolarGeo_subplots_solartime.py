@@ -20,7 +20,7 @@ from apps.ClimAnalFunctions import *
 
 def app(app, epw, ui, timeshift=timeshift):
     st.write("# "+app['title'])
-
+    
     lat = st.sidebar.number_input('Latitude', -90.0, 90.0, st.session_state['lat'], help="Whilst these charts can be informed by climate data (global coordinates), they can also be generated independently here manually")
     lat = lat * pi / 180
     DayChoice = st.sidebar.slider('Julian Day Number', 1, 365, 172)

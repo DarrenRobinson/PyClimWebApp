@@ -5,6 +5,7 @@ import pandas as pd
 import csv
 import operator
 from apps.helpers.helper import Helper
+import copy
 
 # from ladybug.epw import EPW
 
@@ -25,17 +26,14 @@ class EPWHelper(Helper):
         with tempfile.TemporaryDirectory() as tmpdirname:                       # temp folder for storing the file during extraction
             with open(tmpdirname + name, 'wb') as f:
                 f.write(urlopen(response).read())
-                self._read(tmpdirname+name)                                     # read file
+                self._read(tmpdirname+name) # read file                               
                 f.close()
 
-        # with tempfile.TemporaryDirectory() as tmpdirname:                       # temp folder for storing the file during extraction
+        # with tempfile.TemporaryDirectory() as tmpdirname:                     # temp folder for storing the file during extraction
         #     with open(tmpdirname + name, 'wb') as f:
         #         f.write(urlopen(response).read())
         #         data = EPW(tmpdirname+name)
         #         f.close()
-    
-        # st.write(data)
-        # return self.dataframe, self.headers
     
     def _read(self,fp):
         self.headers = self._read_headers(fp)
@@ -155,18 +153,47 @@ class EPWHelper(Helper):
             csvfile.close()
         return i 
 
+    # This method filters the data
+    def _epw_filter_pipeline(self, op_cond, range):
+        #
+        # Operator AND is used (op_cond = True) if in dropdowns start month is before end month e.g. start: Feb, end: Nov
+        # e.g. May is valid out because it is after Feb **AND** before Nov
+        # 
+        # Operator OR is used (op_cond = False) if start month is after end month e.g. start: Nov, end: Feb, as it
+        # indicates the desired range is Jan to Feb and Nov to Dec
+        # e.g. Jan is valid because it is after Nov **OR** before Feb
+        #
+        filter_operator = operator.__and__ if op_cond else operator.__or__
+        self.dataframe = self.dataframe.loc[filter_operator(range[0], range[1])]
+
     # This method passes the time filter parameters to _time_filter_pipeline for filtering
     def epw_filter(self, file_title):
         # Read the corresponding filter parameters from st.session_state according to feature (file_title)
         time_var = self.time_var.copy()
-        for feature in self.features:
-            if feature['file_title'] == file_title:
-                for var in time_var.keys():
-                    if feature['file_title']+"_"+var in st.session_state:
-                        if (var == 'start_month') | (var == 'end_month'):
-                            time_var[var] = st.session_state[feature['file_title']+"_"+var]['value']
-                        else:
-                            time_var[var] = st.session_state[feature['file_title']+"_"+var]
+        for var in time_var.keys():
+            if file_title+"_"+var in st.session_state:
+                if (var == 'start_month') | (var == 'end_month'):
+                    time_var[var] = st.session_state[file_title+"_"+var]['value']
+                else:
+                    time_var[var] = st.session_state[file_title+"_"+var]
+        # time_var = self.time_var.copy()
+        # for feature in self.features:
+        #     if feature['file_title'] == file_title:
+        #         for var in time_var.keys():
+        #             if feature['file_title']+"_"+var in st.session_state:
+        #                 if (var == 'start_month') | (var == 'end_month'):
+        #                     time_var[var] = st.session_state[feature['file_title']+"_"+var]['value']
+        #                 else:
+        #                     time_var[var] = st.session_state[feature['file_title']+"_"+var]
+        # time_var = []
+        # time_var['start_month'] = st.session_state[file_title+'_start_month']['value']
+        # time_var['end_month'] = st.session_state[file_title+'_end_month']['value']
+        # time_var['start_day'] = st.session_state[file_title+'_start_day']
+        # time_var['end_day'] = st.session_state[file_title+'_end_day']
+        # time_var['start_hour'] = st.session_state[file_title+'_start_hour']
+        # time_var['end_hour'] = st.session_state[file_title+'_end_hour']
+
+
 
         # filter by day and month
         direction = (time_var['end_month'] > time_var['start_month']) | ((time_var['end_month'] == time_var['start_month']) & (time_var['end_day'] >= time_var['start_day']))
@@ -189,18 +216,3 @@ class EPWHelper(Helper):
             (self.dataframe['Hour'] <= time_var['end_hour'])       
         )
         self._epw_filter_pipeline(direction, range)
-
-    # This method filters the data
-    def _epw_filter_pipeline(self, op_cond, range):
-        #
-        # Operator AND is used (op_cond = True) if in dropdowns start month is before end month e.g. start: Feb, end: Nov
-        # e.g. May is valid out because it is after Feb **AND** before Nov
-        # 
-        # Operator OR is used (op_cond = False) if start month is after end month e.g. start: Nov, end: Feb, as it
-        # indicates the desired range is Jan to Feb and Nov to Dec
-        # e.g. Jan is valid because it is after Nov **OR** before Feb
-        #
-        filter_operator = operator.__and__ if op_cond else operator.__or__
-        self.dataframe = self.dataframe.loc[filter_operator(range[0], range[1])]
-
-
