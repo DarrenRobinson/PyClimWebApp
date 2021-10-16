@@ -544,7 +544,9 @@ class EPWHelper():
         # st.session_state['timezone'] = float(d['LOCATION'][7])
 
         return d, float(d['LOCATION'][5]), float(d['LOCATION'][6]), float(d['LOCATION'][7])
-    
+
+
+
     def _read_data(self,fp):
         names=[
             'Year',
@@ -636,7 +638,7 @@ class EPWHelper():
     def _first_row_with_climate_data(self,fp):
         with open(fp, newline='') as csvfile:
             csvreader = csv.reader(csvfile, delimiter=',', quotechar='"')
-            for i,row in enumerate(csvreader):
+            for i, row in enumerate(csvreader):
                 if row[0].isdigit():
                     break
             csvfile.close()
@@ -954,3 +956,5 @@ class EPWHelper():
     #     r = pdk.Deck(layers=[layer], map_style='mapbox://styles/mapbox/streets-v11', initial_view_state=view_state, tooltip={"html": "<b>Longitude: </b> {Longitude} <br /> " "<b>Latitude: </b>{Latitude} <br /> "})
                             
     #     st.sidebar.pydeck_chart(r)
+
+

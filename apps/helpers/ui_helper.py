@@ -45,13 +45,6 @@ class UIHelper():
         graph = '<img width={} height={} src="data:image/jpg;base64, {}">'.format(width, height, decoded)
         href = '<center>Download figure <a href=\'data:image/{};base64,{}\' download=\'{}\'>{}</a></center><br>'.format(format, decoded, filename+"."+format, format.upper())
         return graph, href
-            
-    # def generate_dl_link(self, fig, filename, format):
-    #     tmpfile = BytesIO()
-    #     fig.savefig(tmpfile, format=format, dpi=300)
-    #     encoded = base64.b64encode(tmpfile.getvalue()).decode('utf-8')
-    #     href = '<center><a href=\'data:image/{};base64,{}\' download=\'{}\'>{}</a></center><br>'.format(format, encoded, filename+"."+format, 'Download figure')
-    #     return href
 
     # def format_selector(self):
     #     options = ['jpg', 'png', 'svg', 'pdf']
