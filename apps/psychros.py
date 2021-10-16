@@ -14,21 +14,14 @@
 #to a defined fraction of the wbtd, to mimic adiabatic (evaporative) cooling.
 
 #imports the basic libraries
-# import pandas as pd
-# import streamlit as st
-# import matplotlib
-# from matplotlib import pyplot as plt
-# import numpy as np
 from apps.ClimAnalFunctions import * 
 
 def app(app, epw, ui):
     st.write("# "+app['title'])
-    
     # Time filter
     ui.time_filter(app['file_title'])
     colour = st.sidebar.color_picker('Colour Picker', value='#0C791A', help="By default when applying filters, all data should be plotted in the same colour")
     # colour = '#0C791A'
-
     temp_list = []
     rh_list = []
     g_list = []
@@ -122,7 +115,6 @@ def app(app, epw, ui):
         for plotpoints in range (0,len(temp_list)):
             g_list.append(g(temp_list[plotpoints],rh_list[plotpoints]))
         ax.scatter(temp_list,g_list, c='red', alpha=0.5, s=5)
-        # ax.legend()
     else:
         cumhour=0
         Colour_list = ['firebrick', 'salmon', 'darkorange', 'orange', 'gold', 'yellow', 'yellowgreen', 'green', 'olive', 'cyan', 'skyblue', 'blue']
@@ -132,7 +124,6 @@ def app(app, epw, ui):
         for month in range (1,13):
             for days in range (0, daynum_list[month-1]):
                 for hours in range(1, hour_range):
-                # for hours in range(1,25):
                     Monthly_g.append(g(temp_list[cumhour],rh_list[cumhour]))
                     Monthly_t.append(temp_list[cumhour])
                     cumhour=cumhour+1
@@ -158,8 +149,7 @@ def app(app, epw, ui):
     if not filter_applied:  
         ax.legend(loc = 'upper left', frameon=False)
 
-    # st.pyplot(fig)
-    # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+
     graph, href = ui.base64_to_link_and_graph(fig, fig_title, 'jpg', 700, 700/3*2)
     st.write(graph, href, unsafe_allow_html=True)
 
@@ -244,9 +234,7 @@ def app(app, epw, ui):
         #plt.axis('off')
         fig_title = 'Hourly climate data plotted on a psychrometric chart (data transformed to emulate direct evaporative cooling)'
         ax.set_title(fig_title, loc='center')
-        # ax.legend()
-        # st.pyplot(fig)
-        # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+
         graph, href = ui.base64_to_link_and_graph(fig, fig_title, 'jpg', 700, 700/3*2)
         st.write(graph, href, unsafe_allow_html=True)
 

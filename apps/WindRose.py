@@ -11,10 +11,8 @@ from apps.ClimAnalFunctions import *
 
 def app(app, epw, ui):
     st.write("# "+app['title'])
-    
     # Time filter helper
     ui.time_filter(app['file_title'])
-    
     #in the future: provide the option to plot using the Beaufort scale
 
     ########################################################
@@ -39,20 +37,8 @@ def app(app, epw, ui):
     winspeed_list= []
     windir_list = []
     temp_list = []
-    # file_list = []
-
-    # with open(os.path.join(pathlib.Path(__file__).parent.absolute(), result+".csv"), "r") as file: 
-    #     for line in file:
-    #         line = line.rstrip('\n')
-    #         line = line.split(',')
-    #         file_list.append(line)
-    #     file.close()
 
     #this popuates lists with the corresponding data
-    # for i in range (3, len(epw.file_list)):
-    #     temp_list.append(float(epw.file_list[i][3])/TempInterval)
-    #     winspeed_list.append(float(epw.file_list[i][7]))
-    #     windir_list.append(float(epw.file_list[i][8]))
     temp_list = epw.dataframe['Dry Bulb Temperature'].values.tolist()
     winspeed_list = epw.dataframe['Wind Speed'].values.tolist()
     windir_list = epw.dataframe['Wind Direction'].values.tolist()
@@ -121,10 +107,7 @@ def app(app, epw, ui):
     #    ax.set_yticklabels([])
         fig.colorbar(cp, label = 'Annual hours: wind approaching from \n ith direction at jth temperature')
 
-    # plt.tight_layout()
-    # plt.show()
-    # st.pyplot(fig)
     fig_title = 'Wind Rose'
-    # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+
     graph, href = ui.base64_to_link_and_graph(fig, fig_title, 'jpg', 700, 520)
     st.write(graph, href, unsafe_allow_html=True)

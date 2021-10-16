@@ -14,7 +14,7 @@ from apps.ClimAnalFunctions import *
 def app(app, epw, ui):
     st.write("# "+app['title'])
 
-    lat = st.sidebar.number_input('Latitude', -90.0, 90.0, st.session_state['lat'])
+    lat = st.sidebar.number_input('Latitude', -90.0, 90.0, epw.lat)
     lat = lat * pi / 180
     AzimuthIncrement = st.sidebar.slider('Azimuth Increment', 1, 45, 10)
     HorizontalProtractor = st.sidebar.checkbox("Horizontal Protractor", value=False)
@@ -27,13 +27,12 @@ def app(app, epw, ui):
     SunpathDay_list = [355,325,294,264,233,202,172,141,111,80,52,21]
     Colour_list = ['firebrick', 'darkorange', 'orange', 'gold', 'green', 'cyan', 'blue']
     Month_list = ['Dec', 'Nov/Jan', 'Oct/Feb', 'Sep/Mar', 'Aug/Apr', 'Jul/May', 'Jun']
-    
-    # fig = plt.figure(figsize=(9, 9))
-    fig_sun, ax_sun = plt.subplots(1,1, figsize = (9, 9), tight_layout=True)
 
     #######################################
     # THIS PLOTS THE ISO-ALTITUDE CIRCLES AND RADIAL AZIMUTH LINES
     #######################################
+
+    fig_sun, ax_sun = plt.subplots(1,1, figsize = (9, 9), tight_layout=True)
 
     for circle in range(90, 0, -10):
         circles_x = []
@@ -55,7 +54,6 @@ def app(app, epw, ui):
 
         ax_sun.plot(circles_x, circles_y, lw=1, color='darkgray')
         ax_sun.plot(spokes_x, spokes_y, lw=1, color='darkgray')
-
 
     for month in range(1,8):
         azi_list = []
@@ -146,7 +144,6 @@ def app(app, epw, ui):
     ax_sun.set_title(fig_title, loc='center')
     ax_sun.legend(loc = 'lower left', frameon=False)
     ax_sun.axis('off')
-    # st.pyplot(fig_sun)
-    # st.write(ui.generate_fig_dl_link(fig, fig_title), unsafe_allow_html=True)
+
     graph, href = ui.base64_to_link_and_graph(fig_sun, fig_title, 'jpg', 700, 700)
     st.write(graph, href, unsafe_allow_html=True)
