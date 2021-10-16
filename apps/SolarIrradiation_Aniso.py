@@ -11,7 +11,6 @@
 #modelling anisotropy.
 
 #imports the basic libraries
-from matplotlib.pyplot import tight_layout
 from apps.ClimAnalFunctions import * 
 
 ##########################################################################################

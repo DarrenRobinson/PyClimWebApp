@@ -6,7 +6,6 @@
 ##########################################################################################
 
 #THIS MODULE SIMPLY CREATES A POLAR WIND ROSE PLOT.
-from matplotlib.pyplot import tight_layout
 from apps.ClimAnalFunctions import *  
 
 def app(app, epw, ui):

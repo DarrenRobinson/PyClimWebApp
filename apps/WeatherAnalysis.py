@@ -11,7 +11,6 @@
 #5) wind speed / temperature frequency histograms, 6) ground temperature profile. 
 
 #imports the basic libraries
-from matplotlib.pyplot import tight_layout
 from apps.ClimAnalFunctions import * 
 
 def app(app, epw, ui, timeshift=timeshift):
