@@ -15,7 +15,6 @@
 ############################################
 
 #imports the basic libraries
-from matplotlib.pyplot import tight_layout
 from apps.ClimAnalFunctions import * 
 
 def app(app, epw, ui, timeshift=timeshift):

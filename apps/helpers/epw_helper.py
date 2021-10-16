@@ -539,13 +539,7 @@ class EPWHelper():
                     d[row[0]]=row[1:]
             csvfile.close()          
 
-        # st.session_state['lat'] = float(d['LOCATION'][5])
-        # st.session_state['longitude'] = float(d['LOCATION'][6])
-        # st.session_state['timezone'] = float(d['LOCATION'][7])
-
         return d, float(d['LOCATION'][5]), float(d['LOCATION'][6]), float(d['LOCATION'][7])
-
-
 
     def _read_data(self,fp):
         names=[
@@ -867,7 +861,6 @@ class EPWHelper():
             help="A list of available weather data files (Keyword Search Enabled)"
         )      
 
-
     #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
     # EPW Filter
     #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -876,7 +869,6 @@ class EPWHelper():
     def df_filter(self, file_title):
         # Read the corresponding filter parameters from st.session_state according to feature (file_title)
         time_var = {'start_month': 1, 'start_day': 1, 'end_month': 12, 'end_day': 31, 'start_hour': 1, 'end_hour': 24}
-        # time_var = time_var.copy()
         for var in time_var.keys():
             if file_title+"_"+var in st.session_state:
                 if (var == 'start_month') | (var == 'end_month'):
@@ -956,5 +948,3 @@ class EPWHelper():
     #     r = pdk.Deck(layers=[layer], map_style='mapbox://styles/mapbox/streets-v11', initial_view_state=view_state, tooltip={"html": "<b>Longitude: </b> {Longitude} <br /> " "<b>Latitude: </b>{Latitude} <br /> "})
                             
     #     st.sidebar.pydeck_chart(r)
-
-

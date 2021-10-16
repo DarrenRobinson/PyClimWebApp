@@ -18,6 +18,7 @@ from apps.ClimAnalFunctions import *
 
 def app(app, epw, ui):
     st.write("# "+app['title'])
+
     # Time filter
     ui.time_filter(app['file_title'])
     colour = st.sidebar.color_picker('Colour Picker', value='#0C791A', help="By default when applying filters, all data should be plotted in the same colour")
@@ -148,8 +149,7 @@ def app(app, epw, ui):
     ax.set_title(fig_title, loc='center')  
     if not filter_applied:  
         ax.legend(loc = 'upper left', frameon=False)
-
-
+        
     graph, href = ui.base64_to_link_and_graph(fig, fig_title, 'jpg', 700, 700/3*2)
     st.write(graph, href, unsafe_allow_html=True)
 

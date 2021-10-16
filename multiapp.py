@@ -66,7 +66,9 @@ class MultiApp:
             st.sidebar.write("---")
 
             # Run the selected feature script
-            app['function'](app, epw, ui)                       
+            app_info = dict(app)
+            del app_info['function']
+            app['function'](app_info, epw, ui)                       
 
             # Site analytics
             with st.sidebar:
