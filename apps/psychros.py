@@ -21,22 +21,24 @@ def app(app, epw, ui):
 
     # Time filter
     ui.time_filter(app['file_title'])
-    colour = st.sidebar.color_picker('Colour Picker', value='#0C791A', help="By default when applying filters, all data should be plotted in the same colour")
-    # colour = '#0C791A'
     temp_list = []
     rh_list = []
     g_list = []
 
-    PlotMonthly = st.sidebar.checkbox("Plot Monthly", value=True, help="If FALSE then there is no distinction between data points for different months")
-    PlotEvapCool = st.sidebar.checkbox("PlotEvapCool", value=True, help="Efficiency of the evaporative cooling process")
-    
     min_temp = min(np.array(epw.dataframe['Dry Bulb Temperature']))
     # max_temp = max(np.array(epw.dataframe['Dry Bulb Temperature']))
     # min_temp = min(np.array(epw.file_list[3:])[:,3])
     # max_temp = max(np.array(epw.file_list[3:])[:,3])
-
-    LLdbt = st.sidebar.number_input("LLdbt", min_value=float(min_temp), value=25.0, step=0.5, help="Temperature above which data points are shifted to mimic evaporative cooling") #lower limit of temperature: above which data is shifted
     MartinezLimit = True
+    PlotMonthly = st.sidebar.checkbox("Plot Monthly", value=True, help="If FALSE then there is no distinction between data points for different months")
+    PlotEvapCool = st.sidebar.checkbox("PlotEvapCool", value=True, help="Efficiency of the evaporative cooling process")
+    colour = st.sidebar.color_picker('Colour Picker', value='#0C791A', help="By default when applying filters, all data should be plotted in the same colour")
+    # colour = '#0C791A'
+    
+    with st.sidebar.form(key='psychros'):
+        LLdbt = st.number_input("LLdbt", min_value=float(min_temp), value=25.0, step=0.5, help="Temperature above which data points are shifted to mimic evaporative cooling") #lower limit of temperature: above which data is shifted
+        submit_button = st.form_submit_button(label='Apply Change')
+
     EvapCoolEff = st.sidebar.slider("EvapCoolEff", 0.0, 1.0, 0.7, help="If TRUE then a separate plot is produced with evaporative cooling mimicked") #Proportion of wbtd thar data s shifted to.
     Screen = False #so that wbt not t_screen is calculated  
     
@@ -149,7 +151,7 @@ def app(app, epw, ui):
     ax.set_title(fig_title, loc='center')  
     if not filter_applied:  
         ax.legend(loc = 'upper left', frameon=False)
-        
+
     graph, href = ui.base64_to_link_and_graph(fig, fig_title, 'jpg', 700, 700/3*2)
     st.write(graph, href, unsafe_allow_html=True)
 

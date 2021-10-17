@@ -14,13 +14,20 @@ from apps.ClimAnalFunctions import *
 def app(app, epw, ui):
     st.write("# "+app['title'])
 
-    lat = st.sidebar.number_input('Latitude', -90.0, 90.0, epw.lat)
-    lat = lat * pi / 180
+    with st.sidebar.form(key='sunpath_lat'):
+        lat = st.number_input('Latitude', -90.0, 90.0, epw.lat)
+        submit_button = st.form_submit_button(label='Apply Change')
+
     AzimuthIncrement = st.sidebar.slider('Azimuth Increment', 1, 45, 10)
     HorizontalProtractor = st.sidebar.checkbox("Horizontal Protractor", value=False)
     VerticalProtractor = st.sidebar.checkbox("Vertical Protractor", value=False)
     ClockTime = st.sidebar.checkbox("Clock Time", value=False)
-    WallAzimuth = st.sidebar.number_input('Wall Azimuth', 0, 359, 185)
+    
+    with st.sidebar.form(key='sunpath_wallaz'):
+        WallAzimuth = st.number_input('Wall Azimuth', 0, 359, 185)
+        submit_button = st.form_submit_button(label='Apply Change')
+
+    lat = lat * pi / 180
     EqTonly = True
     Hemisphere = "S" if lat<0 else "N"
     #working backwards from the winter solstice

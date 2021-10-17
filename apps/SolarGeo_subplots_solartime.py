@@ -20,12 +20,16 @@ from apps.ClimAnalFunctions import *
 def app(app, epw, ui, timeshift=timeshift):
     st.write("# "+app['title'])
 
-    lat = st.sidebar.number_input('Latitude', -90.0, 90.0, epw.lat, help="Whilst these charts can be informed by climate data (global coordinates), they can also be generated independently here manually")
-    lat = lat * pi / 180
+    with st.sidebar.form(key='SolarGeo_subplots_solartime'):
+        lat = st.number_input('Latitude', -90.0, 90.0, epw.lat, help="Whilst these charts can be informed by climate data (global coordinates), they can also be generated independently here manually")
+        submit_button = st.form_submit_button(label='Apply Change')
+
     DayChoice = st.sidebar.slider('Julian Day Number', 1, 365, 172)
     wallaz = st.sidebar.slider("WallAz", 0, 359, 180, help="This is the orientation of the wall: receiving surface")
-    wallaz = wallaz * pi /180
     tilt = st.sidebar.slider("Tilt", 0, 179, 90, help="This is the tilt of the wall: receiving surface (0 is flat facing up, 179 is flat almost facing down)")
+    
+    lat = lat * pi / 180
+    wallaz = wallaz * pi /180
     tilt = tilt * pi / 180
     # isotropic = True
     EqTonly=False #this is a switch that corrects for longitude difference when finding the sun position

@@ -27,21 +27,22 @@ class MultiApp:
         epw = EPWHelper() 
         ui = UIHelper()   
 
-        # Display sorting/filtering functionalities                
+        # Display sorting/filtering functionalities
         epw.advanced_search()   
-            
+        epw.map_viewer()
+        
         if 'epw_valid' not in st.session_state:
             st.session_state['epw_valid'] = True
 
         try:
             # Fetch the epw dataframe and header info
-            epw.read_epw_f(epw.file_name['file_url'])     
+            epw.read_epw_f(epw.file_name['file_url'])   
         except:
             st.session_state['epw_valid'] = False
+            st.error('Unable to read the selected epw file. Please select a different one.')
         else:
-            if epw.dataframe.empty:
-                st.session_state['epw_valid'] = False
-            
+            st.session_state['epw_valid'] = False if epw.dataframe.empty else True
+                
         if st.session_state['epw_valid']:
             st.sidebar.markdown(                                    
                 "Latitude: "+str(epw.lat)+                     
@@ -49,7 +50,6 @@ class MultiApp:
                 "<br>Time Zone: "+str(epw.timezone), 
                 unsafe_allow_html=True                              
             )
-
             st.sidebar.write("---")
 
             # Display feature selection dropdown
@@ -66,8 +66,7 @@ class MultiApp:
             st.sidebar.write("---")
 
             # Run the selected feature script
-            app_info = dict(app)
-            del app_info['function']
+            app_info = {'title': app['title'], 'file_title': app['file_title']}
             app['function'](app_info, epw, ui)                       
 
             # Site analytics
@@ -94,5 +93,3 @@ class MultiApp:
                     alt="free web stats"></a></div></noscript>
                     <!-- End of Statcounter Code -->
                 """)
-        else:
-            st.error('Unable to read the selected epw file')
