@@ -42,13 +42,18 @@ def app(app, epw, ui, timeshift=timeshift):
 
     MonthlyHDD_list = []
     MonthlyCDD_list = []
+
     HDDbase = st.sidebar.slider("Heating Degree-day Base Temperature", 10.0, 18.0, 15.5, 0.5, help="Temperature below which heating is needed")
     CDDbase = st.sidebar.slider("Cooling Degree-day Base Temperature", 14.0, 22.0, 18.0, 0.5, help="Temperature above which cooling is needed")
 
-    #Tground parameters
-    Conductivity = st.sidebar.number_input("Soil Conductivity (W/(m.K))", 0.1, 3.0, 1.21, help="Soil conductivity (W/(m.K)): ground temperature profile")
-    Density = st.sidebar.number_input("Soil Density (kg/m\u00b3)", 1000, 3000, 1960, help="Soil density (kg/m\u00b3): ground temperature profile")
-    Cp = st.sidebar.number_input("Soil Specific Heat Capacity (J/(kg.K))", 500, 2000, 840, help="Soil specific heat capacity (J/(kg.K)): ground temperature profile")
+    with st.sidebar.form(key='sunWeatherAnalysispath'):
+        #Tground parameters
+        Conductivity = st.number_input("Soil Conductivity (W/(m.K))", 0.1, 3.0, 1.21, help="Soil conductivity (W/(m.K)): ground temperature profile")
+        Density = st.number_input("Soil Density (kg/m\u00b3)", 1000, 3000, 1960, help="Soil density (kg/m\u00b3): ground temperature profile")
+        Cp = st.number_input("Soil Specific Heat Capacity (J/(kg.K))", 500, 2000, 840, help="Soil specific heat capacity (J/(kg.K)): ground temperature profile")
+
+        submit_button = st.form_submit_button(label='Apply Changes')
+
     TotalHDD=0
     TotalCDD=0
     Rho=1.2 #kg/m3

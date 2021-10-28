@@ -25,11 +25,11 @@ def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
 
     DiffuseOnly = st.sidebar.checkbox("DiffuseOnly", value=False, help="If TRUE then only diffuse irradiation is calculated; otherwise direct is also included")
     isotropic = st.sidebar.checkbox("isotropic", value=False, help="If TRUE then simpler calculations are used for an isotropic sky")
+    groundref = st.sidebar.number_input("groundref", 0.0, 1.0, groundref, 0.5)
+    timeshift = st.sidebar.slider("Timeshift", -0.5, 0.5, timeshift, 0.5, help="This is to handle timing conventions relating to climate data collection")
 
     #This is to access the headers from the epw file
     lat = epw.lat * pi / 180
-    groundref = st.sidebar.number_input("groundref", 0.0, 1.0, groundref, 0.5)
-    timeshift = st.sidebar.slider("Timeshift", -0.5, 0.5, timeshift, 0.5, help="This is to handle timing conventions relating to climate data collection")
 
     #this popuates global and diffuse lists with the corresponding solar data
     global_list = epw.dataframe['Global Horizontal Radiation'].to_numpy()
