@@ -833,7 +833,6 @@ class EPWHelper():
     #EPW Reader
     #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
-
     # This is the method (along with its subequent assisting methods) to read the epw file
     def read_epw_f(self, url):
         name = url[url.rfind('/') + 1:]                                         
@@ -844,7 +843,7 @@ class EPWHelper():
                 # data = EPW(tmpdirname+name)
                 self._read(tmpdirname+name)                              
                 f.close()
-    
+
     def _read(self,fp):
         self.headers, self.lat, self.lng, self.timezone  = self._read_headers(fp)
         self.dataframe = self._read_data(fp)
@@ -908,7 +907,7 @@ class EPWHelper():
                        names=names,
         )
 
-        # extract only the useful columns
+        # filter out unwanted columns
         df = df[
             [
             # 'Year',
@@ -1350,7 +1349,6 @@ class EPWHelper():
     # This method is under construction. Currently when it's called, it outputs a map pinpointing selections in weather data file list
     # It is commented out as it's currently unused
     def map_viewer(self):
-        
         self.weather_data_dropdown = pd.DataFrame(self.weather_data_dropdown)  
         df = self.weather_data_dropdown[['lon', 'lat', 'title']]
         layer = pdk.Layer(
@@ -1367,6 +1365,7 @@ class EPWHelper():
             get_fill_color=[200, 27, 27],
             get_line_color=[0, 0, 0],
         )
+
         selected = pd.DataFrame(self.file_name, index=[0])
         layer2 = pdk.Layer(
             "ScatterplotLayer",
@@ -1382,7 +1381,8 @@ class EPWHelper():
             get_fill_color=[16, 12, 200],
             get_line_color=[0, 0, 0],
         )
-        view_state = pdk.ViewState(latitude=selected['lat'].iloc[0], longitude=selected['lon'].iloc[0], zoom=4, min_zoom= 1, max_zoom=30, height=180)
+
+        view_state = pdk.ViewState(latitude=selected['lat'].iloc[0], longitude=selected['lon'].iloc[0], zoom=4, min_zoom= 1, max_zoom=30, height=170)
         
         r = pdk.Deck(
             layers=[layer, layer2],

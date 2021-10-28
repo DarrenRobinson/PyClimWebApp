@@ -3,6 +3,7 @@ This class is the framework of the web-app.
 It is called and run (instantiated) in app.py.
 '''
 
+# import datetime
 import streamlit as st
 from apps.helpers.epw_helper import EPWHelper
 from apps.helpers.ui_helper import UIHelper
@@ -30,9 +31,11 @@ class MultiApp:
         # Display sorting/filtering functionalities
         epw.advanced_search()   
         epw.map_viewer()
-        
+
         if 'epw_valid' not in st.session_state:
             st.session_state['epw_valid'] = True
+        
+        # begin_time = datetime.datetime.now()
 
         try:
             # Fetch the epw dataframe and header info
@@ -42,7 +45,9 @@ class MultiApp:
             st.error('Unable to read the selected epw file. Please select a different one.')
         else:
             st.session_state['epw_valid'] = False if epw.dataframe.empty else True
-                
+        
+        # st.write(datetime.datetime.now() - begin_time)
+        
         if st.session_state['epw_valid']:
             st.sidebar.markdown(                                    
                 "Latitude: "+str(epw.lat)+                     
