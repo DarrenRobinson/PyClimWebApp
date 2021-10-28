@@ -845,7 +845,7 @@ class EPWHelper():
                 f.close()
 
     def _read(self,fp):
-        self.headers, self.lat, self.lng, self.timezone  = self._read_headers(fp)
+        self.headers, self.lat, self.lng, self.timezone = self._read_headers(fp)
         self.dataframe = self._read_data(fp)
         
     def _read_headers(self,fp):
