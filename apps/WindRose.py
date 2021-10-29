@@ -27,7 +27,7 @@ def app(app, epw, ui):
     lower_percentile_limit  = st.sidebar.slider('Lower Percentile Limit', 0, 50, 10, help="The lower threshold for the bounds of the colormap: limits impact of outliers")
     upper_percentile_limit = st.sidebar.slider('Upper Percentile Limit', 51, 100, 80, help="The upper threshold for the bounds of the colormap: limits impact of outliers")
     #This determines whether temperature or wind speed is plotted
-    PlotTemp_status = st.radio("PlotTemp", ("Temperature", "Wind Speed"), help="If TRUE then a temperature-dependent rose will be produced; else speed-dependent")
+    PlotTemp_status = st.sidebar.radio("PlotTemp", ("Temperature", "Wind Speed"), help="If TRUE then a temperature-dependent rose will be produced; else speed-dependent")
     PlotTemp = True if (PlotTemp_status == "Temperature") else False
     #Wind speeds are potted at 1m/s intervals: TempInterval sets the temperature intervals
     TempInterval = st.sidebar.slider('Temperature Interval', 1.0, 5.0, 2.5, 0.5, help="Temperature spans a much broader range than wind speed, this is a way of limiting the number of radial divisions")
