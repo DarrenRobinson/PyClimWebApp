@@ -6,3 +6,4 @@ pydeck==0.6.2
 # numpy==1.18.5
 numpy==1.23.0
 # locustio==0.999
+protobuf~=3.19.0
