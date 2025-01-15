@@ -1,6 +1,6 @@
 # https://docs.streamlit.io/develop/api-reference/configuration/config.toml
 [server]
 headless = true
-enableCORS = false
+enableCORS = true
 port = 8502
 address = "0.0.0.0"

@@ -1,4 +1,8 @@
-# PyClim: a series of Python modules, based around the matplotlib library, for the analysis of hourly weather data. It is intended as a resources for architectural / engineering / technology students and practitioners, to help develop early-stage bioclimatic design concepts. PyClim is organised around the following modules
+# PyClim
+
+A series of Python modules, based around the matplotlib library, for the analysis of hourly weather data. It is intended as a resources for architectural / engineering / technology students and practitioners, to help develop early-stage bioclimatic design concepts.
+
+PyClim is organised around the following modules
 
 - ClimAnalFunctions: functions relating to solar geometry, psychrometry and illumination.
 
@@ -13,3 +17,49 @@
 - WeatherAnalysis: creates a range of plots and statistics of climate variables: 1) temporal solar irradiance / maps, 2) violin plots of key synoptic variables, 3) Monthly degree-day bar charts, 4) inverse illuminance cumulative distribution function: determines light switch-off hours, 5) wind speed / temperature frequency histograms, 6) ground temperature profile.
 
 - WindRose: plots a user-controllable wind rose, with theta segments of azimuthal sectors falsecoloured either according to the hours that the wind approaches that direction and in the indicated (theta) speed, or at the indicated (theta) temperature.
+
+# Installation
+
+See [`deploy.sh`](./deploy.sh) which is a deployment script that will install this app and the nginx web server.
+
+Create a service account using [useradd](https://manpages.ubuntu.com/manpages/noble/man8/useradd.8.html)
+
+```bash
+sudo useradd --system --shell /sbin/nologin pyclim
+```
+
+
+
+## Service control
+
+Enable the service
+
+```bash
+sudo systemctl enable streamlit.service
+```
+
+Start the service
+
+```bash
+sudo systemctl start streamlit.service
+```
+
+# Configuration
+
+Edit `.streamlit/config.toml`
+
+# Monitoring
+
+View the service status
+
+```bash
+sudo systemctl status nginx.service
+sudo systemctl status streamlit.service
+```
+
+View service logs
+
+```bash
+sudo journalctl --follow -u streamlit.service
+```
+
