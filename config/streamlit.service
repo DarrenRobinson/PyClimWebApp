@@ -1,0 +1,14 @@
+[Unit]
+Description=PyClim Streamlit App Service
+After=network.target
+
+[Service]
+User=pyclim
+WorkingDirectory=/opt/pyclim
+ExecStart=/opt/pyclim/venv/bin/python /opt/pyclim/venv/bin/streamlit run /opt/pyclim/app.py --server.port 80 --server.address 0.0.0.0
+Restart=on-failure
+RestartSec=10
+Environment="PATH=/opt/pyclim/venv/bin:$PATH"
+
+[Install]
+WantedBy=multi-user.target
