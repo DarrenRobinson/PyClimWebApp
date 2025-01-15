@@ -19,7 +19,7 @@ python3 -m venv "$venv_dir"
 
 # Install dependencies
 $pip install --quiet --upgrade -r requirements.txt
-cp --recursive * "app_dir/"
+cp --recursive app.py multiapp.py apps .streamlit "app_dir/"
 
 # Install Streamlit service
 cp --verbose config/streamlit.service /etc/systemd/system/streamlit.service

@@ -5,7 +5,7 @@ After=network.target
 [Service]
 User=pyclim
 WorkingDirectory=/opt/pyclim
-ExecStart=/opt/pyclim/venv/bin/python /opt/pyclim/venv/bin/streamlit run /opt/pyclim/app.py --server.port 80 --server.address 0.0.0.0
+ExecStart=/opt/pyclim/venv/bin/python /opt/pyclim/venv/bin/streamlit run /opt/pyclim/app.py
 Restart=on-failure
 RestartSec=10
 Environment="PATH=/opt/pyclim/venv/bin:$PATH"
