@@ -7,7 +7,7 @@ set -e
 
 # Options
 app_dir="/opt/pyclim"
-venv_dir="$sort_dir/venv"
+venv_dir="$app_dir/venv"
 pip="$venv_dir/bin/pip"
 python_version="python3.12"
 python="$venv_dir/bin/python"
