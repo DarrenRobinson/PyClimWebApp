@@ -14,7 +14,7 @@ python="$venv_dir/bin/python"
 
 # Create Python virtual environment
 apt update -qq
-apt install --upgrade --yes -qq "$python_version" "$python_version-venv"
+apt install --upgrade --yes -qq "$python_version" "$python_version-venv" "$python_version-dev"
 python3 -m venv "$venv_dir"
 
 # Install dependencies
