@@ -976,8 +976,12 @@ class EPWHelper():
     # are used for connecting to EnergyPlus
     #
 
-    @st.cache
-    def _get_db(self):
+    @staticmethod
+    @st.cache_data
+    def _get_db() -> dict:
+        """
+        Download and parse EnergyPlus JSON data.
+        """
         # Connect to EnergyPlus
         response = urlopen('https://github.com/NREL/EnergyPlus/raw/develop/weather/master.geojson')
         data = json.loads(response.read().decode('utf8'))
