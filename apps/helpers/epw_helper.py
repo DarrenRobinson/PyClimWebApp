@@ -1077,7 +1077,7 @@ class EPWHelper:
             }
         )
         weather_data_file_list["title"] = weather_data_file_list["title"].apply(
-            lambda x: " ".join(re.split("_|\.", str(x)))
+            lambda x: " ".join(re.split(r"_|\.", str(x)))
         )
 
         weather_data_file_list = (
