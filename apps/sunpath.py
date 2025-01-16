@@ -13,7 +13,7 @@ import math
 
 import matplotlib.pyplot as plt
 import streamlit as st
-from ClimAnalFunctions import (declin_angle, solar_altitude, solar_azimuth,
+from .ClimAnalFunctions import (declin_angle, solar_altitude, solar_azimuth,
                                sunrise_time, time_diff)
 
 pi = math.pi

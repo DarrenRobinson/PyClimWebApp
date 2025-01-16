@@ -20,7 +20,7 @@ import math
 import matplotlib.pyplot as plt
 import streamlit as st
 
-from apps.ClimAnalFunctions import (cai, daylength, declin_angle,
+from .ClimAnalFunctions import (cai, daylength, declin_angle,
                                     solar_altitude, solar_azimuth, time_diff,
                                     timeshift)
 
