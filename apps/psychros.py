@@ -13,8 +13,10 @@
 #It also creates a second chart with data translated along the wet bulb line 
 #to a defined fraction of the wbtd, to mimic adiabatic (evaporative) cooling.
 
-#imports the basic libraries
-from apps.ClimAnalFunctions import * 
+import matplotlib.pyplot as plt
+import numpy as np
+import streamlit as st
+from ClimAnalFunctions import g_dry_wet,twetrh,g,tsat
 
 def app(app, epw, ui):
     st.write("# "+app['title'])
@@ -37,7 +39,7 @@ def app(app, epw, ui):
     
     with st.sidebar.form(key='psychros'):
         LLdbt = st.number_input("LLdbt", min_value=float(min_temp), value=25.0, step=0.5, help="Temperature above which data points are shifted to mimic evaporative cooling") #lower limit of temperature: above which data is shifted
-        submit_button = st.form_submit_button(label='Apply Change')
+        st.form_submit_button(label='Apply Change')
 
     EvapCoolEff = st.sidebar.slider("EvapCoolEff", 0.0, 1.0, 0.7, help="If TRUE then a separate plot is produced with evaporative cooling mimicked") #Proportion of wbtd thar data s shifted to.
     Screen = False #so that wbt not t_screen is calculated  
@@ -114,8 +116,8 @@ def app(app, epw, ui):
     # #NOW: PLOT THE DATA
     # #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
-    if PlotMonthly == False:
-        for plotpoints in range (0,len(temp_list)):
+    if not PlotMonthly:
+        for plotpoints in range(0,len(temp_list)):
             g_list.append(g(temp_list[plotpoints],rh_list[plotpoints]))
         ax.scatter(temp_list,g_list, c='red', alpha=0.5, s=5)
     else:
@@ -215,7 +217,7 @@ def app(app, epw, ui):
             tdry = temp_list[plotpoints]
             twet = twetrh(temp_list[plotpoints], rh_list[plotpoints], Screen)
             wbtd = tdry-twet
-            if MartinezLimit==True:
+            if MartinezLimit:
                 LLdbt = 29 + g_list[plotpoints] / -0.0055 #where -0.0055 = dy/dx of PDEC line
             
             if tdry>=LLdbt:

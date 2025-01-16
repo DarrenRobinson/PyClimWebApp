@@ -11,7 +11,13 @@
 #modelling anisotropy.
 
 #imports the basic libraries
-from apps.ClimAnalFunctions import * 
+import math
+import matplotlib.pyplot as plt
+import numpy as np
+import streamlit as st
+from ClimAnalFunctions import igbeta2, cai2, solar_azimuth2, solar_altitude2, time_diff2, declin_angle2, groundref, timeshift
+
+pi = math.pi
 
 ##########################################################################################
 #THIS SURFACE PLOT CALCULATION WOULD PROBABLY BE 'MUCH' QUICKER USING A GLOBAL RADIANCE 
@@ -103,7 +109,7 @@ def app(app, epw, ui, timeshift=timeshift, groundref=groundref):
             # cai_list.clear()
             # igbeta_list.clear()
 
-    if isotropic==True:
+    if isotropic:
         #This creates a 2D irradiation surface plot
         xlist = np.linspace(0, 350, 36)
         ylist = np.linspace(0, 90, 10) #Note: theer need to be 19 subdivisions (here and for Z) for 5o bins of altitude

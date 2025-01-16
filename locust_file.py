@@ -1,5 +1,4 @@
 import time as t
-from datetime import datetime
 from locust import HttpUser, task, between
 
 class AppUser(HttpUser):

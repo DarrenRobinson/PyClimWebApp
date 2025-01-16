@@ -11,7 +11,13 @@
 #5) wind speed / temperature frequency histograms, 6) ground temperature profile. 
 
 #imports the basic libraries
-from apps.ClimAnalFunctions import * 
+import math
+import matplotlib.pyplot as plt
+import numpy as np
+import streamlit as st
+from ClimAnalFunctions import Tground, LumEff, solar_altitude, time_diff, sunrise_time, declin_angle, timeshift
+
+pi=math.pi
 
 def app(app, epw, ui, timeshift=timeshift):
     st.write("# "+app['title'])
@@ -52,7 +58,7 @@ def app(app, epw, ui, timeshift=timeshift):
         Density = st.number_input("Soil Density (kg/m\u00b3)", 1000, 3000, 1960, help="Soil density (kg/m\u00b3): ground temperature profile")
         Cp = st.number_input("Soil Specific Heat Capacity (J/(kg.K))", 500, 2000, 840, help="Soil specific heat capacity (J/(kg.K)): ground temperature profile")
 
-        submit_button = st.form_submit_button(label='Apply Changes')
+        st.form_submit_button(label='Apply Changes')
 
     TotalHDD=0
     TotalCDD=0
@@ -120,9 +126,9 @@ def app(app, epw, ui, timeshift=timeshift):
                 solalt = solar_altitude(cumday,k + dT,lat,dec_list[cumday-1])
                 if solalt>0 and global_list[24*(cumday-1)+k-1]>0:
                     ibn = (global_list[24*(cumday-1)+k-1] - diffuse_list[24*(cumday-1)+k-1])/math.sin(solalt)
-                    if globaleff==True and diffuse_list[24*(cumday-1)+k-1]>0:
+                    if globaleff and diffuse_list[24*(cumday-1)+k-1]>0:
                         illuminance = global_list[24*(cumday-1)+k-1]*LumEff(globaleff,cumday,solalt,diffuse_list[24*(cumday-1)+k-1],ibn)
-                    elif globaleff==False and diffuse_list[24*(cumday-1)+k-1]>0:
+                    elif not globaleff and diffuse_list[24*(cumday-1)+k-1]>0:
                         illuminance = diffuse_list[24*(cumday-1)+k-1]*LumEff(globaleff,cumday,solalt,diffuse_list[24*(cumday-1)+k-1],ibn)
                 illuminance_list.append(illuminance*10**-3)
             if daymeantemp > CDDbase:
@@ -321,7 +327,7 @@ def app(app, epw, ui, timeshift=timeshift):
     Z = np.array(illuminance_list)
     Z = Z.reshape(365,24)
     cp = ax_daylight.contourf(Y, X, Z, 16, cmap='jet') #'plasma', 'jet' and 'viridis' are also good cmaps
-    if globaleff==False:
+    if not globaleff:
         fig_daylight.colorbar(cp, label = 'diffuse horizontal illuminance, kLux') # Adds a colorbar
     else:
         fig_daylight.colorbar(cp, label = 'global horizontal illuminance, kLux') # Adds a colorbar

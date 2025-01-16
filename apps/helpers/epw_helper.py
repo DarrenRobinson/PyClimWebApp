@@ -1077,7 +1077,7 @@ class EPWHelper():
         def _format_country_or_state(x, match):
             try:
                 x = f"{x} ({match[x]})"
-            except:
+            except KeyError:
                 x = f"{x}"
             return x
 
@@ -1087,7 +1087,7 @@ class EPWHelper():
                     x = f"{x['title']} ({self.state_codes[x['state']]}, {self.country_codes[x['country']]})"
                 else:
                     x = f"{x['title']} ({self.country_codes[x['country']]})"
-            except:
+            except KeyError:
                 x = f"{x['title']}"
             return x
 
@@ -1112,7 +1112,7 @@ class EPWHelper():
                     with st.form(key='advanced_search'):
                         st.number_input("Latitude", -90.0, 90.0, 53.4, 0.1, key='user_lat')
                         st.number_input("Longitude", -180.0, 180.0, -1.5, 0.1, key='user_lng')
-                        submit_button = st.form_submit_button(label='Submit')
+                        st.form_submit_button(label='Submit')
                     
                 if st.session_state.filter_option == self.filter_list:        
 
@@ -1140,7 +1140,7 @@ class EPWHelper():
                     if 'country' in st.session_state:
                         if st.session_state['country'] == 'all':
                             state_dropdown = []
-                        elif st.session_state['country'] == None:
+                        elif st.session_state['country'] is None:
                             state_dropdown = []
                         elif not states_filtered[states_filtered['country'] == st.session_state['country']]['state'].empty:
                             state_dropdown = ['all']

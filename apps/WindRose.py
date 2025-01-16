@@ -6,7 +6,9 @@
 ##########################################################################################
 
 #THIS MODULE SIMPLY CREATES A POLAR WIND ROSE PLOT.
-from apps.ClimAnalFunctions import *  
+import streamlit as st
+import matplotlib.pyplot as plt
+import numpy as np
 
 def app(app, epw, ui):
     st.write("# "+app['title'])
@@ -67,7 +69,7 @@ def app(app, epw, ui):
             ##
             zpval = tempval_list[tempnum+adjustment][sectornum] # 2) An adjustment variable +ep is added here.
             # zpval = tempval_list[tempnum][sectornum] # Original line 
-        except:
+        except KeyError:
             st.write(maxtemp, mintemp)
             st.dataframe(tempval_list)
             st.write(tempnum, sectornum)
@@ -82,7 +84,7 @@ def app(app, epw, ui):
 
     azimuth_list = np.radians(azimuth_list)
 
-    if PlotTemp == False:
+    if not PlotTemp:
         #NB: The jet cmap gives very good discrimination:
         cp = ax.pcolormesh(azimuth_list, zenith_list, value_list, cmap='jet') #'plasma', 'magma', 'jet' and 'viridis' are good cmaps
         
@@ -91,7 +93,7 @@ def app(app, epw, ui):
         ax.set_theta_direction(-1)
         ax.set_ylim([int(np.percentile(winspeed_list,lower_percentile_limit)), int(np.percentile(winspeed_list,upper_percentile_limit))])
         
-        if invert_radialaxis==True:
+        if invert_radialaxis:
             ax.set_ylim(plt.ylim()[::-1])
         fig.colorbar(cp, label = 'Annual hours: wind approaching from \n ith direction at jth speed')
     else:
@@ -102,7 +104,7 @@ def app(app, epw, ui):
         ax.set_theta_direction(-1)
         ax.set_ylim([int(np.percentile(temp_list,lower_percentile_limit)), int(np.percentile(temp_list,upper_percentile_limit))])
         
-        if invert_radialaxis==True:
+        if invert_radialaxis:
             ax.set_ylim(plt.ylim()[::-1])
     #    ax.set_yticklabels([])
         fig.colorbar(cp, label = 'Annual hours: wind approaching from \n ith direction at jth temperature')
