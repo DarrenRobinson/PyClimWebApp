@@ -18,7 +18,7 @@ import numpy as np
 # import datetime
 # from matplotlib.pyplot import axis
 
-matplotlib.use('Agg')
+matplotlib.use("Agg")
 
 # XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX########
 # HERE WE OPEN THE CLIMATE FILE AND ASSIGN COORDINATES
@@ -37,6 +37,7 @@ groundref = 0.2
 # XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX########
 # FUNCTIONS TO CALCULATE THE PSYCHROMETRIC PROPERTIES OF HUMID AIR
 # XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX########
+
 
 def g(dbt, rh):
     # calculates moisture content from dbt and rh
@@ -71,6 +72,7 @@ def g(dbt, rh):
 #    H=air_enthalpy+mc*vapour_enthalpy
 #    return H
 
+
 def tsat(mc):
     # Calculates saturation temperature from moisture content
     tstep = 64
@@ -91,10 +93,10 @@ def pss(t):
     if t >= 0:
         suf = 30.59051 - 8.2 * math.log10(t + 273.16) + 0.0024804 * (t + 273.16)
         suf = suf - 3142.31 / (t + 273.16)
-        pss = 10 ** suf
+        pss = 10**suf
     else:
         suf = 9.5380997 - 2663.91 / (t + 273.15)
-        pss = 10 ** suf
+        pss = 10**suf
     return pss
 
 
@@ -107,11 +109,11 @@ def gss(fs, pss):
 def fs(dbt):
     # provides necessary interaction coefficients
     if dbt < 11:
-        fs = -7.3E-06 * (dbt + 273.15) + 1.00444
+        fs = -7.3e-06 * (dbt + 273.15) + 1.00444
     elif dbt >= 11 and dbt < 26:
-        fs = 1.32E-05 * (dbt + 273.15) + 1.004205
+        fs = 1.32e-05 * (dbt + 273.15) + 1.004205
     elif dbt >= 26 and dbt <= 60:
-        fs = 4.05E-05 * (dbt + 273.15) + 1.003497
+        fs = 4.05e-05 * (dbt + 273.15) + 1.003497
     return fs
 
 
@@ -139,14 +141,14 @@ def pvap(tdry, twet, screen: bool):
     else:
         corr = 6.66
     pssw = pss(twet)
-    pvap = pssw - 101.325 * corr * 10 ** -4 * (tdry - twet)
+    pvap = pssw - 101.325 * corr * 10**-4 * (tdry - twet)
     return pvap
 
 
 def g_dry_wet(dbt, twet):
     # calculates moisture content, given the dry and wet bulb temperatures
     pst = 10 * pvap(dbt, twet, False)
-    mc = (0.62197 * fs(dbt) * pst / (1013.25 - fs(dbt) * pst))
+    mc = 0.62197 * fs(dbt) * pst / (1013.25 - fs(dbt) * pst)
     return mc
 
 
@@ -172,22 +174,33 @@ def twetrh(tdry, rh, screen):
 # XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX########
 
 
-def Tground(t_mean, t_swing, cum_monthdaydaynum_list, dayofminmean, depth, Conductivity=1.21, Density=1960, Cp=840):
+def Tground(
+    t_mean,
+    t_swing,
+    cum_monthdaydaynum_list,
+    dayofminmean,
+    depth,
+    Conductivity=1.21,
+    Density=1960,
+    Cp=840,
+):
     # Eq 2 in: Labs, K. "Regional analysis of ground and above-ground climate conclusion",
     # Underground Space Vol.7 pp037-65, 1982
     # approx ground thermophysical properties
 
-    Diff = 8.64 * 10 ** 4 * Conductivity / (Density * Cp)  # m^2/day
+    Diff = 8.64 * 10**4 * Conductivity / (Density * Cp)  # m^2/day
     Decrement = math.exp(-depth * (pi / (365 * Diff)) ** 0.5)
     Lag = 0.5 * (365 / (pi * Diff)) ** 0.5
     Tground = t_mean - t_swing * Decrement * math.cos(
-        2 * pi * (cum_monthdaydaynum_list - dayofminmean - depth * Lag) / 365)
+        2 * pi * (cum_monthdaydaynum_list - dayofminmean - depth * Lag) / 365
+    )
     return Tground
 
 
 # XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX########
 # FUNCTIONS TO CALCULATE THE POSITION OF THE SUN
 # XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX########
+
 
 # Exception handling for arcsine and arccosine functions: only necessary
 # when using exclusively solar time
@@ -229,15 +242,29 @@ def sunrise_time2(dec, lat, jday):
 # this function calculates the declination angle in radians
 def declin_angle(jday):
     tau = 2 * pi * (jday - 1) / 365
-    declin_angle = 0.006918 - 0.399912 * math.cos(tau) + 0.070257 * math.sin(tau) - 0.006758 * math.cos(
-        2 * tau) + 0.000907 * math.sin(2 * tau) - 0.002697 * math.cos(3 * tau) + 0.00148 * math.sin(3 * tau)
+    declin_angle = (
+        0.006918
+        - 0.399912 * math.cos(tau)
+        + 0.070257 * math.sin(tau)
+        - 0.006758 * math.cos(2 * tau)
+        + 0.000907 * math.sin(2 * tau)
+        - 0.002697 * math.cos(3 * tau)
+        + 0.00148 * math.sin(3 * tau)
+    )
     return declin_angle
 
 
 def declin_angle2(jday):
     tau = 2 * pi * (jday - 1) / 365
-    declin_angle = 0.006918 - 0.399912 * np.cos(tau) + 0.070257 * np.sin(tau) - 0.006758 * np.cos(
-        2 * tau) + 0.000907 * np.sin(2 * tau) - 0.002697 * np.cos(3 * tau) + 0.00148 * np.sin(3 * tau)
+    declin_angle = (
+        0.006918
+        - 0.399912 * np.cos(tau)
+        + 0.070257 * np.sin(tau)
+        - 0.006758 * np.cos(2 * tau)
+        + 0.000907 * np.sin(2 * tau)
+        - 0.002697 * np.cos(3 * tau)
+        + 0.00148 * np.sin(3 * tau)
+    )
     return declin_angle
 
 
@@ -245,7 +272,9 @@ def declin_angle2(jday):
 def solar_altitude(jday, hour, latitude, Declin):
     Hourangle = pi * hour / 12
     solar_altitude = arcsin(
-        math.sin(latitude) * math.sin(Declin) - math.cos(latitude) * math.cos(Declin) * math.cos(Hourangle))
+        math.sin(latitude) * math.sin(Declin)
+        - math.cos(latitude) * math.cos(Declin) * math.cos(Hourangle)
+    )
     if solar_altitude < 0:
         solar_altitude = 0
     return solar_altitude
@@ -254,7 +283,9 @@ def solar_altitude(jday, hour, latitude, Declin):
 def solar_altitude2(jday, hour, latitude, Declin):
     Hourangle = pi * hour / 12
     solar_altitude = np.arcsin(
-        np.sin(latitude) * np.sin(Declin) - np.cos(latitude) * np.cos(Declin) * np.cos(Hourangle))
+        np.sin(latitude) * np.sin(Declin)
+        - np.cos(latitude) * np.cos(Declin) * np.cos(Hourangle)
+    )
     solar_altitude = np.where(solar_altitude < 0, 0, solar_altitude)
     return solar_altitude
 
@@ -264,26 +295,44 @@ def solar_azimuth(jday, hour, latitude, solalt, declin):
     Hourangle = pi * hour / 12
     if Hourangle < pi:
         solar_azimuth = arccos(
-            (-math.sin(latitude) * math.sin(solalt) + math.sin(declin)) / (math.cos(latitude) * math.cos(solalt)))
+            (-math.sin(latitude) * math.sin(solalt) + math.sin(declin))
+            / (math.cos(latitude) * math.cos(solalt))
+        )
     else:
-        solar_azimuth = ((2 * pi) - arccos(
-            (-math.sin(latitude) * math.sin(solalt) + math.sin(declin)) / (math.cos(latitude) * math.cos(solalt))))
+        solar_azimuth = (2 * pi) - arccos(
+            (-math.sin(latitude) * math.sin(solalt) + math.sin(declin))
+            / (math.cos(latitude) * math.cos(solalt))
+        )
     return solar_azimuth
 
 
 def solar_azimuth2(jday, hour, latitude, solalt, declin):
     Hourangle = pi * hour / 12
-    solar_azimuth = np.where(Hourangle < pi, (
-        np.arccos((-np.sin(latitude) * np.sin(solalt) + np.sin(declin)) / (np.cos(latitude) * np.cos(solalt)))), (
-                                         (2 * pi) - np.arccos((-np.sin(latitude) * np.sin(solalt) + np.sin(declin)) / (
-                                             np.cos(latitude) * np.cos(solalt)))))
+    solar_azimuth = np.where(
+        Hourangle < pi,
+        (
+            np.arccos(
+                (-np.sin(latitude) * np.sin(solalt) + np.sin(declin))
+                / (np.cos(latitude) * np.cos(solalt))
+            )
+        ),
+        (
+            (2 * pi)
+            - np.arccos(
+                (-np.sin(latitude) * np.sin(solalt) + np.sin(declin))
+                / (np.cos(latitude) * np.cos(solalt))
+            )
+        ),
+    )
     return solar_azimuth
 
 
 # this function calculates the cosine of the angle of incidence on a tilted plane
 def cai(wallaz, tilt, solalt, solaz):
     wallsolaz = math.fabs(solaz - wallaz)
-    CAI = math.cos(solalt) * math.cos(wallsolaz) * math.sin(tilt) + math.sin(solalt) * math.cos(tilt)
+    CAI = math.cos(solalt) * math.cos(wallsolaz) * math.sin(tilt) + math.sin(
+        solalt
+    ) * math.cos(tilt)
     if CAI < 0:
         CAI = 0
     return CAI
@@ -291,7 +340,9 @@ def cai(wallaz, tilt, solalt, solaz):
 
 def cai2(wallaz, tilt, solalt, solaz):
     wallsolaz = np.fabs(solaz - wallaz)
-    CAI = np.cos(solalt) * np.cos(wallsolaz) * np.sin(tilt) + np.sin(solalt) * np.cos(tilt)
+    CAI = np.cos(solalt) * np.cos(wallsolaz) * np.sin(tilt) + np.sin(solalt) * np.cos(
+        tilt
+    )
     CAI = np.where(CAI < 0, 0, CAI)
     return CAI
 
@@ -300,8 +351,13 @@ def cai2(wallaz, tilt, solalt, solaz):
 def time_diff(jday, EqTonly, longitude, timezone, timeshift):
     B = 2 * pi * (jday - 1) / 365
     # The term on the left below, converts from radians, through degrees, to minutes: Earth takes 4minutes to rotate one degree.
-    EqT = (4 * 180 / pi) * (0.000075 + 0.001868 * math.cos(B) - 0.032077 * math.sin(B) - 0.014615 * math.cos(
-        2 * B) - 0.040849 * math.sin(2 * B))
+    EqT = (4 * 180 / pi) * (
+        0.000075
+        + 0.001868 * math.cos(B)
+        - 0.032077 * math.sin(B)
+        - 0.014615 * math.cos(2 * B)
+        - 0.040849 * math.sin(2 * B)
+    )
     if not EqTonly:
         # NB: timeshift accounts for the climate file time convention: hour-centred corresponds to +/-30mins
         deltaT = 4 * longitude - 60 * timezone + (60 * timeshift) + EqT
@@ -316,8 +372,12 @@ def time_diff2(jday, EqTonly, longitude, timezone, timeshift):
     B = 2 * pi * (jday - 1) / 365
     # The term on the left below, converts from radians, through degrees, to minutes: Earth takes 4minutes to rotate one degree.
     EqT = (4 * 180 / pi) * (
-                0.000075 + 0.001868 * np.cos(B) - 0.032077 * np.sin(B) - 0.014615 * np.cos(2 * B) - 0.040849 * np.sin(
-            2 * B))
+        0.000075
+        + 0.001868 * np.cos(B)
+        - 0.032077 * np.sin(B)
+        - 0.014615 * np.cos(2 * B)
+        - 0.040849 * np.sin(2 * B)
+    )
     if not EqTonly:
         # NB: timeshift accounts for the climate file time convention: hour-centred corresponds to +/-30mins
         deltaT = 4 * longitude - 60 * timezone + (60 * timeshift) + EqT
@@ -367,12 +427,18 @@ def igbeta(jday, cai, igh, idh, solalt, tilt, isotropic, DiffuseOnly, groundref)
 
 
 def igbeta2(jday, cai, igh, idh, solalt, tilt, isotropic, DiffuseOnly, groundref):
-    np.seterr(divide='ignore', invalid='ignore')
+    np.seterr(divide="ignore", invalid="ignore")
     ibn = np.where(solalt > 0, (igh - idh) / np.sin(solalt), 0)
-    idbeta = np.where(isotropic, idh * (1 + np.cos(tilt)) / 2,
-                      np.where(idh > 0, idh_perez2(jday, cai, solalt, idh, ibn, tilt), 0))
-    igbeta = np.where(DiffuseOnly, idbeta + (igh * groundref * (1 - np.cos(tilt)) / 2),
-                      idbeta + (ibn * cai) + (igh * groundref * (1 - np.cos(tilt)) / 2))
+    idbeta = np.where(
+        isotropic,
+        idh * (1 + np.cos(tilt)) / 2,
+        np.where(idh > 0, idh_perez2(jday, cai, solalt, idh, ibn, tilt), 0),
+    )
+    igbeta = np.where(
+        DiffuseOnly,
+        idbeta + (igh * groundref * (1 - np.cos(tilt)) / 2),
+        idbeta + (ibn * cai) + (igh * groundref * (1 - np.cos(tilt)) / 2),
+    )
     return igbeta
 
 
@@ -400,40 +466,82 @@ def LumEff2(globaleff, jday, solalt, idh, ibn):
 
 def LumEffCoeffs(globaleff, clearness, amc, solalt, brightness):
     if globaleff:
-        LA_list = [96.6251, 107.5371, 98.7277, 92.721, 86.7266, 88.3516, 78.624, 99.6452]
+        LA_list = [
+            96.6251,
+            107.5371,
+            98.7277,
+            92.721,
+            86.7266,
+            88.3516,
+            78.624,
+            99.6452,
+        ]
         LB_list = [-0.4703, 0.7866, 0.6972, 0.5591, 0.9763, 1.3891, 1.4699, 1.8569]
         LC_list = [11.501, 1.7899, 4.4046, 8.3579, 7.1033, 6.0641, 4.9305, -4.4555]
-        LD_list = [9.1555, -1.1892, -6.9483, -8.3063, -10.9361, -7.5967, -11.3703, -3.1465]
+        LD_list = [
+            9.1555,
+            -1.1892,
+            -6.9483,
+            -8.3063,
+            -10.9361,
+            -7.5967,
+            -11.3703,
+            -3.1465,
+        ]
     else:
         LA_list = [97.2375, 107.2129, 104.996, 102.3945, 100.71, 106.42, 141.88, 152.23]
         LB_list = [-0.4597, 1.1508, 2.9605, 5.589, 5.94, 3.83, 1.9, 0.35]
         LC_list = [11.962, 0.584, -5.5334, -13.951, -22.75, -36.15, -53.24, -45.27]
         LD_list = [-8.9149, -3.949, -8.7793, -13.9052, -23.74, -28.83, -14.03, -7.98]
-    LumEff = LA_list[clearness - 1] + LB_list[clearness - 1] * amc + LC_list[clearness - 1] * math.sin(solalt) + \
-             LD_list[clearness - 1] * math.log(brightness)
+    LumEff = (
+        LA_list[clearness - 1]
+        + LB_list[clearness - 1] * amc
+        + LC_list[clearness - 1] * math.sin(solalt)
+        + LD_list[clearness - 1] * math.log(brightness)
+    )
     return LumEff
 
 
 def LumEffCoeffs2(globaleff, clearness, amc, solalt, brightness):
     if globaleff:
-        LA_list = np.array([96.6251, 107.5371, 98.7277, 92.721, 86.7266, 88.3516, 78.624, 99.6452])
-        LB_list = np.array([-0.4703, 0.7866, 0.6972, 0.5591, 0.9763, 1.3891, 1.4699, 1.8569])
-        LC_list = np.array([11.501, 1.7899, 4.4046, 8.3579, 7.1033, 6.0641, 4.9305, -4.4555])
-        LD_list = np.array([9.1555, -1.1892, -6.9483, -8.3063, -10.9361, -7.5967, -11.3703, -3.1465])
+        LA_list = np.array(
+            [96.6251, 107.5371, 98.7277, 92.721, 86.7266, 88.3516, 78.624, 99.6452]
+        )
+        LB_list = np.array(
+            [-0.4703, 0.7866, 0.6972, 0.5591, 0.9763, 1.3891, 1.4699, 1.8569]
+        )
+        LC_list = np.array(
+            [11.501, 1.7899, 4.4046, 8.3579, 7.1033, 6.0641, 4.9305, -4.4555]
+        )
+        LD_list = np.array(
+            [9.1555, -1.1892, -6.9483, -8.3063, -10.9361, -7.5967, -11.3703, -3.1465]
+        )
     else:
-        LA_list = np.array([97.2375, 107.2129, 104.996, 102.3945, 100.71, 106.42, 141.88, 152.23])
+        LA_list = np.array(
+            [97.2375, 107.2129, 104.996, 102.3945, 100.71, 106.42, 141.88, 152.23]
+        )
         LB_list = np.array([-0.4597, 1.1508, 2.9605, 5.589, 5.94, 3.83, 1.9, 0.35])
-        LC_list = np.array([11.962, 0.584, -5.5334, -13.951, -22.75, -36.15, -53.24, -45.27])
-        LD_list = np.array([-8.9149, -3.949, -8.7793, -13.9052, -23.74, -28.83, -14.03, -7.98])
-    LumEff = LA_list[clearness - 1] + LB_list[clearness - 1] * amc + LC_list[clearness - 1] * np.sin(solalt) + LD_list[
-        clearness - 1] * np.log(brightness)
+        LC_list = np.array(
+            [11.962, 0.584, -5.5334, -13.951, -22.75, -36.15, -53.24, -45.27]
+        )
+        LD_list = np.array(
+            [-8.9149, -3.949, -8.7793, -13.9052, -23.74, -28.83, -14.03, -7.98]
+        )
+    LumEff = (
+        LA_list[clearness - 1]
+        + LB_list[clearness - 1] * amc
+        + LC_list[clearness - 1] * np.sin(solalt)
+        + LD_list[clearness - 1] * np.log(brightness)
+    )
     return LumEff
 
 
 # this function calculates the Perez Clearness daynum_listber, for use in the Perz Coefficients function
 def PerezClearness(solalt, idh, ibn):
     ThetaZ = ((pi / 2) - solalt) * 180 / pi
-    clearness = (((idh + ibn) / idh) + 5.535 * 10 ** -6 * ThetaZ ** 3) / (1 + 5.535 * 10 ** -6 * ThetaZ ** 3)
+    clearness = (((idh + ibn) / idh) + 5.535 * 10**-6 * ThetaZ**3) / (
+        1 + 5.535 * 10**-6 * ThetaZ**3
+    )
 
     if (1 <= clearness) and (clearness < 1.065):
         PerezClearness = 1
@@ -475,7 +583,7 @@ def PerezClearness2(solalt, idh, ibn):
     #         PerezClearness = 6
     #     elif (4.5 < clearness) and (clearness < 6.2):
     #         PerezClearness = 7
-    #     else: 
+    #     else:
     #         PerezClearness = 8
 
     #     return PerezClearness
@@ -484,9 +592,11 @@ def PerezClearness2(solalt, idh, ibn):
     # PerezClearness = func(solalt, idh, ibn)
     # begin_time = datetime.datetime.now()
 
-    np.seterr(divide='ignore', invalid='ignore')
+    np.seterr(divide="ignore", invalid="ignore")
     ThetaZ = ((pi / 2) - solalt) * 180 / pi
-    clearness = (((idh + ibn) / idh) + 5.535 * 10 ** -6 * ThetaZ ** 3) / (1 + 5.535 * 10 ** -6 * ThetaZ ** 3)
+    clearness = (((idh + ibn) / idh) + 5.535 * 10**-6 * ThetaZ**3) / (
+        1 + 5.535 * 10**-6 * ThetaZ**3
+    )
     # clearness = pd.DataFrame(clearness)
     # PerezClearness = pd.cut(clearness, [0, 2, 4, 6, 8, 10, 12, np.inf], labels=[1,2,3,4,5,6,7,8])
     PerezClearness = np.where(
@@ -510,13 +620,13 @@ def PerezClearness2(solalt, idh, ibn):
                             np.where(
                                 np.all([(4.5 < clearness), (clearness < 6.2)], axis=0),
                                 7,
-                                8
-                            )
-                        )
-                    )
-                )
-            )
-        )
+                                8,
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ),
     )
     # st.write(datetime.datetime.now() - begin_time)
     # PerezClearness.to_numpy()
@@ -556,12 +666,24 @@ def PerezCoefficients(clearness):
 
 
 def PerezCoefficients2(clearness):
-    F11_list = np.array([-0.0083, 0.1299, 0.3297, 0.5682, 0.873, 1.1326, 1.0602, 0.6777])
-    F12_list = np.array([0.5877, 0.6826, 0.4869, 0.1875, -0.392, -1.2367, -1.5999, -0.3273])
-    F13_list = np.array([-0.0621, -0.1514, -0.2211, -0.2951, -0.3616, -0.4118, -0.3589, -0.2504])
-    F21_list = np.array([-0.0596, -0.0189, 0.0554, 0.1089, 0.2256, 0.2878, 0.2642, 0.1561])
-    F22_list = np.array([0.0721, 0.066, -0.064, -0.1519, -0.462, -0.823, -1.1272, -1.3765])
-    F23_list = np.array([-0.022, -0.0289, -0.0261, -0.014, 0.0012, 0.0559, 0.1311, 0.2506])
+    F11_list = np.array(
+        [-0.0083, 0.1299, 0.3297, 0.5682, 0.873, 1.1326, 1.0602, 0.6777]
+    )
+    F12_list = np.array(
+        [0.5877, 0.6826, 0.4869, 0.1875, -0.392, -1.2367, -1.5999, -0.3273]
+    )
+    F13_list = np.array(
+        [-0.0621, -0.1514, -0.2211, -0.2951, -0.3616, -0.4118, -0.3589, -0.2504]
+    )
+    F21_list = np.array(
+        [-0.0596, -0.0189, 0.0554, 0.1089, 0.2256, 0.2878, 0.2642, 0.1561]
+    )
+    F22_list = np.array(
+        [0.0721, 0.066, -0.064, -0.1519, -0.462, -0.823, -1.1272, -1.3765]
+    )
+    F23_list = np.array(
+        [-0.022, -0.0289, -0.0261, -0.014, 0.0012, 0.0559, 0.1311, 0.2506]
+    )
     F11 = F11_list[clearness - 1]
     F12 = F12_list[clearness - 1]
     F13 = F13_list[clearness - 1]
@@ -585,7 +707,9 @@ def idh_perez(jday, cai, solalt, idh, ibn, tilt):
     a1 = math.sin(solalt)
     if a1 < math.sin(5 * pi / 180):
         a1 = math.sin(5 * pi / 180)
-    idh_perez = idh * ((1 - F1) * (1 + math.cos(tilt)) / 2 + F1 * cai / a1 + F2 * math.sin(tilt))
+    idh_perez = idh * (
+        (1 - F1) * (1 + math.cos(tilt)) / 2 + F1 * cai / a1 + F2 * math.sin(tilt)
+    )
     return idh_perez
 
 
@@ -600,5 +724,7 @@ def idh_perez2(jday, cai, solalt, idh, ibn, tilt):
     a1 = np.sin(solalt)
     a1 = np.where(a1 < np.sin(5 * pi / 180), np.sin(5 * pi / 180), a1)
 
-    idh_perez = idh * ((1 - F1) * (1 + np.cos(tilt)) / 2 + F1 * cai / a1 + F2 * np.sin(tilt))
+    idh_perez = idh * (
+        (1 - F1) * (1 + np.cos(tilt)) / 2 + F1 * cai / a1 + F2 * np.sin(tilt)
+    )
     return idh_perez

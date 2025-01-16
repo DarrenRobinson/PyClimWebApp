@@ -20,25 +20,47 @@ import math
 import matplotlib.pyplot as plt
 import streamlit as st
 
-from .ClimAnalFunctions import (cai, daylength, declin_angle,
-                                    solar_altitude, solar_azimuth, time_diff,
-                                    timeshift)
+from .ClimAnalFunctions import (
+    cai,
+    daylength,
+    declin_angle,
+    solar_altitude,
+    solar_azimuth,
+    time_diff,
+    timeshift,
+)
 
 pi = math.pi
 
 
 def app(app, epw, ui, timeshift=timeshift):
-    st.write("# " + app['title'])
+    st.write("# " + app["title"])
 
-    with st.sidebar.form(key='SolarGeo_subplots_solartime'):
-        lat = st.number_input('Latitude', -90.0, 90.0, epw.lat,
-                              help="Whilst these charts can be informed by climate data (global coordinates), they can also be generated independently here manually")
-        st.form_submit_button(label='Apply Change')
+    with st.sidebar.form(key="SolarGeo_subplots_solartime"):
+        lat = st.number_input(
+            "Latitude",
+            -90.0,
+            90.0,
+            epw.lat,
+            help="Whilst these charts can be informed by climate data (global coordinates), they can also be generated independently here manually",
+        )
+        st.form_submit_button(label="Apply Change")
 
-    DayChoice = st.sidebar.slider('Julian Day Number', 1, 365, 172)
-    wallaz = st.sidebar.slider("WallAz", 0, 359, 180, help="This is the orientation of the wall: receiving surface")
-    tilt = st.sidebar.slider("Tilt", 0, 179, 90,
-                             help="This is the tilt of the wall: receiving surface (0 is flat facing up, 179 is flat almost facing down)")
+    DayChoice = st.sidebar.slider("Julian Day Number", 1, 365, 172)
+    wallaz = st.sidebar.slider(
+        "WallAz",
+        0,
+        359,
+        180,
+        help="This is the orientation of the wall: receiving surface",
+    )
+    tilt = st.sidebar.slider(
+        "Tilt",
+        0,
+        179,
+        90,
+        help="This is the tilt of the wall: receiving surface (0 is flat facing up, 179 is flat almost facing down)",
+    )
 
     lat = lat * pi / 180
     wallaz = wallaz * pi / 180
@@ -85,9 +107,24 @@ def app(app, epw, ui, timeshift=timeshift):
             # this loop populates lists for daynuber, solar altitude and solar azimuth for a user-defined day
             for j in range(1, 24):
                 hour_list.append(j)
-                solalt_list.append(solar_altitude(i, j, lat, dec_list[i - 1]) * 180 / pi)
-                solaz_list.append(solar_azimuth(i, j, lat, solalt_list[j - 1] * pi / 180, dec_list[i - 1]) * 180 / pi)
-                cai_list.append(cai(wallaz, tilt, solalt_list[j - 1] * pi / 180, solaz_list[j - 1] * pi / 180))
+                solalt_list.append(
+                    solar_altitude(i, j, lat, dec_list[i - 1]) * 180 / pi
+                )
+                solaz_list.append(
+                    solar_azimuth(
+                        i, j, lat, solalt_list[j - 1] * pi / 180, dec_list[i - 1]
+                    )
+                    * 180
+                    / pi
+                )
+                cai_list.append(
+                    cai(
+                        wallaz,
+                        tilt,
+                        solalt_list[j - 1] * pi / 180,
+                        solaz_list[j - 1] * pi / 180,
+                    )
+                )
     #            day_global_list.append(global_list[24*(i-1)+j-1])
     #            day_diffuse_list.append(diffuse_list[24*(i-1)+j-1])
     #            igbeta_list.append(igbeta(cai_list[j-1],day_global_list[j-1],day_diffuse_list[j-1],solalt_list[j-1]*pi/180,tilt*pi/180))
@@ -99,40 +136,42 @@ def app(app, epw, ui, timeshift=timeshift):
     # this plots the daily declination angles, as an OO figure
     fig, axes = plt.subplots(3, 2, figsize=(15, 10), tight_layout=True)
 
-    axes[0, 0].plot(day_list, dec_list, 'b-')
-    axes[0, 0].set_title('Daily declination angles')
-    axes[0, 0].set_xlabel('time, Julian days')
-    axes[0, 0].set_ylabel('declination angle, degrees')
+    axes[0, 0].plot(day_list, dec_list, "b-")
+    axes[0, 0].set_title("Daily declination angles")
+    axes[0, 0].set_xlabel("time, Julian days")
+    axes[0, 0].set_ylabel("declination angle, degrees")
 
     # this plots the clock-solar time difference for the selected day, as an OO figure
-    axes[0, 1].plot(day_list, timediff_list, 'y-')
-    axes[0, 1].set_title('Daily clock-solar time difference')
-    axes[0, 1].set_xlabel('time, Julian days')
-    axes[0, 1].set_ylabel('time difference, hours')
+    axes[0, 1].plot(day_list, timediff_list, "y-")
+    axes[0, 1].set_title("Daily clock-solar time difference")
+    axes[0, 1].set_xlabel("time, Julian days")
+    axes[0, 1].set_ylabel("time difference, hours")
 
     # this plots the clock-solar time difference for the selected day, as an OO figure
-    axes[1, 0].plot(day_list, daylength_list, 'y-')
-    axes[1, 0].set_title('Daily solar day length')
-    axes[1, 0].set_xlabel('time, Julian days')
-    axes[1, 0].set_ylabel('day length, hours')
+    axes[1, 0].plot(day_list, daylength_list, "y-")
+    axes[1, 0].set_title("Daily solar day length")
+    axes[1, 0].set_xlabel("time, Julian days")
+    axes[1, 0].set_ylabel("day length, hours")
 
     # this plots the hourly solar altitude for the selected day, as an OO figure
-    axes[1, 1].plot(hour_list, solalt_list, 'rx-')
-    axes[1, 1].set_title('Hourly solar altitude angles for day ' + str(DayChoice))
-    axes[1, 1].set_xlabel('time, hours')
-    axes[1, 1].set_ylabel('solar altitude angle, degrees')
+    axes[1, 1].plot(hour_list, solalt_list, "rx-")
+    axes[1, 1].set_title("Hourly solar altitude angles for day " + str(DayChoice))
+    axes[1, 1].set_xlabel("time, hours")
+    axes[1, 1].set_ylabel("solar altitude angle, degrees")
 
     # this plots the hourly solar azimuth for the selected day, as an OO figure
-    axes[2, 0].plot(hour_list, solaz_list, 'g-')
-    axes[2, 0].set_title('Hourly solar azimuth angles for day ' + str(DayChoice))
-    axes[2, 0].set_xlabel('time, hours')
-    axes[2, 0].set_ylabel('solar azimuth angle, degrees')
+    axes[2, 0].plot(hour_list, solaz_list, "g-")
+    axes[2, 0].set_title("Hourly solar azimuth angles for day " + str(DayChoice))
+    axes[2, 0].set_xlabel("time, hours")
+    axes[2, 0].set_ylabel("solar azimuth angle, degrees")
 
     # this plots the hourly solar azimuth for the selected day, as an OO figure
-    axes[2, 1].plot(hour_list, cai_list, 'mo-')
-    axes[2, 1].set_title('Hourly cosine of the angle of incidence for day ' + str(DayChoice))
-    axes[2, 1].set_xlabel('time, hours')
-    axes[2, 1].set_ylabel('CAI')
+    axes[2, 1].plot(hour_list, cai_list, "mo-")
+    axes[2, 1].set_title(
+        "Hourly cosine of the angle of incidence for day " + str(DayChoice)
+    )
+    axes[2, 1].set_xlabel("time, hours")
+    axes[2, 1].set_ylabel("CAI")
 
     ##this plots the hourly solar irradiance for the selected day, as an OO figure
     # axes[3,0].plot(hour_list, igbeta_list, 'c.-')
@@ -140,6 +179,6 @@ def app(app, epw, ui, timeshift=timeshift):
     # axes[3,0].set_xlabel('time, hours')
     # axes[3,0].set_ylabel('Ig_beta')
 
-    fig_title = 'Solar Geometry Subplots'
-    graph, href = ui.base64_to_link_and_graph(fig, fig_title, 'jpg', 700, 700 / 15 * 10)
+    fig_title = "Solar Geometry Subplots"
+    graph, href = ui.base64_to_link_and_graph(fig, fig_title, "jpg", 700, 700 / 15 * 10)
     st.write(graph, href, unsafe_allow_html=True)

@@ -2,7 +2,7 @@ import streamlit as st
 
 
 def app(app, epw, ui):
-    st.write("# "+app['title'])
+    st.write("# " + app["title"])
     st.write("""
     The PyClim Web App (built using Streamlit) is an interface to PyClim: a suite of graphical analysis modules (based around Python’s matplotlib library) for the analysis of hourly weather data. This is intended as a resources for architectural / engineering / technology students and practitioners, to help develop early-stage bioclimatic design concepts.
 
@@ -52,5 +52,4 @@ def app(app, epw, ui):
     FEEDBACK:
     
     If you encounter any bugs with this App, please send a description by e-mail to Darren Robinson: d.robinson1@sheffield.ac.uk  
-    """
-    )
+    """)
