@@ -20,15 +20,8 @@ import math
 import matplotlib.pyplot as plt
 import streamlit as st
 
-from .ClimAnalFunctions import (
-    cai,
-    daylength,
-    declin_angle,
-    solar_altitude,
-    solar_azimuth,
-    time_diff,
-    timeshift,
-)
+from .ClimAnalFunctions import (cai, daylength, declin_angle, solar_altitude,
+                                solar_azimuth, time_diff, timeshift)
 
 pi = math.pi
 

@@ -16,16 +16,10 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 import streamlit as st
-from .ClimAnalFunctions import (
-    cai2,
-    declin_angle2,
-    groundref,
-    igbeta2,
-    solar_altitude2,
-    solar_azimuth2,
-    time_diff2,
-    timeshift,
-)
+
+from .ClimAnalFunctions import (cai2, declin_angle2, groundref, igbeta2,
+                                solar_altitude2, solar_azimuth2, time_diff2,
+                                timeshift)
 
 pi = math.pi
 

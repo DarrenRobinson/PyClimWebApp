@@ -7,7 +7,6 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
-
 # THIS MODULE SIMPLY CREATES A POLAR WIND ROSE PLOT.
 import streamlit as st
 

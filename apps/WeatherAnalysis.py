@@ -16,15 +16,9 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 import streamlit as st
-from .ClimAnalFunctions import (
-    LumEff,
-    Tground,
-    declin_angle,
-    solar_altitude,
-    sunrise_time,
-    time_diff,
-    timeshift,
-)
+
+from .ClimAnalFunctions import (LumEff, Tground, declin_angle, solar_altitude,
+                                sunrise_time, time_diff, timeshift)
 
 pi = math.pi
 
