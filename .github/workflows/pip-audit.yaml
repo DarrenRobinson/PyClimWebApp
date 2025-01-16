@@ -1,0 +1,22 @@
+name: Vulnerability scan in Python package dependencies
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.12"
+    - name: gh-action-pip-audit
+      uses: pypa/gh-action-pip-audit@v1.1.0
