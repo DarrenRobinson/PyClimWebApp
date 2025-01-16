@@ -16,9 +16,13 @@
 
 # imports the basic libraries
 import math
+
 import matplotlib.pyplot as plt
 import streamlit as st
-from apps.ClimAnalFunctions import timeshift, cai, solar_azimuth, solar_altitude, time_diff,daylength,declin_angle
+
+from apps.ClimAnalFunctions import (cai, daylength, declin_angle,
+                                    solar_altitude, solar_azimuth, time_diff,
+                                    timeshift)
 
 pi = math.pi
 

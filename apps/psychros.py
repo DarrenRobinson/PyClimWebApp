@@ -16,7 +16,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import streamlit as st
-from ClimAnalFunctions import g_dry_wet,twetrh,g,tsat
+from ClimAnalFunctions import g, g_dry_wet, tsat, twetrh
+
 
 def app(app, epw, ui):
     st.write("# "+app['title'])

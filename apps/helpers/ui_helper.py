@@ -1,6 +1,8 @@
-import streamlit as st
 import base64
 import io
+
+import streamlit as st
+
 # from io import BytesIO
 
 # General naming convention:
