@@ -22,13 +22,9 @@ PyClim is organised around the following modules
 
 See [`deploy.sh`](./deploy.sh) which is a deployment script that will install this app and the nginx web server.
 
-Create a service account using [useradd](https://manpages.ubuntu.com/manpages/noble/man8/useradd.8.html)
-
 ```bash
-sudo useradd --system --shell /sbin/nologin pyclim
+sudo bash -x deploy.sh
 ```
-
-
 
 ## Service control
 
@@ -62,4 +58,3 @@ View service logs
 ```bash
 sudo journalctl --follow -u streamlit.service
 ```
-
