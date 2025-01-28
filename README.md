@@ -42,7 +42,7 @@ sudo systemctl start streamlit.service
 
 # Configuration
 
-Edit `.streamlit/config.toml`
+For [Streamlit configuration](https://docs.streamlit.io/develop/api-reference/configuration/config.toml), edit `.streamlit/config.toml`.
 
 # Monitoring
 
@@ -58,3 +58,10 @@ View service logs
 ```bash
 sudo journalctl --follow -u streamlit.service
 ```
+
+Web server access logs
+
+```bash
+tail -f /var/log/nginx/access.log
+```
+
