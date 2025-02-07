@@ -4,3 +4,8 @@ headless = true
 enableCORS = true
 port = 8502
 address = "0.0.0.0"
+
+[browser]
+# Disable telemetry
+# https://docs.streamlit.io/develop/concepts/configuration/options#telemetry
+gatherUsageStats = false
