@@ -18,6 +18,16 @@ PyClim is organised around the following modules
 
 - WindRose: plots a user-controllable wind rose, with theta segments of azimuthal sectors falsecoloured either according to the hours that the wind approaches that direction and in the indicated (theta) speed, or at the indicated (theta) temperature.
 
+# Development
+
+Please read ["First steps building Streamlit apps"](https://docs.streamlit.io/get-started/tutorials) in their documentation.
+
+Run the development instance at http://localhost:8502
+
+```bash
+streamlit run app.py
+```
+
 # Installation
 
 See [`deploy.sh`](./deploy.sh) which is a deployment script that will install this app and the nginx web server.
