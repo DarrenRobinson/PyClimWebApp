@@ -26,20 +26,6 @@ See [`deploy.sh`](./deploy.sh) which is a deployment script that will install th
 sudo bash -x deploy.sh
 ```
 
-## Encryption certificate installation
-
-```bash
-cert_path="/etc/ssl/certs/pyclim_shef_ac_uk.crt"
-sudo cp -v pyclim_shef_ac_uk.crt $cert_path
-sudo chown root:root $cert_path
-key_path="/etc/ssl/private/pyclim_shef_ac_uk.key"
-sudo cp -v pyclim_shef_ac_uk.key $key_path
-sudo chown root:root $key_path
-sudo chmod 600 $key_path
-```
-
-
-
 # Usage
 
 ## Service control
@@ -75,15 +61,18 @@ View service logs
 sudo journalctl --follow -u streamlit.service
 ```
 
+```bash
+sudo journalctl -u nginx.service
+```
+
 Web server access logs
 
 ```bash
 sudo tail -f /var/log/nginx/access.log
 ```
 
-and access logs
+and error logs
 
 ```bash
 sudo tail -f /var/log/nginx/error.log
 ```
-
